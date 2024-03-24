@@ -1,2 +1,4 @@
 /cmake-build-debug/
 *.exe
+/.vs
+/out/build/x64-Debug
