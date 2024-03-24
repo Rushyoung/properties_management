@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main() {
-    printf("aaa, mic ok!\n");
     int test;
+    int nb=250;
     return 0;
 }
