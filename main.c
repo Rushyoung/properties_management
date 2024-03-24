@@ -1,11 +1,11 @@
-// last editor:mjc
+// last editor:lzx
 
 
 
 #include <stdio.h>
 
 int main() {
-    printf("Hello, World!\n");
+    printf("aaa, mic ok!\n");
     int test;
     return 0;
 }
