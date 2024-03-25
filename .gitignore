@@ -55,6 +55,8 @@ dkms.conf
 test*
 .vscode/*
 build/*
+.idea/*
+cmake-build-debug/*
 
 #assets
 assets/*
