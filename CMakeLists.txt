@@ -3,4 +3,5 @@ project(property)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(property main.c)
+add_executable(property main.c
+        src/base_type.c)
