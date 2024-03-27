@@ -5,6 +5,7 @@ typedef struct{
     int _type_size;
     int length;
     int _capacity;
+    int _is_need_free;
     void* _data;
 } list;
 
@@ -21,6 +22,7 @@ typedef struct{
     int size;
     str *keys;
     int *values;
+    int _is_need_free;
 } map;
 
 map map_create();
@@ -35,6 +37,7 @@ typedef struct{
     int size;
     str *keys;
     str *values;
+    int _is_need_free;
 } dict;
 
 dict dict_create();
