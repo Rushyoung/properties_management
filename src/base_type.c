@@ -1,6 +1,7 @@
 #ifndef DEBUG
+#include "base_type.h"
 #endif
-#include "../include/base_type.h"
+
 #include <stdlib.h>
 #include <string.h>
 

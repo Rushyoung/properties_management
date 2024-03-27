@@ -19,7 +19,6 @@ typedef char* str;
 
 typedef struct{
     int _capacity;
-    int size;
     str *keys;
     int *values;
     int _is_need_free;
@@ -34,7 +33,6 @@ void map_expand(map*);
 
 typedef struct{
     int _capacity;
-    int size;
     str *keys;
     str *values;
     int _is_need_free;
