@@ -54,10 +54,10 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
         return NULL;
     }
     _table_skip_to_table(file_ptr, _table);
-    int lin_width = 0;
-    int col_count = 0;
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
     int col_position = -1;
-    fscanf(file_ptr, "%d%d", &lin_width, &col_count);
+    fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
     int table_start = ftell(file_ptr) + 2; // the endl is 2 bytes
 
     fseek(file_ptr, table_start, SEEK_SET);
@@ -66,7 +66,6 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
         fscanf(file_ptr, "%s", column_name);
         if(strcmp(column_name, _column) == 0){
             col_position = i;
-            break;
         }
     }
     if(col_position == -1){
@@ -100,23 +99,11 @@ list db_select_col(db* _db, const str _table, const str _column){
     if(file_ptr == NULL){
         return list_create(0);
     }
-    char temp_char;
-    while(1){
-        char table_name[256];
-        fscanf(file_ptr, "%s", table_name);
-        if(strcmp(table_name, _table) == 0){
-            break;
-        }
-
-        do{
-            temp_char = fgetc(file_ptr);
-        }while(temp_char != '=');
-        fseek(file_ptr, 7, SEEK_CUR);
-    }
-    int lin_width = 0;
-    int col_count = 0;
+    _table_skip_to_table(file_ptr, _table);
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
     int col_position = -1;
-    fscanf(file_ptr, "%d%d", &lin_width, &col_count);
+    fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
     int table_start = ftell(file_ptr) + 2; // the endl is 2 bytes
 
     fseek(file_ptr, table_start, SEEK_SET);
@@ -125,7 +112,6 @@ list db_select_col(db* _db, const str _table, const str _column){
         fscanf(file_ptr, "%s", column_name);
         if(strcmp(column_name, _column) == 0){
             col_position = i;
-            break;
         }
     }
     if(col_position == -1){
@@ -138,9 +124,9 @@ list db_select_col(db* _db, const str _table, const str _column){
         fscanf(file_ptr, "%d", &temp_int);
         lin_skip += temp_int;
     }
-
+    char temp_char;
     list result = list_create(sizeof(str));
-    for(int oid=0; ;oid++){
+    for(int oid=0; ; oid++){
         fseek(file_ptr, table_start, SEEK_SET);
         fseek(file_ptr, (lin_width+2)*2, SEEK_CUR);
         fseek(file_ptr, (lin_width+2)*oid, SEEK_CUR);
@@ -163,8 +149,9 @@ static int _table_skip_to_next(FILE* _fp){
     char table_name[256];
     int lin_width = 0, col_count = 0;
     fscanf(_fp, "%s%d%d", table_name, &lin_width, &col_count);
+    fseek(_fp, 2, SEEK_CUR);
     char first_char=' ';
-    while(1){
+    while(1 && !feof(_fp)){
         first_char = fgetc(_fp);
         if(first_char == '='){
             fseek(_fp, 7, SEEK_CUR);
@@ -176,12 +163,12 @@ static int _table_skip_to_next(FILE* _fp){
 }
 
 
-static int _table_skip_to_table(FILE* _fp, const _table){
+static int _table_skip_to_table(FILE* _fp, const str _table){
     char table_name[256];
     int cursor = 0;
     fseek(_fp, 0, SEEK_SET);
     while(!feof(_fp)){
-        fscanf("%s", table_name);
+        fscanf(_fp, "%s", table_name);
         fseek(_fp, cursor, SEEK_SET);
         if(strcmp(table_name, _table) == 0){
             return cursor;

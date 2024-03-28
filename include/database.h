@@ -24,9 +24,9 @@ list db_select_col(db*, const str, const str);
 void db_update(db*, const str, const str, const int);
 void db_update_lin(db*, const str, const int);
 
-void db_commit(db*, const str);
 void db_vacuum(db*);
 
-static int _table_skip(FILE*, int);
+static int _table_skip_to_next(FILE*);
+static int _table_skip_to_table(FILE*, const str);
 
 #endif
