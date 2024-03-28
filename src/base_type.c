@@ -30,11 +30,8 @@ list list_create(int sizeof_type) {
  * @param value 值
  */
 void list_set(list* l, int index, void* value) {
-    if( index < 0 || index >= l->_capacity * 2){
+    if( index < 0 || index >= l->length){
         return;
-    }
-    if( index >= l->_capacity && index < l->_capacity * 2){
-        list_expand(l);
     }
     memcpy(l->_data + index * l->_type_size, value, l->_type_size);
 }
