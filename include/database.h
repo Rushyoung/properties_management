@@ -9,8 +9,7 @@ typedef struct{
     map  _master;
 } db;
 
-db   db_create();
-db   db_open(const str);
+db   db_connect(const str);
 
 void db_insert_table(db*, const str, const map);
 void db_insert_lin(db*, const str, const list);
@@ -27,6 +26,7 @@ void db_update_lin(db*, const str, const int);
 
 void db_commit(db*, const str);
 void db_vacuum(db*);
-void db_close(db*);
+
+static int _table_skip(FILE*, int);
 
 #endif

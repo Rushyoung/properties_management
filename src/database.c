@@ -5,15 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
-db db_create(){
-    db _db;
-    strcpy(_db._file_name, "");
-    _db._master = map_create();
-    return _db;
-}
 
-
-db db_open(const str _file_name){
+db db_connect(const str _file_name){
     db _db;
     strcpy(_db._file_name, _file_name);
     _db._master = map_create();
@@ -60,18 +53,7 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     if(file_ptr == NULL){
         return NULL;
     }
-    while(1){
-        char table_name[256];
-        fscanf(file_ptr, "%s", table_name);
-        if(strcmp(table_name, _table) == 0){
-            break;
-        }
-        char temp_char;
-        do{
-            temp_char = fgetc(file_ptr);
-        }while(temp_char != '=');
-        fseek(file_ptr, 7, SEEK_CUR);
-    }
+    _table_skip_to_table(file_ptr, _table);
     int lin_width = 0;
     int col_count = 0;
     int col_position = -1;
@@ -174,4 +156,37 @@ list db_select_col(db* _db, const str _table, const str _column){
     }
     fclose(file_ptr);
     return result;
+}
+
+
+static int _table_skip_to_next(FILE* _fp){
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
+    fscanf(_fp, "%s%d%d", table_name, &lin_width, &col_count);
+    char first_char=' ';
+    while(1){
+        first_char = fgetc(_fp);
+        if(first_char == '='){
+            fseek(_fp, 7, SEEK_CUR);
+            break;
+        }
+        fseek(_fp, lin_width+1, SEEK_CUR);
+    }
+    return ftell(_fp);
+}
+
+
+static int _table_skip_to_table(FILE* _fp, const _table){
+    char table_name[256];
+    int cursor = 0;
+    fseek(_fp, 0, SEEK_SET);
+    while(!feof(_fp)){
+        fscanf("%s", table_name);
+        fseek(_fp, cursor, SEEK_SET);
+        if(strcmp(table_name, _table) == 0){
+            return cursor;
+        }
+        cursor = _table_skip_to_next(_fp);
+    }
+    return -1;
 }
