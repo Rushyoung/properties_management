@@ -4,6 +4,8 @@
 #include "base_type.h"
 #include <stdio.h>
 
+int fmove(FILE*, long);
+
 typedef struct{
     char _file_name[256];
     map  _master;

@@ -6,6 +6,20 @@
 #include <string.h>
 
 
+inline int fmove(FILE *_file, long _offset){
+    if(_offset <= 0 || _offset > 16){
+        return fseek(_file, _offset, SEEK_CUR);
+    }
+    for(long i=0; i<_offset; i++){
+        int c = fgetc(_file);
+        if (c == '\n') {
+            i++;
+        }
+    }
+    return 0;
+}
+
+
 db db_connect(const str _file_name){
     db _db;
     strcpy(_db._file_name, _file_name);
@@ -80,9 +94,9 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     }
 
     fseek(file_ptr, table_start, SEEK_SET);
-    fseek(file_ptr, (lin_width+2)*2, SEEK_CUR);
-    fseek(file_ptr, (lin_width+2)*(_oid-1), SEEK_CUR);
-    fseek(file_ptr, lin_skip, SEEK_CUR);
+    fmove(file_ptr, (lin_width+2)*2);
+    fmove(file_ptr, (lin_width+2)*(_oid-1));
+    fmove(file_ptr, lin_skip);
 
     char result[256];
     fscanf(file_ptr, "%s", result);
@@ -128,13 +142,13 @@ list db_select_col(db* _db, const str _table, const str _column){
     list result = list_create(sizeof(str));
     for(int oid=0; ; oid++){
         fseek(file_ptr, table_start, SEEK_SET);
-        fseek(file_ptr, (lin_width+2)*2, SEEK_CUR);
-        fseek(file_ptr, (lin_width+2)*oid, SEEK_CUR);
+        fmove(file_ptr, (lin_width+2)*2);
+        fmove(file_ptr, (lin_width+2)*oid);
         temp_char = fgetc(file_ptr);
         if(temp_char == '='){
             break;
         }
-        fseek(file_ptr, lin_skip - 1, SEEK_CUR);
+        fmove(file_ptr, lin_skip);
         char temp_str[256];
         fscanf(file_ptr, "%s", temp_str);
         str temp_str_ = string(temp_str);
@@ -145,19 +159,54 @@ list db_select_col(db* _db, const str _table, const str _column){
 }
 
 
+dict db_select_lin(db* _db, const str _table, const int _oid){
+    if(map_get(&(_db->_master), _table) == 0){
+        return dict_create(0);
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "r");
+    if(file_ptr == NULL){
+        return dict_create(0);
+    }
+
+    _table_skip_to_table(file_ptr, _table);
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
+    fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
+    int table_start = ftell(file_ptr) + 2; // the endl is 2 bytes
+
+    dict result = dict_create();
+    fseek(file_ptr, table_start, SEEK_SET);
+    char temp_str[256];
+    for(int i=0; i<col_count; i++){
+        fscanf(file_ptr, "%s", temp_str);
+        dict_set(&result, temp_str, "");
+    }
+
+    fseek(file_ptr, table_start, SEEK_SET);
+    fmove(file_ptr, (lin_width+2)*2);
+    fmove(file_ptr, (lin_width+2)*(_oid-1));
+    for(int i=0; i<col_count; i++){
+        fscanf(file_ptr, "%s", temp_str);;
+        dict_set(&result, result.keys[i], temp_str);
+    }
+
+    return result;
+}
+
+
 static int _table_skip_to_next(FILE* _fp){
     char table_name[256];
     int lin_width = 0, col_count = 0;
     fscanf(_fp, "%s%d%d", table_name, &lin_width, &col_count);
-    fseek(_fp, 2, SEEK_CUR);
+    fmove(_fp, 2);
     char first_char=' ';
     while(1 && !feof(_fp)){
         first_char = fgetc(_fp);
         if(first_char == '='){
-            fseek(_fp, 7, SEEK_CUR);
+            fmove(_fp, 7);
             break;
         }
-        fseek(_fp, lin_width+1, SEEK_CUR);
+        fmove(_fp, lin_width+1);
     }
     return ftell(_fp);
 }
