@@ -20,8 +20,8 @@ G["UI"] --> H
 ``` 
 #### Base Type
 It should include some commonly used data structures, such as string, list, stack, deque and others.  
-All of structures(except str) should get a sizeof the detail data struct, and is should return a void pointer.  
-The void pointer should be change to the data on its own, then be read and operated.  
+All structures(except str) should get a sizeof the detail data struct, and it should return a void pointer.  
+The void pointer should be changed to the data on its own, then be read and operated.  
 #### DateBase Operate  
 This is a module for operating databases.  
 We assume that the data to be stored is always of string type.  
@@ -33,6 +33,41 @@ Specific business of the project.
 #### UI  
 a UI module. 
 
+## User data content
+
+
+```mermaid
+graph LR
+A[["admin"]]
+A --> A1(role: admin)
+A --> A2(username/password)
+
+B[[workers]]
+B ---> B1(role: workers)
+B ---> B2(username/password)
+B --> B3(work regions)
+B --> B4(patrol route)
+B --> B5(shift time)
+
+C[[residents]]
+C ---> C1(role: residents)
+C ---> C2(username/password)
+C --> C3(name)
+C --> C4(gender)
+C --> C5(address)
+C --> C6(phone number)
+C --> C7(fee record:link list)
+C --> C8(servant)
+C --> C9(region)
+C --> C10(parking space)
+C --> C11(problem list)
+C7 --> c1(fee times)
+C7 --> c2(owe fee times)
+C7 --> c4(trade ID)
+C7 --> c3(pointers)
+```
+
+need an analysis function to change some statues(fee or not) in database
 
 ## coding standard  
 The code should strive for beauty and elegance indirectly.  
@@ -50,8 +85,8 @@ Indentation should be done using 4 spaces instead of one tab.
 Reason: spaces have a consistent width of one character on all devices, while tabs depend on platform implementation. 
 
 #### braces and code blocks
-The left brace should direcly follow control statements or the defination of function.  
-The right brace should be one the same indentationlevel as the corresponding statement.  
+The left brace should directly follow control statements or the definition of function.  
+The right brace should be one of the same indentation level as the corresponding statement.  
 Indent inside the code block by adding 4 spaces.
 For example:
 ```C
@@ -74,7 +109,7 @@ The `<type>` should be one of the following:
 - feat: a new feature
 - fix: a bug fix
 - docs: documentation only changes
-- style: changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- style: changes that do not affect the meaning of the code (white-space, formatting, missing semicolons, etc.)
 - refactor: a code change that neither fixes a bug nor adds a feature
 - perf: a code change that improves performance
 - chore: changes to the build process or auxiliary tools and libraries such as documentation generation
