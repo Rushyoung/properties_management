@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 int fmove(FILE*, long);
+int finsert(FILE*, const str);
 
 typedef struct{
     char _file_name[256];
@@ -30,5 +31,6 @@ void db_vacuum(db*);
 
 static int _table_skip_to_next(FILE*);
 static int _table_skip_to_table(FILE*, const str);
+static void _table_skip_to_position(FILE*, const int, const int);
 
 #endif

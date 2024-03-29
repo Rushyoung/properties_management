@@ -12,21 +12,32 @@ inline int fmove(FILE *_file, long _offset){
     }
     for(long i=0; i<_offset; i++){
         int c = fgetc(_file);
-        if (c == '\n') {
-            i++;
-        }
     }
     return 0;
 }
 
 
+int finsert(FILE *_file, const str _str){
+    return fprintf(_file, "%s", _str);
+}
+
+
+// connect
 db db_connect(const str _file_name){
     db _db;
     strcpy(_db._file_name, _file_name);
     _db._master = map_create();
     // read master
-    FILE* file_ptr = fopen(_file_name, "r");
+    FILE* file_ptr = fopen(_file_name, "rb");
     if(file_ptr == NULL){
+        FILE* file_ptr = fopen(_file_name, "wb");
+        fprintf(file_ptr, "master 24 2\r\n");
+        fprintf(file_ptr, "%16s%8s\r\n", "table", "width");
+        fprintf(file_ptr, "%16d%8d\r\n", 16, 8);
+        fprintf(file_ptr, "%16s%8d\r\n", "master", 24);
+        fprintf(file_ptr, "======\r\n");
+        fclose(file_ptr);
+        map_set(&(_db._master), "master", 24);
         return _db;
     }
     char table_name[256];
@@ -49,7 +60,19 @@ db db_connect(const str _file_name){
 
 
 // insert 
+void db_insert_table(db* _db, const str _table, const map _columns){
+    if(map_get(&(_db->_master), _table) != 0){
+        return;
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "ab");
+    if(file_ptr == NULL){
+        return;
+    }
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
+    fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
 
+}
 
 
 
@@ -63,7 +86,7 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
         return NULL;
     }
-    FILE* file_ptr = fopen(_db->_file_name, "r");
+    FILE* file_ptr = fopen(_db->_file_name, "rb");
     if(file_ptr == NULL){
         return NULL;
     }
@@ -109,7 +132,7 @@ list db_select_col(db* _db, const str _table, const str _column){
     if(map_get(&(_db->_master), _table) == 0){
         return list_create(0);
     }
-    FILE* file_ptr = fopen(_db->_file_name, "r");
+    FILE* file_ptr = fopen(_db->_file_name, "rb");
     if(file_ptr == NULL){
         return list_create(0);
     }
@@ -163,7 +186,7 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
         return dict_create(0);
     }
-    FILE* file_ptr = fopen(_db->_file_name, "r");
+    FILE* file_ptr = fopen(_db->_file_name, "rb");
     if(file_ptr == NULL){
         return dict_create(0);
     }
@@ -225,4 +248,22 @@ static int _table_skip_to_table(FILE* _fp, const str _table){
         cursor = _table_skip_to_next(_fp);
     }
     return -1;
+}
+
+
+static void _table_skip_to_position(FILE* _fp, const int _column, const int _oid){
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
+    int lin_skip = 0, temp_int;
+    fscanf(_fp, "%s%d%d", table_name, &lin_width, &col_count);
+    int table_start = ftell(_fp) + 2; // the endl is 2 bytes
+    fmove(_fp,2 + lin_width + 2);
+    for(int i=1; i<_column; i++){
+        fscanf(_fp, "%d", &temp_int);
+        lin_skip += temp_int;
+    }
+    fseek(_fp, table_start, SEEK_SET);
+    fmove(_fp, (lin_width+2)*2);
+    fmove(_fp, (lin_width+2)*(_oid-1));
+    fmove(_fp, lin_skip);
 }
