@@ -8,6 +8,16 @@ int fmove(FILE*, long);
 int finsert(FILE*, const str);
 
 typedef struct{
+    int head;
+    int start;
+    int col_count;
+    int lin_width;
+    char table_name[256];
+} table_info;
+
+table_info table_get_info(FILE*);
+
+typedef struct{
     char _file_name[256];
     map  _master;
 } db;
