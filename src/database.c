@@ -106,7 +106,6 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     if(col_position == -1){
         return NULL;
     }
-
     fseek(file_ptr, table_head, SEEK_SET);
     _table_skip_to_position(file_ptr, col_position, _oid);
     char result[256];
@@ -202,6 +201,44 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
     }
 
     return result;
+}
+
+
+//update
+void db_update(db* _db, const str _table, const str _column, const int _oid, const str value){
+    if(map_get(&(_db->_master), _table) == 0){
+        return;
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "rb+");
+    if(file_ptr == NULL){
+        return;
+    }
+    int table_head = _table_skip_to_table(file_ptr, _table);
+    char table_name[256];
+    int lin_width = 0, col_count = 0;
+    int col_position = -1;
+    fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
+    fmove(file_ptr, 2);
+    char column_name[256];
+    for(int i = 1; i <= col_count; i++){
+        fscanf(file_ptr, "%s", column_name);
+        if(strcmp(column_name, _column) == 0){
+            col_position = i;
+        }
+    }
+    if(col_position == -1){
+        return;
+    }
+    int word_width;
+    for(int i = 0; i < col_position; i++){
+        fscanf(file_ptr, "%d", &word_width);
+    }
+    fseek(file_ptr, table_head, SEEK_SET);
+    _table_skip_to_position(file_ptr, col_position, _oid);
+    char format[16];
+    sprintf(format, "%%%ds", word_width);
+    fprintf(file_ptr, format, value);
+    fclose(file_ptr);
 }
 
 

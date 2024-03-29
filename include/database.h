@@ -24,7 +24,7 @@ str  db_select(db*, const str, const str, const int);
 dict db_select_lin(db*, const str, const int);
 list db_select_col(db*, const str, const str);
 
-void db_update(db*, const str, const str, const int);
+void db_update(db*, const str, const str, const int, const str);
 void db_update_lin(db*, const str, const int);
 
 void db_vacuum(db*);
