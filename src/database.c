@@ -90,16 +90,14 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     if(file_ptr == NULL){
         return NULL;
     }
-    _table_skip_to_table(file_ptr, _table);
+    int table_head = _table_skip_to_table(file_ptr, _table);
     char table_name[256];
     int lin_width = 0, col_count = 0;
     int col_position = -1;
     fscanf(file_ptr, "%s%d%d", table_name, &lin_width, &col_count);
-    int table_start = ftell(file_ptr) + 2; // the endl is 2 bytes
-
-    fseek(file_ptr, table_start, SEEK_SET);
+    fmove(file_ptr, 2);
     char column_name[256];
-    for(int i = 0; i < col_count; i++){
+    for(int i = 1; i <= col_count; i++){
         fscanf(file_ptr, "%s", column_name);
         if(strcmp(column_name, _column) == 0){
             col_position = i;
@@ -109,18 +107,8 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
         return NULL;
     }
 
-    int lin_skip = 0;
-    for(int i=0; i<col_position; i++){
-        int temp_int;
-        fscanf(file_ptr, "%d", &temp_int);
-        lin_skip += temp_int;
-    }
-
-    fseek(file_ptr, table_start, SEEK_SET);
-    fmove(file_ptr, (lin_width+2)*2);
-    fmove(file_ptr, (lin_width+2)*(_oid-1));
-    fmove(file_ptr, lin_skip);
-
+    fseek(file_ptr, table_head, SEEK_SET);
+    _table_skip_to_position(file_ptr, col_position, _oid);
     char result[256];
     fscanf(file_ptr, "%s", result);
     fclose(file_ptr);
@@ -209,7 +197,7 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
     fmove(file_ptr, (lin_width+2)*2);
     fmove(file_ptr, (lin_width+2)*(_oid-1));
     for(int i=0; i<col_count; i++){
-        fscanf(file_ptr, "%s", temp_str);;
+        fscanf(file_ptr, "%s", temp_str);
         dict_set(&result, result.keys[i], temp_str);
     }
 
@@ -251,7 +239,7 @@ static int _table_skip_to_table(FILE* _fp, const str _table){
 }
 
 
-static void _table_skip_to_position(FILE* _fp, const int _column, const int _oid){
+static int _table_skip_to_position(FILE* _fp, const int _column, const int _oid){
     char table_name[256];
     int lin_width = 0, col_count = 0;
     int lin_skip = 0, temp_int;
@@ -266,4 +254,5 @@ static void _table_skip_to_position(FILE* _fp, const int _column, const int _oid
     fmove(_fp, (lin_width+2)*2);
     fmove(_fp, (lin_width+2)*(_oid-1));
     fmove(_fp, lin_skip);
+    return ftell(_fp);
 }

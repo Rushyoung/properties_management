@@ -31,6 +31,6 @@ void db_vacuum(db*);
 
 static int _table_skip_to_next(FILE*);
 static int _table_skip_to_table(FILE*, const str);
-static void _table_skip_to_position(FILE*, const int, const int);
+static int _table_skip_to_position(FILE*, const int, const int);
 
 #endif
