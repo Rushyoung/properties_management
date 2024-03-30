@@ -14,6 +14,7 @@ void list_set(list*, int, void*);
 void*list_get(list*, int);
 void list_append(list*, void*);
 void list_expand(list*);
+void list_free(list*);
 
 typedef char* str;
 
@@ -29,7 +30,7 @@ void map_set(map*, str, int);
 int  map_get(map*, str);
 void map_remove(map*, str);
 void map_expand(map*);
-
+void map_free(map*);
 
 typedef struct{
     int _capacity;
@@ -43,6 +44,7 @@ void dict_set(dict*, str, str);
 str  dict_get(dict*, str);
 void dict_remove(dict*, str);
 void dict_expand(dict*);
+void dict_free(dict*);
 
 str string(str);
 #define _string(_str) ({str s = string(_str); &s;})

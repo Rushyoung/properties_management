@@ -74,6 +74,17 @@ void list_expand(list* l) {
 
 
 /**
+ * @brief 释放链表
+ * @param l 链表
+*/
+void list_free(list* l) {
+    if(l->_is_need_free == 1){
+        free(l->_data);
+    }
+}
+
+
+/**
  * @brief 创建一个映射
  * @return map 返回创建的映射
  */
@@ -168,6 +179,19 @@ void map_expand(map* d) {
         d->keys[i] = NULL;
     }
     d->values = realloc(d->values, sizeof(int) * d->_capacity);
+}
+
+
+/**
+ * @brief 释放映射
+ * @param d 映射
+*/
+void map_free(map* d) {
+    for(int i = 0; i < d->_capacity; i++){
+        free(d->keys[i]);
+    }
+    free(d->keys);
+    free(d->values);
 }
 
 
@@ -278,6 +302,20 @@ void dict_expand(dict* d) {
     for(int i=d->_capacity - 16; i < d->_capacity; i++){
         d->values[i] = NULL;
     }
+}
+
+
+/**
+ * @brief 释放字典
+ * @param d 字典
+*/
+void dict_free(dict* d) {
+    for(int i = 0; i < d->_capacity; i++){
+        free(d->keys[i]);
+        free(d->values[i]);
+    }
+    free(d->keys);
+    free(d->values);
 }
 
 
