@@ -57,6 +57,8 @@ test*
 build/*
 .idea/*
 cmake-build-debug/*
+/.vs/*
+/out/build/x64-Debug/*
 
 #assets
 assets/*
