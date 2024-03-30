@@ -60,3 +60,5 @@ cmake-build-debug/*
 
 #assets
 assets/*
+/.vs
+/out/build/x64-Debug
