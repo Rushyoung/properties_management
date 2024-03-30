@@ -45,5 +45,6 @@ void dict_remove(dict*, str);
 void dict_expand(dict*);
 
 str string(str);
+#define _string(_str) ({str s = string(_str); &s;})
 
 #endif

@@ -3,6 +3,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -22,11 +23,16 @@ int finsert(FILE *_file, const str _str){
     fseek(_file, 0, SEEK_END);
     int end_cursor = ftell(_file);
     char *buffer = (char*)malloc(end_cursor - start_cursor + 8);
+    if(buffer == NULL){
+        return 1;
+    }
     fseek(_file, start_cursor, SEEK_SET);
     fread(buffer, 1, end_cursor - start_cursor, _file);
     fseek(_file, start_cursor, SEEK_SET);
     fprintf(_file, "%s", _str);
     fwrite(buffer, 1, end_cursor - start_cursor, _file);
+    free(buffer);
+    return 0;
 }
 
 
@@ -48,11 +54,8 @@ db db_connect(const str _file_name){
     FILE* file_ptr = fopen(_file_name, "rb");
     if(file_ptr == NULL){
         FILE* file_ptr = fopen(_file_name, "wb");
-        fprintf(file_ptr, "master 24 2\r\n");
-        fprintf(file_ptr, "%16s%8s\r\n", "table", "width");
-        fprintf(file_ptr, "%16d%8d\r\n", 16, 8);
-        fprintf(file_ptr, "%16s%8d\r\n", "master", 24);
-        fprintf(file_ptr, "======\r\n");
+        fprintf(file_ptr, "master 24 2\r\n%16s%8s\r\n%16d%8d\r\n%16s%8d\r\n======\r\n",
+                          "table", "width", 16, 8, "master", 24);
         fclose(file_ptr);
         map_set(&(_db._master), "master", 24);
         return _db;
@@ -95,26 +98,59 @@ void db_insert_table(db* _db, const str _table, const map _columns){
     }
     _table_skip_to_next(file_ptr);
     fmove(file_ptr, -8);
-    char temp_str[256];
-    sprintf(temp_str, "%16s%8d\r\n", _table, lin_width);
-    finsert(file_ptr, temp_str);
+    char format[256];
+    sprintf(format, "%16s%8d\r\n", _table, lin_width);
+    finsert(file_ptr, format);
     fclose(file_ptr);
     file_ptr = fopen(_db->_file_name, "ab");
     fprintf(file_ptr, "%s %d %d\r\n", _table, lin_width, col_count);
     for(int i=0; i<col_count; i++){
-        sprintf(temp_str, "%%%ds", _columns.values[i]);
-        fprintf(file_ptr, temp_str, _columns.keys[i]);
+        sprintf(format, "%%%ds", _columns.values[i]);
+        fprintf(file_ptr, format, _columns.keys[i]);
     }
     fprintf(file_ptr, "\r\n");
     for(int i=0; i<col_count; i++){
-        sprintf(temp_str, "%%%dd", _columns.values[i]);
-        fprintf(file_ptr, temp_str, _columns.values[i]);
+        sprintf(format, "%%%dd", _columns.values[i]);
+        fprintf(file_ptr, format, _columns.values[i]);
     }
     fprintf(file_ptr, "\r\n======\r\n");
     fclose(file_ptr);
 }
 
 
+void db_insert_lin(db* _db, const str _table, list _values){
+    if(map_get(&(_db->_master), _table) == 0){
+        return;
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "rb+");
+    if(file_ptr == NULL){
+        return;
+    }
+    _table_skip_to_table(file_ptr, _table);
+    table_info info = table_get_info(file_ptr);
+    fseek(file_ptr, info.start, SEEK_SET);
+    fmove(file_ptr, info.lin_width+2);
+    list each_width = list_create(sizeof(int));
+    int temp_int;
+    for(int i=0; i<info.col_count; i++){
+        fscanf(file_ptr, "%d", &temp_int);
+        list_append(&each_width, &temp_int);
+    }
+    fseek(file_ptr, info.head, SEEK_SET);
+    _table_skip_to_next(file_ptr);
+    fmove(file_ptr, -8);
+    char format[256] = {};
+    char result[65536] = {};
+    int result_len = 0;
+    for(int i=0; i<info.col_count; i++){
+        sprintf(format, "%%%ds", *(int*)list_get(&each_width, i));
+        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
+        result_len += *(int*)list_get(&each_width, i);
+    }
+    sprintf(result + result_len, "\r\n");
+    finsert(file_ptr, result);
+    fclose(file_ptr);
+}
 
 // remove
 
@@ -195,8 +231,7 @@ list db_select_col(db* _db, const str _table, const str _column){
         fmove(file_ptr, lin_skip);
         char temp_str[256];
         fscanf(file_ptr, "%s", temp_str);
-        str temp_str_ = string(temp_str);
-        list_append(&result, &temp_str_);
+        list_append(&result, _string(temp_str));
     }
     fclose(file_ptr);
     return result;
@@ -211,10 +246,8 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
     if(file_ptr == NULL){
         return dict_create(0);
     }
-
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
-
     dict result = dict_create();
     fseek(file_ptr, info.start, SEEK_SET);
     char temp_str[256];
@@ -222,7 +255,6 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
         fscanf(file_ptr, "%s", temp_str);
         dict_set(&result, temp_str, "");
     }
-
     fseek(file_ptr, info.start, SEEK_SET);
     fmove(file_ptr, (info.lin_width+2)*2);
     fmove(file_ptr, (info.lin_width+2)*(_oid-1));
@@ -230,7 +262,6 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
         fscanf(file_ptr, "%s", temp_str);
         dict_set(&result, result.keys[i], temp_str);
     }
-
     return result;
 }
 

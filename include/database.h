@@ -25,7 +25,7 @@ typedef struct{
 db   db_connect(const str);
 
 void db_insert_table(db*, const str, const map);
-void db_insert_lin(db*, const str, const list);
+void db_insert_lin(db*, const str, list);
 
 void db_remove_table(db*, const str);
 void db_remove_lin(db*, const str, const int);
