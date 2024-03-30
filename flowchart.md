@@ -38,12 +38,12 @@ work_assignments --> repair
 work_assignments --> clean
 work_assignments --> remind_payment
 
-workers -->worker_login
-worker_login ---> verify2{username&password}
-worker_login ---> forget2[forgetpassword]
+workers --> worker_login
+worker_login --> verify2{username&password}
+worker_login --> forget2[forgetpassword]
 forget2 --> reset2[resetpassword]
 verify2 --> |success| worker_main
-verify2 --> |fail| worker_login
+verify2 ---> |fail| worker_login
 worker_main --> inquire_work
 worker_main --> sort2
 worker_main --> count_work
