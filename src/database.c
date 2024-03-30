@@ -153,8 +153,53 @@ void db_insert_lin(db* _db, const str _table, list _values){
 }
 
 // remove
+void db_remove_table(db* _db, const str _table){
+    if(map_get(&(_db->_master), _table) == 0){
+        return;
+    }
+    map_remove(&(_db->_master), _table);
+    FILE* file_ptr = fopen(_db->_file_name, "rb+");
+    if(file_ptr == NULL){
+        return;
+    }
+    table_info info = table_get_info(file_ptr);
+    fseek(file_ptr, info.start, SEEK_SET);
+    fmove(file_ptr, (info.lin_width + 2)*2);
+    char temp_char, temp_str[256];
+    while(1){
+        temp_char = fgetc(file_ptr);
+        if(temp_char == '='){
+            break;
+        }
+        fscanf(file_ptr, "%s", temp_str);
+        if(strcmp(temp_str, _table) == 0){
+            fmove(file_ptr, -16);
+            fprintf(file_ptr, "%24s", "");
+            break;
+        } else {
+            fmove(file_ptr, 10);
+        }
+    }
+    fclose(file_ptr);
+}
 
 
+void db_remove_lin(db* _db, const str _table, const int _oid){
+    if(map_get(&(_db->_master), _table) == 0){
+        return;
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "rb+");
+    if(file_ptr == NULL){
+        return;
+    }
+    _table_skip_to_table(file_ptr, _table);
+    table_info info = table_get_info(file_ptr);
+    _table_skip_to_position(file_ptr, 1, _oid);
+    char format[256];
+    sprintf(format, "%%%ds", info.lin_width);
+    fprintf(file_ptr, format, "");
+    fclose(file_ptr);
+}
 
 
 // select
