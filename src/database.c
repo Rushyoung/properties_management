@@ -347,6 +347,53 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
 }
 
 
+// vacuum
+void db_vacuum(db* _db){
+    char new_file_name[256];
+    sprintf(new_file_name, "%s.vac", _db->_file_name);
+    FILE* fin = fopen(_db->_file_name, "rb");
+    FILE* fout = fopen(new_file_name, "wb");
+    list tables = list_create(sizeof(int));
+    // get each table info
+    fseek(fin, 0, SEEK_END);
+    int file_end = ftell(fin);
+    fseek(fin, 0, SEEK_SET);
+    while(ftell(fin) < file_end){
+        list_append(&tables, ({int _ = ftell(fin); &_;}));
+        _table_skip_to_next(fin);
+    };
+    char line[65536];
+    for(int i=0; i<tables.length; i++ ){
+        fseek(fin, *(int*)list_get(&tables, i), SEEK_SET);
+        table_info info = table_get_info(fin);
+        if(map_get(&(_db->_master), info.table_name) == 0){
+            continue;
+        }
+        while(1){
+            fgets(line, 65536, fin);
+            if(line[0] == '='){
+                fprintf(fout, "======\r\n");
+                break;
+            }
+            int is_empty_line = 1;
+            for(int i=0; i<info.lin_width && line[i]; i++){
+                if(line[i] != ' '){
+                    is_empty_line = 0;
+                    break;
+                }
+            }
+            if(!is_empty_line){
+                fprintf(fout, "%s", line);
+            }
+        }
+    }
+    fclose(fin);
+    fclose(fout);
+    remove(_db->_file_name);
+    rename(new_file_name, _db->_file_name);
+}
+
+
 static int _table_skip_to_next(FILE* _fp){
     table_info info = table_get_info(_fp);
     fseek(_fp, info.start, SEEK_SET);
