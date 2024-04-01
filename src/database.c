@@ -67,8 +67,7 @@ db db_connect(const str _file_name){
         return _db;
     }
     char table_name[256];
-    int table_width;
-    int file_cur = 65;
+    int table_width = 0, file_cur = 65;
     while(1){
         fseek(file_ptr, file_cur, SEEK_SET);
         char c = fgetc(file_ptr);
@@ -225,7 +224,7 @@ list db_select_col(db* _db, const str _table, const str _column){
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
     fseek(file_ptr, info.start, SEEK_SET);
-    int col_position = -1;
+    int col_position = -1, lin_skip = 0;
     char column_name[256];
     for(int i = 0; i < info.col_count; i++){
         fscanf(file_ptr, "%s", column_name);
@@ -235,15 +234,13 @@ list db_select_col(db* _db, const str _table, const str _column){
     }
     if(col_position == -1){
         return list_create(0);
-    }
-
-    int lin_skip = 0;
+    } 
     for(int i=0; i<col_position; i++){
         int temp_int;
         fscanf(file_ptr, "%d", &temp_int);
         lin_skip += temp_int;
     }
-    char temp_char;
+    char temp_char, temp_str[256];
     list result = list_create(sizeof(str));
     for(int oid=0; ; oid++){
         fseek(file_ptr, info.start, SEEK_SET);
@@ -254,7 +251,6 @@ list db_select_col(db* _db, const str _table, const str _column){
             break;
         }
         fmove(file_ptr, lin_skip);
-        char temp_str[256];
         fscanf(file_ptr, "%s", temp_str);
         list_append(&result, _string(temp_str));
     }
@@ -297,7 +293,7 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
     int col_position = -1;
-    fmove(file_ptr, 2);
+    fseek(file_ptr, info.start, SEEK_SET);
     char column_name[256];
     for(int i = 1; i <= info.col_count; i++){
         fscanf(file_ptr, "%s", column_name);
@@ -352,7 +348,6 @@ void db_vacuum(db* _db){
     FILE* fin = fopen(_db->_file_name, "rb");
     FILE* fout = fopen(new_file_name, "wb");
     list tables = list_create(sizeof(int));
-    // get each table info
     fseek(fin, 0, SEEK_END);
     int file_end = ftell(fin);
     fseek(fin, 0, SEEK_SET);
