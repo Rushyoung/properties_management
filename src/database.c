@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @brief 用于打开文件的宏
+*/
 #define _file_safe_open(attr, file, mode, ret) \
     FILE *(attr) = fopen((file), (mode)); \
     if((attr) == NULL){ \
@@ -13,6 +16,12 @@
     }
 
 
+/**
+ * @brief 在文件中移动指定的字节数
+ * @param _file 文件指针
+ * @param _offset 移动的字节数
+ * @return 0代表成功，其他代表失败
+*/
 inline int fmove(FILE *_file, long _offset){
     if(_offset <= 0 || _offset > 16){
         return fseek(_file, _offset, SEEK_CUR);
@@ -24,6 +33,12 @@ inline int fmove(FILE *_file, long _offset){
 }
 
 
+/**
+ * @brief 在文件中插入字符串
+ * @param _file 文件指针
+ * @param _str 要插入的字符串
+ * @return 0代表成功，其他代表失败
+*/
 int finsert(FILE *_file, const str _str){
     int start_cursor = ftell(_file);
     fseek(_file, 0, SEEK_END);
@@ -42,6 +57,11 @@ int finsert(FILE *_file, const str _str){
 }
 
 
+/**
+ * @brief 获取表的信息
+ * @param _fp 文件指针
+ * @return 表的信息
+*/
 table_info table_get_info(FILE* _fp){
     table_info _table_info;
     _table_info.head = ftell(_fp);
@@ -52,7 +72,11 @@ table_info table_get_info(FILE* _fp){
 }
 
 
-// connect
+/**
+ * @brief 连接到数据库
+ * @param _file_name 数据库文件名
+ * @return 数据库对象
+*/
 db db_connect(const str _file_name){
     db _db;
     strcpy(_db._file_name, _file_name);
@@ -83,7 +107,12 @@ db db_connect(const str _file_name){
 }
 
 
-// insert 
+/**
+ * @brief 在数据库中创建表
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _columns 列信息
+*/ 
 void db_insert_table(db* _db, const str _table, const map _columns){
     if(map_get(&(_db->_master), _table) != 0){
         return;
@@ -118,6 +147,12 @@ void db_insert_table(db* _db, const str _table, const map _columns){
 }
 
 
+/**
+ * @brief 在数据库中插入行
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _values 值
+*/
 void db_insert_lin(db* _db, const str _table, list _values){
     if(map_get(&(_db->_master), _table) == 0){
         return;
@@ -143,7 +178,11 @@ void db_insert_lin(db* _db, const str _table, list _values){
     fclose(file_ptr);
 }
 
-// remove
+/**
+ * @brief 在数据库中删除表
+ * @param _db 数据库对象
+ * @param _table 表名
+*/
 void db_remove_table(db* _db, const str _table){
     if(map_get(&(_db->_master), _table) == 0){
         return;
@@ -172,6 +211,12 @@ void db_remove_table(db* _db, const str _table){
 }
 
 
+/**
+ * @brief 在数据库中删除行
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _oid 行号
+*/ 
 void db_remove_lin(db* _db, const str _table, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
         return;
@@ -187,7 +232,13 @@ void db_remove_lin(db* _db, const str _table, const int _oid){
 }
 
 
-// select
+/**
+ * @brief 在数据库中提取出一个数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _column 列名
+ * @param _oid 行号
+*/
 str db_select(db* _db, const str _table, const str _column, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
         return NULL;
@@ -216,6 +267,12 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
 }
 
 
+/**
+ * @brief 在数据库中提取出一列数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _column 列名
+*/
 list db_select_col(db* _db, const str _table, const str _column){
     if(map_get(&(_db->_master), _table) == 0){
         return list_create(0);
@@ -259,6 +316,12 @@ list db_select_col(db* _db, const str _table, const str _column){
 }
 
 
+/**
+ * @brief 在数据库中提取出一行数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _oid 行号
+*/
 dict db_select_lin(db* _db, const str _table, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
         return dict_create(0);
@@ -284,7 +347,14 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
 }
 
 
-//update
+/**
+ * @brief 在数据库中更新一个数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _column 列名
+ * @param _oid 行号
+ * @param value 值
+*/
 void db_update(db* _db, const str _table, const str _column, const int _oid, const str value){
     if(map_get(&(_db->_master), _table) == 0){
         return;
@@ -317,6 +387,13 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
 }
 
 
+/**
+ * @brief 在数据库中更新一行数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _oid 行号
+ * @param _values 值
+*/
 void db_update_lin(db* _db, const str _table, const int _oid, list _values){
     if(map_get(&(_db->_master), _table) == 0){
         return;
@@ -341,7 +418,10 @@ void db_update_lin(db* _db, const str _table, const int _oid, list _values){
 }
 
 
-// vacuum
+/**
+ * @brief 压缩数据库
+ * @param _db 数据库对象
+*/
 void db_vacuum(db* _db){
     char new_file_name[256 + 8];
     sprintf(new_file_name, "%s.vac", _db->_file_name);
@@ -388,6 +468,11 @@ void db_vacuum(db* _db){
 }
 
 
+/**
+ * @brief 跳转到下一个表
+ * @param _fp 文件指针
+ * @return 下一个表的起始位置
+*/
 static int _table_skip_to_next(FILE* _fp){
     table_info info = table_get_info(_fp);
     fseek(_fp, info.start, SEEK_SET);
@@ -404,6 +489,12 @@ static int _table_skip_to_next(FILE* _fp){
 }
 
 
+/**
+ * @brief 跳转到指定的表
+ * @param _fp 文件指针
+ * @param _table 表名
+ * @return 指定的表的起始位置
+*/
 static int _table_skip_to_table(FILE* _fp, const str _table){
     char table_name[256];
     int cursor = 0;
@@ -420,6 +511,13 @@ static int _table_skip_to_table(FILE* _fp, const str _table){
 }
 
 
+/**
+ * @brief 跳转到指定的位置
+ * @param _fp 文件指针
+ * @param _column 列号
+ * @param _oid 行号
+ * @return 指定的位置
+*/
 static int _table_skip_to_position(FILE* _fp, const int _column, const int _oid){
     int lin_skip = 0, temp_int = 0;
     table_info info = table_get_info(_fp);
