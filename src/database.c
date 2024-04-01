@@ -12,7 +12,7 @@ inline int fmove(FILE *_file, long _offset){
         return fseek(_file, _offset, SEEK_CUR);
     }
     for(long i=0; i<_offset; i++){
-        int c = fgetc(_file);
+        fgetc(_file);
     }
     return 0;
 }
@@ -130,23 +130,17 @@ void db_insert_lin(db* _db, const str _table, list _values){
     table_info info = table_get_info(file_ptr);
     fseek(file_ptr, info.start, SEEK_SET);
     fmove(file_ptr, info.lin_width+2);
-    list each_width = list_create(sizeof(int));
-    int temp_int;
+    char format[256] = {}, result[65536] = {};
+    int result_len = 0, each_width = 0;
     for(int i=0; i<info.col_count; i++){
-        fscanf(file_ptr, "%d", &temp_int);
-        list_append(&each_width, &temp_int);
+        fscanf(file_ptr, "%d", &each_width);
+        sprintf(format, "%%%ds", each_width);
+        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
+        result_len += each_width;
     }
     fseek(file_ptr, info.head, SEEK_SET);
     _table_skip_to_next(file_ptr);
     fmove(file_ptr, -8);
-    char format[256] = {};
-    char result[65536] = {};
-    int result_len = 0;
-    for(int i=0; i<info.col_count; i++){
-        sprintf(format, "%%%ds", *(int*)list_get(&each_width, i));
-        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
-        result_len += *(int*)list_get(&each_width, i);
-    }
     sprintf(result + result_len, "\r\n");
     finsert(file_ptr, result);
     fclose(file_ptr);
@@ -347,9 +341,36 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
 }
 
 
+void db_update_lin(db* _db, const str _table, const int _oid, list _values){
+    if(map_get(&(_db->_master), _table) == 0){
+        return;
+    }
+    FILE* file_ptr = fopen(_db->_file_name, "rb+");
+    if(file_ptr == NULL){
+        return;
+    }
+    _table_skip_to_table(file_ptr, _table);
+    table_info info = table_get_info(file_ptr);
+    fseek(file_ptr, info.start, SEEK_SET);
+    fmove(file_ptr, info.lin_width+2);
+    char format[256] = {}, result[65536] = {};
+    int result_len = 0, each_width = 0;
+    for(int i=0; i<info.col_count; i++){
+        fscanf(file_ptr, "%d", &each_width);
+        sprintf(format, "%%%ds", each_width);
+        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
+        result_len += each_width;
+    } 
+    fseek(file_ptr, info.head, SEEK_SET);
+    _table_skip_to_position(file_ptr, 1, _oid); 
+    fprintf(file_ptr, "%s", result);
+    fclose(file_ptr);
+}
+
+
 // vacuum
 void db_vacuum(db* _db){
-    char new_file_name[256];
+    char new_file_name[256 + 8];
     sprintf(new_file_name, "%s.vac", _db->_file_name);
     FILE* fin = fopen(_db->_file_name, "rb");
     FILE* fout = fopen(new_file_name, "wb");
@@ -387,6 +408,7 @@ void db_vacuum(db* _db){
             }
         }
     }
+    list_free(&tables);
     fclose(fin);
     fclose(fout);
     remove(_db->_file_name);
