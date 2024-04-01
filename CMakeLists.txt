@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.27)
-project(cproject C)
+project(property)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(cproject main.c)
+add_executable(property main.c
+        include/base_type.h
+        src/base_type.c)
