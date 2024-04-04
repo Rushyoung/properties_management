@@ -18,7 +18,6 @@ list list_create(int sizeof_type) {
     l.length = 0;
     l._capacity = 8;
     l._data = malloc(sizeof_type * l._capacity);
-    l._is_need_free = 0;
     return l;
 }
 
@@ -78,9 +77,7 @@ void list_expand(list* l) {
  * @param l 链表
 */
 void list_free(list* l) {
-    if(l->_is_need_free == 1){
-        free(l->_data);
-    }
+    free(l->_data);
 }
 
 
@@ -96,7 +93,6 @@ map map_create() {
         d.keys[i] = NULL;
     }
     d.values = malloc(sizeof(int) * d._capacity);
-    d._is_need_free = 0;
     return d;
 }
 
@@ -210,7 +206,6 @@ dict dict_create() {
     for(int i = 0; i < d._capacity; i++){
         d.values[i] = NULL;
     }
-    d._is_need_free = 0;
     return d;
 }
 
