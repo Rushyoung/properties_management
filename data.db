@@ -1,0 +1,25 @@
+master 24 2
+           table   width
+              16       8
+          master      24
+          status      38
+       user_info      56
+             fee      48
+             log      64
+======
+status 38 3
+        username        password  auth
+              16              16     6
+======
+user_info 56 3
+        username           phone                    zone
+              16              16                      24
+======
+fee 48 3
+        username             fee            paid
+              16              16              16
+======
+log 64 4
+        username            time          action          amount
+              16              16              16              16
+======
