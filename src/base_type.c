@@ -6,13 +6,12 @@
 #include <string.h>
 
 
-
 /**
  * @brief 创建一个链表
  * @param sizeof(type) 类型的大小
  * @return list 返回创建的链表
  */
-list list_create(int sizeof_type) {
+list list_create_by(int sizeof_type) {
     list l;
     l._type_size = sizeof_type;
     l.length = 0;
@@ -28,7 +27,7 @@ list list_create(int sizeof_type) {
  * @param index 索引
  * @param value 值
  */
-void list_set(list* l, int index, void* value) {
+void list_set_ptr(list* l, int index, void* value) {
     if( index < 0 || index >= l->length){
         return;
     }
@@ -42,14 +41,14 @@ void list_set(list* l, int index, void* value) {
  * @param index 索引
  * @return void* 返回索引对应的元素
  */
-void*list_get(list* l, int index) {
+void*list_get_ptr(list* l, int index) {
     if( index < 0 || index >= l->_capacity){
         return NULL;
     }
     return l->_data + index * l->_type_size;
 }
 
-void list_append(list* l, void* value) {
+void list_append_ptr(list* l, void* value) {
     if( l->length >= l->_capacity){
         list_expand(l);
     }

@@ -8,12 +8,16 @@ typedef struct{
     void* _data;
 } list;
 
-list list_create(int);
-void list_set(list*, int, void*);
-void*list_get(list*, int);
-void list_append(list*, void*);
+list list_create_by(int);
+void list_set_ptr(list*, int, void*);
+void*list_get_ptr(list*, int);
+void list_append_ptr(list*, void*);
 void list_expand(list*);
 void list_free(list*);
+#define list_create(type) ({list_create_by(sizeof(type));})
+#define list_get(type, l, index) ({*(type*)list_get_ptr((l), (index));})
+#define list_set(l, index, value) ({typeof(value) _v=value; list_set_ptr((l), (index), &_v);})
+#define list_append(l, value) ({typeof(value) _v=value; list_append_ptr((l), &_v);})
 
 typedef char* str;
 
@@ -44,6 +48,5 @@ void dict_expand(dict*);
 void dict_free(dict*);
 
 str string(str);
-#define _string(_str) ({str s = string(_str); &s;})
 
 #endif

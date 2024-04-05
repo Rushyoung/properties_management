@@ -167,7 +167,7 @@ void db_insert_lin(db* _db, const str _table, list _values){
     for(int i=0; i<info.col_count; i++){
         fscanf(file_ptr, "%d", &each_width);
         sprintf(format, "%%%ds", each_width);
-        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
+        sprintf(result + result_len, format, list_get(str, &_values, i));
         result_len += each_width;
     }
     fseek(file_ptr, info.head, SEEK_SET);
@@ -275,9 +275,9 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
 */
 list db_select_col(db* _db, const str _table, const str _column){
     if(map_get(&(_db->_master), _table) == 0){
-        return list_create(0);
+        return list_create(void);
     }
-    _file_safe_open(file_ptr, _db->_file_name, "rb", list_create(0));
+    _file_safe_open(file_ptr, _db->_file_name, "rb", list_create(void));
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
     fseek(file_ptr, info.start, SEEK_SET);
@@ -290,7 +290,7 @@ list db_select_col(db* _db, const str _table, const str _column){
         }
     }
     if(col_position == -1){
-        return list_create(0);
+        return list_create(void);
     } 
     for(int i=0; i<col_position; i++){
         int temp_int;
@@ -298,7 +298,7 @@ list db_select_col(db* _db, const str _table, const str _column){
         lin_skip += temp_int;
     }
     char temp_char, temp_str[256];
-    list result = list_create(sizeof(str));
+    list result = list_create(str);
     for(int oid=0; ; oid++){
         fseek(file_ptr, info.start, SEEK_SET);
         fmove(file_ptr, (info.lin_width+2)*2);
@@ -309,7 +309,7 @@ list db_select_col(db* _db, const str _table, const str _column){
         }
         fmove(file_ptr, lin_skip);
         fscanf(file_ptr, "%s", temp_str);
-        list_append(&result, _string(temp_str));
+        list_append(&result, string(temp_str));
     }
     fclose(file_ptr);
     return result;
@@ -408,7 +408,7 @@ void db_update_lin(db* _db, const str _table, const int _oid, list _values){
     for(int i=0; i<info.col_count; i++){
         fscanf(file_ptr, "%d", &each_width);
         sprintf(format, "%%%ds", each_width);
-        sprintf(result + result_len, format, *(str*)list_get(&_values, i));
+        sprintf(result + result_len, format, list_get(str, &_values, i));
         result_len += each_width;
     } 
     fseek(file_ptr, info.head, SEEK_SET);
@@ -427,17 +427,17 @@ void db_vacuum(db* _db){
     sprintf(new_file_name, "%s.vac", _db->_file_name);
     FILE* fin = fopen(_db->_file_name, "rb");
     FILE* fout = fopen(new_file_name, "wb");
-    list tables = list_create(sizeof(int));
+    list tables = list_create(int);
     fseek(fin, 0, SEEK_END);
     int file_end = ftell(fin);
     fseek(fin, 0, SEEK_SET);
     while(ftell(fin) < file_end){
-        list_append(&tables, ({int _ = ftell(fin); &_;}));
+        list_append(&tables, ftell(fin));
         _table_skip_to_next(fin);
     };
     char line[65536];
     for(int i=0; i<tables.length; i++ ){
-        fseek(fin, *(int*)list_get(&tables, i), SEEK_SET);
+        fseek(fin, list_get(int, &tables, i), SEEK_SET);
         table_info info = table_get_info(fin);
         if(map_get(&(_db->_master), info.table_name) == 0){
             continue;
