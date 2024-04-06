@@ -50,6 +50,9 @@ void list_append(list* l, void* _data){
     l->length++;
 }
 
+void list_free(list* l){
+    free(l->data);
+}
 
 map map_create(){
     map m;
@@ -59,4 +62,156 @@ map map_create(){
         m.keys[i] = NULL;
     }
     m.values = malloc(sizeof(int*) * m.capacity);
+}
+
+void map_set(map* m, str key, int value){
+    int is_set = 0;
+    for(int i = 0; i < m->capacity; i++){
+        if(is_set == 0 && m->keys[i] == NULL){
+            m->keys[i] = malloc(strlen(key));
+            strcpy(m->keys[i], key);
+            m->values[i] = value;
+            is_set = 1;
+            continue;
+        }
+        if(is_set == 0 && m->keys[i] != NULL && strcmp(m->keys[i], key) == 0){
+            m->values[i] = value;
+            return;
+        }
+        //unique
+        if(is_set == 1 && m->keys[i] != NULL && strcmp(m->keys[i], key) == 0){
+            free(m->keys[i]);
+            m->keys[i] = NULL;
+            m->values[i] = 0;
+            return;
+        }
+    }
+    if(is_set == 0){
+        map_expand(m);
+        map_set(m, key, value);
+    }
+}
+
+void map_expand(map* m){
+    m->capacity += 16;
+    m->keys = realloc(m->keys, m->capacity * sizeof(char*));
+    if(m->keys == NULL) perror("mem");
+    for(int i = m->capacity - 16; i < m->capacity; i++){
+        m->keys[i] = NULL;
+    }
+    m->values = realloc(m->values, sizeof(int) * m->capacity);
+    if(m->values == NULL) perror("mem");
+}
+
+int map_get(map* m, str key){
+    for(int i = 0; i < m->capacity; i++){
+        if(strcmp(m->keys[i], key) == 0){
+            return m->values[i];
+        }
+    }
+    return -1;
+}
+
+void map_remove(map* m, str key){
+    for(int i = 0; i < m->capacity; i++){
+        if(strcmp(m->keys[i], key) == 0){
+            free(m->keys[i]);
+            m->keys[i] = NULL;
+            m->values[i] = 0;
+        }
+    }
+}
+
+void map_free(map* m){
+    for(int i = 0; i < m->capacity; i++){
+        free(m->keys[i]);
+    }
+    free(m->values);
+    free(m->keys);
+}
+
+dict dict_create(){
+    dict d;
+    d.capacity = 16;
+    d.keys = malloc(sizeof(char*) * d.capacity);
+    d.values = malloc(sizeof(char*) * d.capacity);
+    for(int i = 0; i < d.capacity; i++){
+        d.keys[i] = NULL;
+        d.values[i] = NULL;
+    }
+    return d;
+}
+
+void dict_set(dict* d, str key, str value){
+    int is_set = 0;
+    for(int i = 0; i < d->capacity; i++){
+        if(is_set == 0 && d->keys[i] == NULL){
+            d->keys[i] = malloc(sizeof(char*) * strlen(key));
+            strcpy(d->keys[i], key);
+            is_set = 1;
+            d->values[i] = malloc(sizeof(char*) * strlen(value));
+            strcpy(d->values[i], value);
+            continue;
+        }
+        if(is_set == 0 && d->keys[i] != NULL && strcmp(d->keys[i], key) == 0){
+            d->values[i] = malloc(sizeof(char*) * strlen(value));
+            strcpy(d->values[i], value);
+            return;
+        }
+        if(is_set == 1 && d->keys[i] && strcmp(d->keys[i], key) == 0){
+            free(d->keys[i]);
+            d->keys[i] = NULL;
+            d->values[i] = NULL;
+            return;
+        }
+    }
+    if(is_set == 0){
+        dict_expand(d);
+        dict_set(d, key, value);
+    }
+}
+
+void dict_expand(dict* d){
+    d->capacity += 16;
+    d->keys = realloc(d->keys, d->capacity);
+    if(d->keys == NULL) perror("mem");
+    d->values = realloc(d->values, d->capacity);
+    if(d->values == NULL) perror("mem");
+    for(int i = d->capacity-16; i < d->capacity; i++){
+        d->keys[i] = NULL;
+        d->values[i] = NULL;
+    }
+}
+
+
+
+str dict_get(dict* d, str key){
+    for(int i = 0; i < d->capacity; i++){
+        if(strcmp(d->keys[i], key) == 0){
+            return d->values[i];
+        }
+    }
+    return NULL;
+}
+
+void dict_remove(dict* d, str key){
+    for(int i = 0; i < d->capacity; i++){
+        if(strcmp(d->keys[i], key) == 0){
+            free(d->keys[i]);
+            d->keys[i] = NULL;
+            free(d->values[i]);
+            d->values[i] = NULL;
+            return;
+        }
+    }
+}
+
+
+void dict_free(dict* d){
+    for(int i = 0; i < d->capacity; i++){
+        free(d->keys[i]);
+        free(d->values[i]);
+    }
+    free(d->keys);
+    free(d->values);
 }

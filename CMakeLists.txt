@@ -5,4 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(property main.c
         include/base_type.h
-        src/base_type.c)
+        src/base_type.c
+        include/database.h
+        src/database.c)
