@@ -87,7 +87,7 @@ void list_free(list* l) {
 map map_create() {
     map d;
     d._capacity = 16;
-    d.keys = malloc(sizeof(char*) * d._capacity);
+    d.keys = malloc(sizeof(str) * d._capacity);
     for(int i = 0; i < d._capacity; i++){
         d.keys[i] = NULL;
     }
@@ -169,7 +169,7 @@ void map_remove(map* d, str key) {
  */
 void map_expand(map* d) {
     d->_capacity += 16;
-    d->keys = realloc(d->keys, sizeof(char*) * d->_capacity);
+    d->keys = realloc(d->keys, sizeof(str) * d->_capacity);
     for(int i=d->_capacity - 16; i < d->_capacity; i++){
         d->keys[i] = NULL;
     }
@@ -197,12 +197,10 @@ void map_free(map* d) {
 dict dict_create() {
     dict d;
     d._capacity = 16;
-    d.keys = malloc(sizeof(char*) * d._capacity);
+    d.keys   = malloc(sizeof(str) * d._capacity);
+    d.values = malloc(sizeof(str) * d._capacity);
     for(int i = 0; i < d._capacity; i++){
-        d.keys[i] = NULL;
-    }
-    d.values = malloc(sizeof(char*) * d._capacity);
-    for(int i = 0; i < d._capacity; i++){
+        d.keys[i]   = NULL;
         d.values[i] = NULL;
     }
     return d;
@@ -288,12 +286,10 @@ void dict_remove(dict* d, str key) {
  */
 void dict_expand(dict* d) {
     d->_capacity += 16;
-    d->keys = realloc(d->keys, sizeof(char*) * d->_capacity);
+    d->keys   = realloc(d->keys, sizeof(str) * d->_capacity);
+    d->values = realloc(d->values, sizeof(str) * d->_capacity);
     for(int i=d->_capacity - 16; i < d->_capacity; i++){
-        d->keys[i] = NULL;
-    }
-    d->values = realloc(d->values, sizeof(char*) * d->_capacity);
-    for(int i=d->_capacity - 16; i < d->_capacity; i++){
+        d->keys[i]   = NULL;
         d->values[i] = NULL;
     }
 }
