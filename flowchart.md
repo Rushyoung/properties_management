@@ -3,23 +3,24 @@ graph LR
 start --> login
 login --> verify{username&password} 
 verify -->|admin| admin
-verify --> |user| user
+verify --> |residents| residents
 verify --> |workers| workers
 verify --> |fail| login
 
 admin --> admin_main
 admin_main --> work_select1{work_select}
-work_select1 --> |to_users| user_manage
+admin_main --> password_maintain1
+admin_main --> password_change1
+work_select1 --> |to_residents| residents_manage
 work_select1 --> |to_workers| worker_manage
 work_select1 --> |to_fee| fee
 work_select1 --> |to_data| data
-data --> add_user
-data --> add_worker
-data --> remove_user
-data --> remove_worker
 data --> backup
 data --> restore
-user_manage --> repair_request
+residents_manage --> repair_request
+residents_manage --> add_resident
+residents_manage --> remove_resident
+residents_manage --> inquire_resident
 fee --> select
 fee --> sort
 fee --> to_singal
@@ -31,6 +32,8 @@ to_singal --> bil
 to_singal --> Paid_overtime
 to_singal --> unpaid
 worker_manage --> work_assignments
+worker_manage --> add_worker
+worker_manage --> remove_worker
 work_assignments --> repair
 work_assignments --> clean
 work_assignments --> remind_payment
@@ -40,13 +43,17 @@ worker_main --> inquire_work
 worker_main --> sort2
 worker_main --> count_work
 worker_main --> complete_work
+worker_main --> password_change2
+worker_main --> password_maintain2
 inquire_work --> region
 inquire_work --> content
 
-user -->  user_main
-user_main --> fee1
-user_main --> problem_report
-user_main --> inquire
+residents -->  residents_main
+residents_main --> fee1
+residents_main --> problem_report
+residents_main --> inquire
+residents_main --> password_change3
+residents_main --> password_maintain3
 fee1 --> unpaid_bills
 fee1 --> paid_overtime
 fee1 --> pay
