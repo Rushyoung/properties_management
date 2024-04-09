@@ -1,16 +1,13 @@
 ```mermaid
 graph LR
-start --> choose{identity}
-choose --> |admin| admin
-choose --> |user| user
-choose --> |workers| workers
+start --> login
+login --> verify{username&password} 
+verify -->|admin| admin
+verify --> |user| user
+verify --> |workers| workers
+verify --> |fail| login
 
-admin --> admin_login
-admin_login ---> verify1{username&password}
-admin_login --> forget1[forgetpassword]
-forget1 --> reset1[resetpassword]
-verify1 --> |success| admin_main
-verify1 --fail--> admin_login
+admin --> admin_main
 admin_main --> work_select1{work_select}
 work_select1 --> |to_users| user_manage
 work_select1 --> |to_workers| worker_manage
@@ -38,12 +35,7 @@ work_assignments --> repair
 work_assignments --> clean
 work_assignments --> remind_payment
 
-workers --> worker_login
-worker_login --> verify2{username&password}
-worker_login --> forget2[forgetpassword]
-forget2 --> reset2[resetpassword]
-verify2 --> |success| worker_main
-verify2 ---> |fail| worker_login
+workers --> worker_main
 worker_main --> inquire_work
 worker_main --> sort2
 worker_main --> count_work
@@ -51,12 +43,7 @@ worker_main --> complete_work
 inquire_work --> region
 inquire_work --> content
 
-user --> user_login
-user_login --> verify3{username&password}
-user_login --> forget3[forgetpassword]
-forget3 --> reset3[resetpassword]
-verify3 --> |success| user_main
-verify3 ----> |fail| user_login
+user -->  user_main
 user_main --> fee1
 user_main --> problem_report
 user_main --> inquire
