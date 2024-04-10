@@ -47,6 +47,7 @@ void dict_remove(dict*, str);
 void dict_expand(dict*);
 void dict_free(dict*);
 
+#define STRING_EXTRA_LIMIT 128
 str string(str);
 
 #endif

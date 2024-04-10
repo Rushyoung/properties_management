@@ -27,11 +27,11 @@ list list_create_by(int sizeof_type) {
  * @param index 索引
  * @param value 值
  */
-void list_set_ptr(list* l, int index, void* value) {
-    if( index < 0 || index >= l->length){
+void list_set_ptr(list* this, int index, void* value) {
+    if( index < 0 || index >= this->length){
         return;
     }
-    memcpy(l->_data + index * l->_type_size, value, l->_type_size);
+    memcpy(this->_data + index * this->_type_size, value, this->_type_size);
 }
 
 
@@ -41,19 +41,19 @@ void list_set_ptr(list* l, int index, void* value) {
  * @param index 索引
  * @return void* 返回索引对应的元素
  */
-void*list_get_ptr(list* l, int index) {
-    if( index < 0 || index >= l->_capacity){
+void*list_get_ptr(list* this, int index) {
+    if( index < 0 || index >= this->_capacity){
         return NULL;
     }
-    return l->_data + index * l->_type_size;
+    return this->_data + index * this->_type_size;
 }
 
-void list_append_ptr(list* l, void* value) {
-    if( l->length >= l->_capacity){
-        list_expand(l);
+void list_append_ptr(list* this, void* value) {
+    if( this->length >= this->_capacity){
+        list_expand(this);
     }
-    memcpy(l->_data + l->length * l->_type_size, value, l->_type_size);
-    l->length++;
+    memcpy(this->_data + this->length * this->_type_size, value, this->_type_size);
+    this->length++;
 }
 
 
@@ -61,13 +61,13 @@ void list_append_ptr(list* l, void* value) {
  * @brief 扩容链表
  * @param l 链表
  */
-void list_expand(list* l) {
-    if(l->_capacity < 64){
-        l->_capacity *= 2;
+void list_expand(list* this) {
+    if(this->_capacity < 64){
+        this->_capacity *= 2;
     } else {
-        l->_capacity += 32;
+        this->_capacity += 32;
     }
-    l->_data = realloc(l->_data, l->_type_size * l->_capacity);
+    this->_data = realloc(this->_data, this->_type_size * this->_capacity);
 }
 
 
@@ -75,8 +75,8 @@ void list_expand(list* l) {
  * @brief 释放链表
  * @param l 链表
 */
-void list_free(list* l) {
-    free(l->_data);
+void list_free(list* this) {
+    free(this->_data);
 }
 
 
@@ -100,30 +100,30 @@ map map_create() {
  * @brief 设置映射的键值对
  * @param d 映射
 */
-void map_set(map* d, str key, int value) {
+void map_set(map* this, str key, int value) {
     int is_set = 0;
-    for(int i = 0; i < d->_capacity; i++){
-        if(is_set == 0 && d->keys[i] == NULL){
-            d->keys[i] = malloc(strlen(key) + 1);
-            strcpy(d->keys[i], key);
-            d->values[i] = value;
+    for(int i = 0; i < this->_capacity; i++){
+        if(is_set == 0 && this->keys[i] == NULL){
+            this->keys[i] = malloc(strlen(key) + 1);
+            strcpy(this->keys[i], key);
+            this->values[i] = value;
             is_set = 1;
             continue;
         }
-        if(is_set == 0 && d->keys[i] != NULL && strcmp(d->keys[i], key) == 0 ){
-            d->values[i] = value;
+        if(is_set == 0 && this->keys[i] != NULL && strcmp(this->keys[i], key) == 0 ){
+            this->values[i] = value;
             return;
         }
-        if(is_set == 1 && d->keys[i] != NULL && strcmp(d->keys[i], key) == 0){
-            free(d->keys[i]);
-            d->keys[i] = NULL;
-            d->values[i] = 0;
+        if(is_set == 1 && this->keys[i] != NULL && strcmp(this->keys[i], key) == 0){
+            free(this->keys[i]);
+            this->keys[i] = NULL;
+            this->values[i] = 0;
             return;
         }
     }
     if(is_set == 0){
-        map_expand(d);
-        map_set(d, key, value);
+        map_expand(this);
+        map_set(this, key, value);
     }
 }
 
@@ -134,13 +134,13 @@ void map_set(map* d, str key, int value) {
  * @param key 键
  * @return int 返回键对应的值
  */
-int map_get(map* d, str key) {
-    for(int i = 0; i < d->_capacity; i++){
-        if(d->keys[i] == NULL){
+int map_get(map* this, str key) {
+    for(int i = 0; i < this->_capacity; i++){
+        if(this->keys[i] == NULL){
             continue;
         }
-        if(strcmp(d->keys[i], key) == 0){
-            return d->values[i];
+        if(strcmp(this->keys[i], key) == 0){
+            return this->values[i];
         }
     }
     return 0;
@@ -152,11 +152,11 @@ int map_get(map* d, str key) {
  * @param d 映射
  * @param key 键
  */
-void map_remove(map* d, str key) {
-    for(int i = 0; i < d->_capacity; i++){
-        if(strcmp(d->keys[i], key) == 0){
-            free(d->keys[i]);
-            d->keys[i] = NULL;
+void map_remove(map* this, str key) {
+    for(int i = 0; i < this->_capacity; i++){
+        if(strcmp(this->keys[i], key) == 0){
+            free(this->keys[i]);
+            this->keys[i] = NULL;
             return;
         }
     }
@@ -167,13 +167,13 @@ void map_remove(map* d, str key) {
  * @brief 扩容映射
  * @param d 映射
  */
-void map_expand(map* d) {
-    d->_capacity += 16;
-    d->keys = realloc(d->keys, sizeof(str) * d->_capacity);
-    for(int i=d->_capacity - 16; i < d->_capacity; i++){
-        d->keys[i] = NULL;
+void map_expand(map* this) {
+    this->_capacity += 16;
+    this->keys = realloc(this->keys, sizeof(str) * this->_capacity);
+    for(int i=this->_capacity - 16; i < this->_capacity; i++){
+        this->keys[i] = NULL;
     }
-    d->values = realloc(d->values, sizeof(int) * d->_capacity);
+    this->values = realloc(this->values, sizeof(int) * this->_capacity);
 }
 
 
@@ -181,12 +181,12 @@ void map_expand(map* d) {
  * @brief 释放映射
  * @param d 映射
 */
-void map_free(map* d) {
-    for(int i = 0; i < d->_capacity; i++){
-        free(d->keys[i]);
+void map_free(map* this) {
+    for(int i = 0; i < this->_capacity; i++){
+        free(this->keys[i]);
     }
-    free(d->keys);
-    free(d->values);
+    free(this->keys);
+    free(this->values);
 }
 
 
@@ -211,34 +211,34 @@ dict dict_create() {
  * @brief 设置字典的键值对
  * @param d 字典
  */
-void dict_set(dict* d, str key, str value) {
+void dict_set(dict* this, str key, str value) {
     int is_set = 0;
-    for(int i = 0; i < d->_capacity; i++){
-        if(is_set == 0 && d->keys[i] == NULL){
-            d->keys[i] = malloc(strlen(key) + 1);
-            strcpy(d->keys[i], key);
-            d->values[i] = malloc(strlen(value) + 1);
-            strcpy(d->values[i], value);
+    for(int i = 0; i < this->_capacity; i++){
+        if(is_set == 0 && this->keys[i] == NULL){
+            this->keys[i] = malloc(strlen(key) + 1);
+            strcpy(this->keys[i], key);
+            this->values[i] = malloc(strlen(value) + 1);
+            strcpy(this->values[i], value);
             is_set = 1;
             continue;
         }
-        if(is_set == 0 && d->keys[i] != NULL && strcmp(d->keys[i], key) == 0 ){
-            free(d->values[i]);
-            d->values[i] = malloc(strlen(value) + 1);
-            strcpy(d->values[i], value);
+        if(is_set == 0 && this->keys[i] != NULL && strcmp(this->keys[i], key) == 0 ){
+            free(this->values[i]);
+            this->values[i] = malloc(strlen(value) + 1);
+            strcpy(this->values[i], value);
             return;
         }
-        if(is_set == 1 && d->keys[i] != NULL && strcmp(d->keys[i], key) == 0){
-            free(d->keys[i]);
-            d->keys[i] = NULL;
-            free(d->values[i]);
-            d->values[i] = NULL;
+        if(is_set == 1 && this->keys[i] != NULL && strcmp(this->keys[i], key) == 0){
+            free(this->keys[i]);
+            this->keys[i] = NULL;
+            free(this->values[i]);
+            this->values[i] = NULL;
             return;
         }
     }
     if(is_set == 0){
-        dict_expand(d);
-        dict_set(d, key, value);
+        dict_expand(this);
+        dict_set(this, key, value);
     }
 }
 
@@ -249,13 +249,13 @@ void dict_set(dict* d, str key, str value) {
  * @param key 键
  * @return str 返回键对应的值
  */
-str dict_get(dict* d, str key) {
-    for(int i = 0; i < d->_capacity; i++){
-        if(d->keys[i] == NULL){
+str dict_get(dict* this, str key) {
+    for(int i = 0; i < this->_capacity; i++){
+        if(this->keys[i] == NULL){
             continue;
         }
-        if(strcmp(d->keys[i], key) == 0){
-            return d->values[i];
+        if(strcmp(this->keys[i], key) == 0){
+            return this->values[i];
         }
     }
     return NULL;
@@ -267,13 +267,13 @@ str dict_get(dict* d, str key) {
  * @param d 字典
  * @param key 键
  */
-void dict_remove(dict* d, str key) {
-    for(int i = 0; i < d->_capacity; i++){
-        if(strcmp(d->keys[i], key) == 0){
-            free(d->keys[i]);
-            d->keys[i] = NULL;
-            free(d->values[i]);
-            d->values[i] = NULL;
+void dict_remove(dict* this, str key) {
+    for(int i = 0; i < this->_capacity; i++){
+        if(strcmp(this->keys[i], key) == 0){
+            free(this->keys[i]);
+            this->keys[i] = NULL;
+            free(this->values[i]);
+            this->values[i] = NULL;
             return;
         }
     }
@@ -284,13 +284,13 @@ void dict_remove(dict* d, str key) {
  * @brief 扩容字典
  * @param d 字典
  */
-void dict_expand(dict* d) {
-    d->_capacity += 16;
-    d->keys   = realloc(d->keys, sizeof(str) * d->_capacity);
-    d->values = realloc(d->values, sizeof(str) * d->_capacity);
-    for(int i=d->_capacity - 16; i < d->_capacity; i++){
-        d->keys[i]   = NULL;
-        d->values[i] = NULL;
+void dict_expand(dict* this) {
+    this->_capacity += 16;
+    this->keys   = realloc(this->keys, sizeof(str) * this->_capacity);
+    this->values = realloc(this->values, sizeof(str) * this->_capacity);
+    for(int i=this->_capacity - 16; i < this->_capacity; i++){
+        this->keys[i]   = NULL;
+        this->values[i] = NULL;
     }
 }
 
@@ -299,13 +299,13 @@ void dict_expand(dict* d) {
  * @brief 释放字典
  * @param d 字典
 */
-void dict_free(dict* d) {
-    for(int i = 0; i < d->_capacity; i++){
-        free(d->keys[i]);
-        free(d->values[i]);
+void dict_free(dict* this) {
+    for(int i = 0; i < this->_capacity; i++){
+        free(this->keys[i]);
+        free(this->values[i]);
     }
-    free(d->keys);
-    free(d->values);
+    free(this->keys);
+    free(this->values);
 }
 
 
@@ -315,9 +315,8 @@ void dict_free(dict* d) {
  * @return str 返回创建的字符串
  */
 str string(str s) {
-    const int STRING_EXTRA_LIMIT = 64;
     static int cursor = 0;
-    static str strings[64] = {};
+    static str strings[STRING_EXTRA_LIMIT] = {};
     if(strings[cursor] != NULL){
         free(strings[cursor]);
     }
