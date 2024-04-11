@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define list_create_by_size(size) list_create(sizeof(size));
 
 list list_create(int sizeof_type){
     list l;

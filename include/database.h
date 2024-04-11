@@ -3,7 +3,7 @@
 //
 #include "../include/base_type.h"
 #include <stdio.h>
-
+#include <string.h>
 
 #ifndef PROPERTY_DATABASE_H
 
@@ -17,9 +17,16 @@ typedef struct{
     char table_name[256];
 } table_info;
 
+table_info table_info_get(FILE*);
 
 
 
+typedef struct{
+    char file_name[256];
+    map master;
+} db;
+
+db database_connect(const str);
 
 #define PROPERTY_DATABASE_H
 
