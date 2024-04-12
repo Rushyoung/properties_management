@@ -1,6 +1,10 @@
 #ifndef __BASE_TYPE_HEADER__
 #define __BASE_TYPE_HEADER__
 
+typedef int bool;
+#define true  1
+#define false 0
+
 typedef struct{
     int _type_size;
     int length;
