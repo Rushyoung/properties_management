@@ -4,6 +4,12 @@
 
 #include <stdio.h>
 
+#ifdef __linux__
+#define wwwww
+#elif defined(_WIN32)
+#include <windows.h>
+#endif
+
 void ui_init(){
     _ui_stack.layouts = list_create( component );
     _ui_stack.is_root = true;
@@ -13,19 +19,32 @@ void ui_init(){
 }
 
 void console_utf8(){
-    ;
+#ifdef _WIN32
+    system("chcp 65001");
+#endif
 }
 
 void console_clear(){
-    ;
+#ifdef __linux__
+    printf("\033[H\033[J");
+#elif defined(_WIN32)
+    system("clear");
+#endif
 }
 
 void console_size(int width, int length){
-    ;
+#ifdef _WIN32
+    char cmd[1024] = {};
+    //TODO
+#endif
 }
 
 void console_title(str title){
-    ;
+#ifdef _WIN32
+    char cmd[1024] = {};
+    sprintf(cmd, "title  %s", title);
+    system(cmd);
+#endif
 }
 
 void console_new(){

@@ -44,7 +44,7 @@ bool zone_is_contain(const str zone, const int goal){
         if(temp_int == goal){
             return true;
         }
-        iif(zone[i] == '-'){
+        if(zone[i] == '-'){
             range_start = temp_int;
             is_range = true;
             continue;
