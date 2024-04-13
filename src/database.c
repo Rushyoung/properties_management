@@ -27,7 +27,10 @@ db database_connect(const str _file_name){
     FILE* fp = fopen(_file_name, "wb");
     if(fp == NULL){
         fp = fopen(_file_name, "wb+");
-        fprintf(fp, "");
+        fprintf(fp, "master 24 2\r\n%16s%8s\r\n%16d%8d\r\n%16s%8d\r\n======\r\n",\
+        "table", "width", 16, 8, "master", 24);
+        fclose(fp);
+
     }
 }
 
