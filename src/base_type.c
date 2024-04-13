@@ -63,7 +63,9 @@ map map_create(){
         m.keys[i] = NULL;
     }
     m.values = malloc(sizeof(int*) * m.capacity);
+    return m;
 }
+
 
 void map_set(map* m, str key, int value){
     int is_set = 0;
