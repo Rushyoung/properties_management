@@ -27,12 +27,25 @@ typedef struct{
     map master;
 } db;
 
-db database_connect(const str);
+db database_connect(const str _file_name);
+void database_insert_table(db* _db, str _table, map _column);
+void database_insert_line(db* _db, str _table, list values);
+void database_remove_table(db* _db, str _table);
+void database_remove_line(db* _db, str _table, int line_no);
 
-void database_insert(db, str, map);
+str database_select(db* _db, str _table, str _column, int line_no);
+list database_select_column(db* _db, str _table, str _column);
+dict database_select_line(db* _db, str _table, int line_no);
 
-void skip_to_next_table(FILE*);
+void database_update(db* _db, str _table, str _column, int line_no, str value);
+void database_update_line(db* _db, str _table, int line_no, list _value);
 
+void database_vacuum(db* _db);
+
+
+int skip_to_next_table(FILE*);
+int jump_to_table(FILE *_fp, str _table);
+int jump_to_position(FILE*, int, int);
 #define PROPERTY_DATABASE_H
 
 #endif //PROPERTY_DATABASE_H

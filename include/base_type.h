@@ -50,4 +50,6 @@ void dict_remove(dict*, str);
 void dict_free(dict*);
 
 
+#define STRING_EXTRA_LIMIT 128
+str string(str);
 #endif //PROPERTY_BASE_TYPE_H

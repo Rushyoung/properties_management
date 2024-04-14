@@ -218,3 +218,17 @@ void dict_free(dict* d){
     free(d->keys);
     free(d->values);
 }
+
+
+str string(str s) {
+    static int cursor = 0;
+    static str strings[STRING_EXTRA_LIMIT] = {};
+    if(strings[cursor] != NULL){
+        free(strings[cursor]);
+    }
+    strings[cursor] = malloc(strlen(s) + 1);
+    strcpy(strings[cursor], s);
+    int id = cursor;
+    cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
+    return strings[id];
+}

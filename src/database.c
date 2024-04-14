@@ -44,10 +44,10 @@ db database_connect(const str _file_name){
     db _db;
     strcpy(_db.file_name, _file_name);
     _db.master = map_create();
-    FILE* fp = fopen(_file_name, "wb");
+    FILE* fp = fopen(_file_name, "rb");
     if(fp == NULL){
         fp = fopen(_file_name, "wb+");
-        fprintf(fp, "master 24 2\r\n%16s%8s\r\n%16d%8d\r\n%16s%8d\r\n======\r\n",\
+        fprintf(fp, "master 24 2\r\n%16s%8s\r\n%16d%8d\r\n%16s%8d\r\n======\r\n",
         "table", "width", 16, 8, "master", 24);
         fclose(fp);
         map_set(&_db.master, "master", 24);
@@ -69,40 +69,369 @@ db database_connect(const str _file_name){
     return _db;
 }
 
-void database_insert(db _db, str _str, map _map){
-    if(map_get(&_map, _str) != 0){
+void database_insert_table(db* _db, str _table, map _column){
+    if(map_get(&_db->master, _table) != -1){
         return;
     }
-    FILE* fp = fopen(_db.file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb");
     if(fp == NULL){
         perror("insert_file_error");
     }
-    int line_count = 0;
-    int column_width = 0;
-    for(int i = 0; i < _map.capacity; i++){
-        if(_map.keys[i] != NULL) {
-            line_count++;
-            if(strlen(_map.keys[i]) >= column_width){
-                column_width = strlen(_map.keys[i]);
-            }
+    int line_width = 0;
+    int column_count = 0;
+    for(int i = 0; i < _column.capacity; i++){
+        if(_column.keys[i] != NULL) {
+            column_count++;
+            line_width += _column.values[i];
         }
-
     }
     skip_to_next_table(fp);
+    fp_move(fp, -8);
+    char format[256] = {};
+    sprintf(format, "%16s%8d\r\n", _table, line_width);
+    file_insert(fp, format);
+    fclose(fp);
+    fp = fopen(_db->file_name, "ab");
+    fprintf(fp, "%s %d %d\r\n", _table, line_width, column_count);
+    for(int i = 0; i < _column.capacity; i++){
+        sprintf(format, "%%%ds", _column.values[i]);
+        fprintf(fp, format, _column.keys[i]);
+    }
+    fprintf(fp, "\r\n");
+    for(int i = 0; i < _column.capacity; i++){
+        sprintf(format, "%%%dd", _column.values[i]);
+        fprintf(fp, format, _column.values[i]);
+    }
+    fprintf(fp,"\r\n======\r\n");
+    fclose(fp);
 }
 
 
-void skip_to_next_table(FILE* fp){
-    char c;
+
+void database_insert_line(db* _db, str _table, list values){
+    if(map_get(&_db->master, _table) != -1){
+        return;
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start + info.line_width + 2, SEEK_SET);
+    char format[256] = {};
+    char insert_data[65536] = {};
+    int insert_len = 0, width = 0;
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%d", &width);
+        sprintf(format, "%%%ds", width);
+        sprintf(insert_data + insert_len, format, list_get(&values, i));
+        insert_len += width;
+    }
+    fseek(fp, info.start, SEEK_SET);
+    skip_to_next_table(fp);
+    fp_move(fp, -8);
+    sprintf(insert_data + insert_len, "\r\n");
+    file_insert(fp, insert_data);
+    fclose(fp);
+}
+
+void database_remove_table(db* _db, str _table){
+    if(map_get(&_db->master, _table) == -1){
+        return;
+    }
+    map_remove(&_db->master, _table);
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("remove");
+    }
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start+info.line_width*2, SEEK_SET);
+    char temp_char, temp_str[256];
     while(1){
+        temp_char = fgetc(fp);
+        if(temp_char == '='){
+            break;
+        }
+        fscanf(fp, "%s", temp_str);
+        if(strcmp(temp_str, _table) == 0){
+            fp_move(fp, -16);
+            fprintf(fp, "%24s", "");
+            break;
+        } else {
+            fp_move(fp, 10);
+        }
+    }
+    fclose(fp);
+}
+
+
+void database_remove_line(db* _db, str _table, int line_no){
+    if(map_get(&_db->master, _table) == -1){
+        return;
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("remove");
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    jump_to_position(fp, 1, line_no);
+    char format[256] = {};
+    sprintf(format, "%%%ds", info.line_width);
+    fprintf(fp, format, "");
+    fclose(fp);
+}
+
+
+int skip_to_next_table(FILE* _fp){
+    table_info info = table_info_get(_fp);
+    fseek(_fp, info.start, SEEK_SET);
+    char first_char=' ';
+    while(!feof(_fp)){
+        first_char = fgetc(_fp);
+        if(first_char == '='){
+            fp_move(_fp, 7);
+            break;
+        }
+        fp_move(_fp, info.line_width+1);
+    }
+    return ftell(_fp);
+}
+
+
+str database_select(db* _db, str _table, str _column, int line_no){
+    if(map_get(&(_db->master), _table) == -1){
+        return NULL;
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("select");
+        return NULL;
+    }
+    int column_pos = -1;
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    char column_name[256] = {};
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%s", &column_name);
+        if(strcmp(column_name, _column) == 0){
+            column_pos = i;
+        }
+    }
+    if(column_pos == -1) return NULL;
+    fseek(fp, info.head, SEEK_SET);
+    jump_to_position(fp, column_pos, line_no);
+    char result[256];
+    fscanf(fp, "%s", &result);
+    return string(result);
+}
+
+list database_select_column(db* _db, str _table, str _column){
+    if(map_get(&(_db->master), _table) == -1){
+        return list_create(sizeof(void));
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("select");
+        return list_create(sizeof(void));
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    int skip_width = 0, column_pos = -1;
+    char column_name[256] = {};
+    for(int i = 0; i < info.line_width; i++){
+        fscanf(fp, "%s", &column_name);
+        if(strcmp(_column, column_name) == 0){
+            column_pos = i;
+        }
+    }
+    if(column_pos == -1){
+        return list_create(sizeof(void));
+    }
+    for(int i = 0; i < column_pos; i++){
+        int temp;
+        fscanf(fp, "%d", &temp);
+        skip_width += temp;
+    }
+    char temp[256] = {};
+    char c;
+    list result = list_create(sizeof(str));
+    for(int line_no = 0;; line_no++){
+        fseek(fp, info.start, SEEK_SET);
+        fp_move(fp, (info.line_width + 2) * (line_no + 2));
         c = fgetc(fp);
-        if(c == EOF) return;
-        if(c == '='){
-            if((c= fgetc(fp)) == '\r'){
-                if((c= fgetc(fp)) == '\n'){
-                    return;
+        if(c == '=') break;
+        fp_move(fp, skip_width);
+        fscanf(fp, "%s", temp);
+        list_append(&result, temp);
+    }
+    fclose(fp);
+    return result;
+}
+
+dict database_select_line(db* _db, str _table, int line_no){
+    if(map_get(&(_db->master), _table) == -1){
+        perror("unknown table");
+        return dict_create();
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("select");
+        return dict_create();
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    dict result = dict_create();
+    fseek(fp, info.start, SEEK_SET);
+    char temp[256];
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%s", temp);
+        dict_set(&result, temp, "");
+    }
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, (info.line_width + 2) * (line_no + 1));
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%s", temp);
+        dict_set(&result, result.keys[i], temp);
+    }
+    return result;
+}
+
+void database_update(db* _db, str _table, str _column, int line_no, str value){
+    if(map_get(&(_db->master), _table) == -1){
+        perror("no such table");
+        return;
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("update");
+        return;
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    int column_pos = -1;
+    fseek(fp, info.start, SEEK_SET);
+    char column_name[256] = {};
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%s", column_name);
+        if(strcmp(column_name, _column) == 0){
+            column_pos = i;
+        }
+    }
+    if(column_pos == -1) return;
+    int width = 0;
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%d", &width);
+    }
+    fseek(fp, info.head, SEEK_SET);
+    jump_to_position(fp, column_pos, line_no);
+    char format[16] = {};
+    sprintf(format, "%%%ds", width);
+    fprintf(fp, format, value);
+    fclose(fp);
+}
+
+void database_update_line(db* _db, str _table, int line_no, list _value){
+    if(map_get(&(_db->master), _table) == -1){
+        perror("no such table");
+        return;
+    }
+    FILE* fp = fopen(_db->file_name, "rb");
+    if(fp == NULL){
+        perror("update");
+        return;
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, info.line_width+2);
+    char format[256] = {}, update[65536] = {};
+    int update_len = 0, width = 0;
+    for(int i = 0; i < info.column_count; i++){
+        fscanf(fp, "%d", &width);
+        sprintf(format, "%%%ds", width);
+        sprintf(update + update_len, format, list_get(&_value, i));
+        update_len += width;
+    }
+    fseek(fp, info.head, SEEK_SET);
+    jump_to_position(fp, 1, line_no);
+    fprintf(fp, "%s", update);
+    fclose(fp);
+}
+
+void database_vacuum(db* _db){
+    char new_filename[256+8] = {};
+    sprintf(new_filename, "%s.vac", _db->file_name);
+    FILE* input = fopen(_db->file_name, "rb");
+    FILE* output = fopen(new_filename, "rb+");
+    if(output == NULL) perror("create vacuum");
+    list tables = list_create(sizeof(int));
+    fseek(input, 0, SEEK_END);
+    int file_end = ftell(input);
+    fseek(input, 0, SEEK_SET);
+    while(ftell(input) < file_end){
+        list_append(&tables, (void*)ftell(input));
+        skip_to_next_table(input);
+    }
+    char line[65536];
+    for(int i = 0; i < tables.length; i++){
+        fseek(input, (long)list_get(&tables, i), SEEK_SET);
+        table_info info = table_info_get(input);
+        if(map_get(&(_db->master), info.table_name) == -1){
+            continue;
+        }
+        while(1){
+            fgets(line, 65536, input);
+            if(line[0] == '='){
+                fprintf(output, "======\r\n");
+                break;
+            }
+            int is_empty = 1;
+            for(int j=0; j < info.line_width && line[j]; j++){
+                if(line[j] != ' '){
+                    is_empty = 0;
+                    break;
                 }
+            }
+            if(!is_empty){
+                fprintf(output, "%s", line);
             }
         }
     }
+    list_free(&tables);
+    fclose(input);
+    fclose(output);
+    remove(_db->file_name);
+    rename(new_filename, _db->file_name);
+}
+
+
+
+int jump_to_table(FILE* _fp, str _table){
+    char table_name[256];
+    int cursor = 0;
+    fseek(_fp, 0, SEEK_SET);
+    while(!feof(_fp)){
+        fscanf(_fp, "%s", table_name);
+        fseek(_fp, cursor, SEEK_SET);
+        if(strcmp(table_name, _table) == 0){
+            return cursor;
+        }
+        cursor = skip_to_next_table(_fp);
+    }
+    return -1;
+}
+
+int jump_to_position(FILE* fp, int column, int line){
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, 4 + info.line_width); //skip a line
+    int temp, width_skip = 0;
+    for(int i = 0; i < column; i++){
+        fscanf(fp, "%d", &temp);
+        width_skip += temp;
+    }
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, (info.line_width + 2) * (line - 1 + 2) + width_skip);
+    return ftell(fp);
 }
