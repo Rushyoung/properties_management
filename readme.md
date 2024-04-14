@@ -31,7 +31,10 @@ Abstract business of the project.
 #### Business  
 Specific business of the project.
 #### UI  
-a UI module. 
+Using Gtk2 for the UI of the project.  
+Download the library from the [Internet](https://archive.org/download/Gtk-bundle_2.22.1-20101229_win64) and unzip it to a folder which its path is without spaces.  
+Then add the system environment variable `C_INCLUDE_PATH` to the path of the folder.
+
 
 
 ## coding standard  
