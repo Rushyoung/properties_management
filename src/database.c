@@ -119,7 +119,7 @@ void db_insert_table(db* _db, const str _table, const map _columns){
     }
     _file_safe_open(file_ptr, _db->_file_name, "rb+", );
     int col_count = 0, lin_width = 0;
-    for(int i = 0; i < _columns._capacity && _columns.keys[i] == NULL; i++){
+    for(int i = 0; i < _columns._capacity && _columns.keys[i] != NULL; i++){
         col_count++;
         lin_width += _columns.values[i];
     }
