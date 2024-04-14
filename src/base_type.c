@@ -70,27 +70,18 @@ map map_create(){
 void map_set(map* m, str key, int value){
     int is_set = 0;
     for(int i = 0; i < m->capacity; i++){
+        if(m->keys[i] != NULL && strcmp(m->keys[i], key) == 0){
+            m->values[i] = value;
+            return;
+        }
         if(is_set == 0 && m->keys[i] == NULL){
-            m->keys[i] = malloc(strlen(key));
+            m->keys[i] = malloc(strlen(key) + 1);
             strcpy(m->keys[i], key);
             m->values[i] = value;
             is_set = 1;
-            continue;
-        }
-        if(is_set == 0 && m->keys[i] != NULL && strcmp(m->keys[i], key) == 0){
-            m->values[i] = value;
-            return;
-        }
-        //unique
-        if(is_set == 1 && m->keys[i] != NULL && strcmp(m->keys[i], key) == 0){
-            free(m->keys[i]);
-            m->keys[i] = NULL;
-            m->values[i] = 0;
-            return;
         }
     }
     if(is_set == 0){
-        map_expand(m);
         map_set(m, key, value);
     }
 }
@@ -108,6 +99,9 @@ void map_expand(map* m){
 
 int map_get(map* m, str key){
     for(int i = 0; i < m->capacity; i++){
+        if(m->keys[i] == NULL){
+            continue;
+        }
         if(strcmp(m->keys[i], key) == 0){
             return m->values[i];
         }

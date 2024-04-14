@@ -8,7 +8,7 @@
 #ifndef PROPERTY_DATABASE_H
 
 int fp_move(FILE*, long);
-int file_insert(FILE*, const str);
+int file_insert(FILE*, const char*);
 
 typedef struct{
     int head;
@@ -27,7 +27,7 @@ typedef struct{
     map master;
 } db;
 
-db database_connect(const str _file_name);
+db database_connect(const char* _file_name);
 void database_insert_table(db* _db, str _table, map _column);
 void database_insert_line(db* _db, str _table, list values);
 void database_remove_table(db* _db, str _table);
