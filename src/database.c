@@ -119,11 +119,9 @@ void db_insert_table(db* _db, const str _table, const map _columns){
     }
     _file_safe_open(file_ptr, _db->_file_name, "rb+", );
     int col_count = 0, lin_width = 0;
-    for(int i = 0; i < _columns._capacity; i++){
-        if(_columns.keys[i] != NULL){
-            col_count++;
-            lin_width += _columns.values[i];
-        }
+    for(int i = 0; i < _columns._capacity && _columns.keys[i] == NULL; i++){
+        col_count++;
+        lin_width += _columns.values[i];
     }
     _table_skip_to_next(file_ptr);
     fmove(file_ptr, -8);
@@ -324,9 +322,9 @@ list db_select_col(db* _db, const str _table, const str _column){
 */
 dict db_select_lin(db* _db, const str _table, const int _oid){
     if(map_get(&(_db->_master), _table) == 0){
-        return dict_create(0);
+        return dict_create();
     }
-    _file_safe_open(file_ptr, _db->_file_name, "rb", dict_create(0));
+    _file_safe_open(file_ptr, _db->_file_name, "rb", dict_create());
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
     dict result = dict_create();
