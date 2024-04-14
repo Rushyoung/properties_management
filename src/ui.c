@@ -17,7 +17,6 @@ void entry_callback(GtkWidget *widget, gpointer entry)
     return;
 }
 
-
 int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     /* 创建主窗口 */
