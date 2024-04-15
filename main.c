@@ -56,9 +56,9 @@ int main() {
 
     database_insert_table(&the, "log", log);
     map_free(&log);
-
+    str test = database_select(&the, "user_info", "phone", 1);
     printf("%s", database_select(&the, "user_info", "phone", 1));
-    database_remove_table(&the, "log");
+    /*database_remove_table(&the, "log");*/
     /*database_vacuum(&the);*/
     return 0;
 }
