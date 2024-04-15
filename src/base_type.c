@@ -58,6 +58,20 @@ void list_append_ptr(list* this, void* value) {
 
 
 /**
+ * @brief
+ * @param
+ * @param
+ */
+void list_earse(list* this, int index) {
+    if(index >= this->length || index < 0){
+        return;
+    }
+    memmove(this->_data + index * this->_type_size, this->_data + (index + 1) * this->_type_size, (this->length - index - 1) * this->_type_size);
+    this->length--;
+}
+
+
+/**
  * @brief 扩容链表
  * @param l 链表
  */
