@@ -74,7 +74,7 @@ void database_insert_table(db* _db, str _table, map _column){
     if(map_get(&(_db->master), _table) != -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("insert_file_error");
     }
@@ -112,7 +112,7 @@ void database_insert_line(db* _db, str _table, list values){
     if(map_get(&(_db->master), _table) != -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
     fseek(fp, info.start + info.line_width + 2, SEEK_SET);
@@ -138,7 +138,7 @@ void database_remove_table(db* _db, str _table){
         return;
     }
     map_remove(&_db->master, _table);
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("remove");
     }
@@ -167,7 +167,7 @@ void database_remove_line(db* _db, str _table, int line_no){
     if(map_get(&_db->master, _table) == -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("remove");
     }
