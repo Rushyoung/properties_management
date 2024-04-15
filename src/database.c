@@ -221,7 +221,11 @@ str database_select(db* _db, str _table, str _column, int line_no){
     fseek(fp, info.head, SEEK_SET);
     jump_to_position(fp, column_pos, line_no);
     char result[256];
+    system("pause");
+    printf("%ld", ftell(fp));
     fscanf(fp, "%s", result);
+
+    fclose(fp);
     return string(result);
 }
 
@@ -294,6 +298,7 @@ dict database_select_line(db* _db, str _table, int line_no){
         fscanf(fp, "%s", temp);
         dict_set(&result, result.keys[i], temp);
     }
+    fclose(fp);
     return result;
 }
 
