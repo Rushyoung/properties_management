@@ -22,6 +22,23 @@ list list_create_by(int sizeof_type) {
 
 
 /**
+ * @brief 创建一个链表, 并初始化一些值
+ * @param sizeof(type) 类型的大小
+ * @param length 长度
+ * @param values 值
+ */
+list list_init_by(int sizeof_type, int length, void* values) {
+    list l = list_create_by(sizeof_type);
+    while(l._capacity < length){
+        list_expand(&l);
+    }
+    l.length = length;
+    memcpy(l._data, values, sizeof_type * length);
+    return l;
+}
+
+
+/**
  * @brief 设置链表的元素
  * @param l 链表
  * @param index 索引
@@ -58,9 +75,9 @@ void list_append_ptr(list* this, void* value) {
 
 
 /**
- * @brief
- * @param
- * @param
+ * @brief 删除链表的元素
+ * @param l 链表
+ * @param index 索引
  */
 void list_earse(list* this, int index) {
     if(index >= this->length || index < 0){
