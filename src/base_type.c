@@ -127,6 +127,15 @@ map map_create() {
 }
 
 
+map map_init_by(int len, map_pair* data){
+    map m = map_create();
+    for(int i=0; i<len; i++){
+        map_set(&m, data[i].key, data[i].value);
+    }
+    return m;
+}
+
+
 /**
  * @brief 设置映射的键值对
  * @param d 映射
@@ -233,6 +242,15 @@ dict dict_create() {
     for(int i = 0; i < d._capacity; i++){
         d.keys[i]   = NULL;
         d.values[i] = NULL;
+    }
+    return d;
+}
+
+
+dict dict_init_by(int len, dict_pair* data){
+    dict d = dict_create();
+    for(int i=0; i<len; i++){
+        dict_set(&d, data[i].key, data[i].value);
     }
     return d;
 }
