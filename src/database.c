@@ -123,6 +123,7 @@ void db_insert_table(db* _db, const str _table, const map _columns){
         col_count++;
         lin_width += _columns.values[i];
     }
+    map_set(&(_db->_master), _table, lin_width);
     _table_skip_to_next(file_ptr);
     fmove(file_ptr, -8);
     char format[256];
@@ -465,6 +466,14 @@ void db_vacuum(db* _db){
     rename(new_file_name, _db->_file_name);
 }
 
+
+/**
+ * @brief 关闭数据库
+ * @param _db 数据库对象
+ */
+void db_close(db* _db){
+    map_free(&(_db->_master));
+}
 
 /**
  * @brief 跳转到下一个表

@@ -38,6 +38,7 @@ void db_update(db*, const str, const str, const int, const str);
 void db_update_lin(db*, const str, const int, list);
 
 void db_vacuum(db*);
+void db_close(db*);
 
 static int _table_skip_to_next(FILE*);
 static int _table_skip_to_table(FILE*, const str);
