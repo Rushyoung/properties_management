@@ -74,7 +74,7 @@ void database_insert_table(db* _db, str _table, map _column){
     if(map_get(&(_db->master), _table) != -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("insert_file_error");
     }
@@ -105,14 +105,15 @@ void database_insert_table(db* _db, str _table, map _column){
     }
     fprintf(fp,"\r\n======\r\n");
     fclose(fp);
+    map_set(&(_db->master), _table, line_width);
 }
 
 
 void database_insert_line(db* _db, str _table, list values){
-    if(map_get(&(_db->master), _table) != -1){
+    if(map_get(&(_db->master), _table) == -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
     fseek(fp, info.start + info.line_width + 2, SEEK_SET);
@@ -122,10 +123,11 @@ void database_insert_line(db* _db, str _table, list values){
     for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
-        sprintf(insert_data + insert_len, format, list_get(&values, i));
+//        printf("here: %s\n", *(char**)list_get(&values, i));
+        sprintf(insert_data + insert_len, format, *(char**)list_get(&values, i));
         insert_len += width;
     }
-    fseek(fp, info.start, SEEK_SET);
+    fseek(fp, info.head, SEEK_SET);
     skip_to_next_table(fp);
     fp_move(fp, -8);
     sprintf(insert_data + insert_len, "\r\n");
@@ -138,7 +140,7 @@ void database_remove_table(db* _db, str _table){
         return;
     }
     map_remove(&_db->master, _table);
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("remove");
     }
@@ -167,7 +169,7 @@ void database_remove_line(db* _db, str _table, int line_no){
     if(map_get(&_db->master, _table) == -1){
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("remove");
     }
@@ -222,6 +224,7 @@ str database_select(db* _db, str _table, str _column, int line_no){
     jump_to_position(fp, column_pos, line_no);
     char result[256];
     fscanf(fp, "%s", result);
+    fclose(fp);
     return string(result);
 }
 
@@ -294,6 +297,7 @@ dict database_select_line(db* _db, str _table, int line_no){
         fscanf(fp, "%s", temp);
         dict_set(&result, result.keys[i], temp);
     }
+    fclose(fp);
     return result;
 }
 
@@ -302,7 +306,7 @@ void database_update(db* _db, str _table, str _column, int line_no, str value){
         perror("no such table");
         return;
     }
-    FILE* fp = fopen(_db->file_name, "rb");
+    FILE* fp = fopen(_db->file_name, "rb+");
     if(fp == NULL){
         perror("update");
         return;
@@ -316,6 +320,7 @@ void database_update(db* _db, str _table, str _column, int line_no, str value){
         fscanf(fp, "%s", column_name);
         if(strcmp(column_name, _column) == 0){
             column_pos = i;
+            
         }
     }
     if(column_pos == -1) return;
@@ -363,7 +368,7 @@ void database_vacuum(db* _db){
     char new_filename[256+8] = {};
     sprintf(new_filename, "%s.vac", _db->file_name);
     FILE* input = fopen(_db->file_name, "rb");
-    FILE* output = fopen(new_filename, "rb+");
+    FILE* output = fopen(new_filename, "wb+");
     if(output == NULL) perror("create vacuum");
     list tables = list_create(sizeof(int));
     fseek(input, 0, SEEK_END);

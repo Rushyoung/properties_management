@@ -1,6 +1,7 @@
 //
 // Created by lzx on 2024/3/30.
 //
+//
 #include "..\include\base_type.h"
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +22,7 @@ list list_create(int sizeof_type){
  */
 void list_set(list* l, int index, void* _data){
     if(index < 0 || index >= l->length){
+        perror("out of index");
         return; // error process
     }
     memcpy(l->data + index * l->type_size, _data, l->type_size);
@@ -40,7 +42,7 @@ void list_expand(list* l){
     else if(l->capacity >= 64){
         l->capacity += 32;
     }
-    realloc(l->data, l->capacity);
+    l->data = realloc(l->data, l->capacity * l->type_size);
 }
 
 void list_append(list* l, void* _data){
@@ -115,6 +117,7 @@ void map_remove(map* m, str key){
             free(m->keys[i]);
             m->keys[i] = NULL;
             m->values[i] = 0;
+            return;
         }
     }
 }
