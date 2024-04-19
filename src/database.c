@@ -325,7 +325,7 @@ void database_update(db* _db, str _table, str _column, int line_no, str value){
     }
     if(column_pos == -1) return;
     int width = 0;
-    for(int i = 0; i < info.column_count; i++){
+    for(int i = -1; i < column_pos; i++){
         fscanf(fp, "%d", &width);
     }
     fseek(fp, info.head, SEEK_SET);
