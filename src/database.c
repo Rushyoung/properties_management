@@ -122,10 +122,11 @@ void database_insert_line(db* _db, str _table, list values){
     for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
-        sprintf(insert_data + insert_len, format, list_get(&values, i));
+        printf("here: %s\n", *(char**)list_get(&values, i));
+        sprintf(insert_data + insert_len, format, *(char**)list_get(&values, i));
         insert_len += width;
     }
-    fseek(fp, info.start, SEEK_SET);
+    fseek(fp, info.head, SEEK_SET);
     skip_to_next_table(fp);
     fp_move(fp, -8);
     sprintf(insert_data + insert_len, "\r\n");
@@ -221,10 +222,7 @@ str database_select(db* _db, str _table, str _column, int line_no){
     fseek(fp, info.head, SEEK_SET);
     jump_to_position(fp, column_pos, line_no);
     char result[256];
-    system("pause");
-    printf("%ld", ftell(fp));
     fscanf(fp, "%s", result);
-
     fclose(fp);
     return string(result);
 }

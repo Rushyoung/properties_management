@@ -1,6 +1,7 @@
 //
 // Created by lzx on 2024/3/30.
 //
+//
 #include "..\include\base_type.h"
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +41,7 @@ void list_expand(list* l){
     else if(l->capacity >= 64){
         l->capacity += 32;
     }
-    realloc(l->data, l->capacity);
+    l->data = realloc(l->data, l->capacity * l->type_size);
 }
 
 void list_append(list* l, void* _data){

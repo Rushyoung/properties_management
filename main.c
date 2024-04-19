@@ -11,7 +11,10 @@
 
 
 #include <stdio.h>
+#include "include/base_type.h"
 #include "include/database.h"
+
+
 int main() {
     db the = database_connect("data.txt");
 
@@ -34,9 +37,9 @@ int main() {
     char* string1 = "what";
     char* string2 = "114514";
     char* string3 = "19d19h";
-    list_append(&users, string1);
-    list_append(&users, string2);
-    list_append(&users, string3);
+    list_append(&users, &string1);
+    list_append(&users, &string2);
+    list_append(&users, &string3);
     database_insert_line(&the, "user_info", users);
     list_free(&users);
 
