@@ -11,12 +11,11 @@
 
 
 #include <stdio.h>
-#include "include/base_type.h"
 #include "include/database.h"
 
 
 int main() {
-    db the = database_connect("data.txt");
+    db the = database_connect("data.db");
 
     map status = map_create();
     map_set(&status, "username", 16); // 16 is the max length of the
@@ -35,7 +34,7 @@ int main() {
     map_free(&user_info);
     list users = list_create(sizeof(char*));
     char* string1 = "what";
-    char* string2 = "114514";
+    char* string2 = "114514191919";
     char* string3 = "19d19h";
     list_append(&users, &string1);
     list_append(&users, &string2);
@@ -61,7 +60,9 @@ int main() {
     map_free(&log);
     str test = database_select(&the, "user_info", "phone", 1);
     printf("%s", database_select(&the, "user_info", "phone", 1));
-    /*database_remove_table(&the, "log");*/
-    /*database_vacuum(&the);*/
+    database_remove_table(&the, "log");
+    database_vacuum(&the);
+
+    database_update(&the, "user_info", "username", 1, "wss");
     return 0;
 }
