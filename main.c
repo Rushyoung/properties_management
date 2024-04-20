@@ -12,35 +12,33 @@
 
 #include <stdio.h>
 #include "include/database.h"
+#include "include/auth.h"
 
 
-int nmmain() {
-    db the = database_connect("data.db");
+int main() {
+    db the = init();
+    str string1 = "admin";
+    str string2 = "000000";
+    printf("%d", login_verify(&the, string1, string2));
 
-    map status = map_create();
-    map_set(&status, "username", 16); // 16 is the max length of the
-    map_set(&status, "password", 16); // username and password
-    map_set(&status, "auth", 6); // auth token
 
-    database_insert_table(&the, "status", status);
-    map_free(&status);
 
-    map user_info = map_create();
+    /*map user_info = map_create();
     map_set(&user_info, "username", 16);
     map_set(&user_info, "phone", 16);
     map_set(&user_info, "zone", 24);
     //向数据库中插入新表（table类型）（user_info）
     database_insert_table(&the, "user_info", user_info);
     map_free(&user_info);
-    list users = list_create(sizeof(char*));
+    list admin = list_create(sizeof(char*));
     char* string1 = "what";
     char* string2 = "114514191919";
     char* string3 = "19d19h";
-    list_append(&users, &string1);
-    list_append(&users, &string2);
-    list_append(&users, &string3);
-    database_insert_line(&the, "user_info", users);
-    list_free(&users);
+    list_append(&admin, &string1);
+    list_append(&admin, &string2);
+    list_append(&admin, &string3);
+    database_insert_line(&the, "user_info", admin);
+    list_free(&admin);
 
     map fee = map_create();
     map_set(&fee, "username", 16);
@@ -64,5 +62,5 @@ int nmmain() {
     database_vacuum(&the);
 
     database_update(&the, "user_info", "username", 1, "wss");
-    return 0;
+*/    return 0;
 }
