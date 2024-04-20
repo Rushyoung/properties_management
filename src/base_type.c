@@ -79,7 +79,7 @@ void list_append_ptr(list* this, void* value) {
  * @param l 链表
  * @param index 索引
  */
-void list_earse(list* this, int index) {
+void list_erase(list* this, int index) {
     if(index >= this->length || index < 0){
         return;
     }
