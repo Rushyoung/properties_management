@@ -28,7 +28,15 @@ typedef struct{
 } db;
 
 db database_connect(const char* _file_name);
+/* @brief:向数据库中插入新表信息
+ * @_table:表名
+ * @_column:表格的列信息
+ * @return  如果表名重复则直接返回
+ */
 void database_insert_table(db* _db, str _table, map _column);
+/* @brief:向已有的一张表
+ * @
+ * */
 void database_insert_line(db* _db, str _table, list values);
 void database_remove_table(db* _db, str _table);
 void database_remove_line(db* _db, str _table, int line_no);
