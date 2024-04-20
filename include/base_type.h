@@ -68,6 +68,7 @@ void dict_free(dict*);
 #define dict_init(...) ({dict_pair _d[]={__VA_ARGS__}; dict_init_by(sizeof(_d)/sizeof(dict_pair), _d);})
 
 #define STRING_EXTRA_LIMIT 128
+#define STRING_SHORT_STD   8
 str string(str);
 
 #endif

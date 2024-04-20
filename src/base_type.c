@@ -366,12 +366,29 @@ void dict_free(dict* this) {
 str string(str s) {
     static int cursor = 0;
     static str strings[STRING_EXTRA_LIMIT] = {};
-    if(strings[cursor] != NULL){
-        free(strings[cursor]);
+    static int str_len[STRING_EXTRA_LIMIT] = {};
+    static int str_use[STRING_EXTRA_LIMIT] = {};
+    int len = strlen(s);
+    for(int i = 0; len <= STRING_SHORT_STD && i < STRING_EXTRA_LIMIT; i++){
+        if(len == str_len[i] && strings[i] != NULL && strcmp(strings[i], s) == 0){
+            str_use[i]++;
+            return strings[i];
+        }
     }
-    strings[cursor] = malloc(strlen(s) + 1);
+    for(; strings[cursor] != NULL;cursor = (cursor + 1) % STRING_EXTRA_LIMIT){
+        if(str_use[cursor] <= 1){
+            free(strings[cursor]);
+            strings[cursor] = NULL;
+            break;
+        } else {
+            str_use[cursor]--;
+        }
+    }
+    strings[cursor] = malloc(len + 1);
     strcpy(strings[cursor], s);
-    int id = cursor;
+    str_len[cursor] = len;
+    str_use[cursor] = 1;
+    int ret = cursor;
     cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
-    return strings[id];
+    return strings[ret];
 }
