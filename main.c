@@ -14,7 +14,7 @@
 #include "include/database.h"
 
 
-int main() {
+int nmmain() {
     db the = database_connect("data.db");
 
     map status = map_create();

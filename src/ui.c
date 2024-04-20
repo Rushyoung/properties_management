@@ -2,8 +2,8 @@
 // Created by Administrator on 2024/4/14.
 //
 
-
 #include <gtk/gtk.h>
+
 
 static void destroy_window_callback(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
@@ -21,6 +21,7 @@ void widget_destory(GtkWidget *widget, gpointer data){
     gtk_widget_destroy(widget);
 }
 
+//创建登录页面
 int login_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 /* 创建主窗口 */
@@ -42,7 +43,7 @@ int login_main(int argc, char *argv[]) {
     gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
     gtk_label_set_markup(GTK_LABEL(label),"<span foreground='black'  font_desc='20'>欢迎使用世界树物业管理系统！</span>");
 
-    GtkWidget *image = gtk_image_new_from_file("..\\logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
@@ -90,11 +91,11 @@ int login_main(int argc, char *argv[]) {
 
 
 
-
-int admin_main(int argc, char *argv[]) {
+//创建管理员页面
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
-//创建主窗口
+    //创建主窗口
     char *shuchu = "NULL";
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -107,7 +108,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("E:\\cks\\logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -127,6 +128,10 @@ int admin_main(int argc, char *argv[]) {
     gtk_label_set_line_wrap(GTK_LABEL(label2), TRUE);
 
     GtkWidget *button = gtk_button_new_with_label("liuhaizhu");
+    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(button), GTK_JUSTIFY_LEFT);
 
     gtk_widget_show_all(window);
     gtk_main();
@@ -138,7 +143,7 @@ int scoller_main(int argc, char *argv[]) {
 
     gtk_init(&argc, &argv);
 
-    //新建筑窗口
+    //新建窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
@@ -163,11 +168,17 @@ int scoller_main(int argc, char *argv[]) {
 
     //将文本框添加到滚动条中
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, "fjkrs gnovzis hngiuyrsbnzg hiuybhiszubfg huyeszbghfuyhhb desuyfbg suyzehbg fuyhbegs aufbgua shhbfi  uyaghi ufhbnaiu8hf nbiuhahbn fiuab hnie uwyfhnaiufhbniyahubfnihuyabnfihuyabniufhybnvay8ubfgnviyahubnwfguvyhanbiuywfghbnvaiswuybhnfgviuyawfnbiyahbfniuajbhnfiyuanfhjiuyahbnfu9ajnbfuyhabnwihfbniuyahwbfniuahbnwgwfiuy8anwhmiuyfhbhnaiyuwfnhiaybnfyhiuawsneyfuybanwifawuhbfnhaegbdfuyhnahiubfhniuawhsnfyuiahbniufhbnauhyefhbniuyahsbeghifuhyasbgfuyhanbfiyughanwiuyfhgauwyfhnyuawehfnbuyabghfuyabhngfuy8abgnyfuhnbauyfbnijuwabfhniuanmfhouiahnfu9aiwmnjfhiuhjahhnmjoahfniuyajnbfhijabnfhijabnfhiuanbfiujaghbnfuijanbhfiuyhnbauoifhniuawhnfihjanwhiuyfbnaowuihfncucyahnbfiouajhbngwfuyianwmhfjisbeduhogvnbirsuydhgbnaijosuzdrgbhniurszjdnbgo8uy9dszghnijazswebghniouyersdbngiuhyswAZBGONFIVHJuAZSWBGNIYHUEWBNRSfgijkbhnosziouybnfgiuhjoserdhbgnfvhijkeszboguybnsdehijrgbisuyzhbnghisudberghiuvyszDBgiuyhbzsniouhyjgbnrsdoifhjugbnipejrsuzdhfgnbpuz8deiorsfbhngoipuy8defjrszbgntdeijoprsuyzfbngiopuydefhjrzsbhngiuygiuybhnzr6ezgs41zr8ds54g15+64z1drs56g14z56dr1ghbzdr41h58914dr984158dzr41h98d56r14h589d14rt895h6149d8rt4f1h895dz41r98ht4158drzf4hg789d41rh5894dz89rf5h4158dzsr41h896", -1);
+    gtk_text_buffer_set_text(buffer, "fjkrs gnovzis hngiuyrsbnzg hiuybhiszubfg huyeszbghfuyhhb desuyfbg suyzehbg fuyhbegs aufbgua shhbfi  uyaghi ufhbnaiu8hf nbiuhahbn fiuab hnie uwyf\r\nhnai\r\n\r\nufhb\r\n\r\nniyah\r\nubfnihu\r\nyabnfi\r\nhuyabni\r\nufhybnva\r\ny8ubfg\r\nnviyahubnwfguvyhanbiuywfghbnvaiswuybhnfgviuyawfnbiyahbfniuajbhnfiyuanfhjiuyahbnfu9ajnbfuyhabnwihfbniuyahwbfniuahbnwgwfiuy8anwhmiuyfhbhnaiyuwfnhiaybnfyhiuawsneyfuybanwifawuhbfnhaegbdfuyhnahiubfhniuawhsnfyuiahbniufhbnauhyefhbniuyahsbeghifuhyasbgfuyhanbfiyughanwiuyfhgauwyfhnyuawehfnbuyabghfuyabhngfuy8abgnyfuhnbauyfbnijuwabfhniuanmfhouiahnfu9aiwmnjfhiuhjahhnmjoahfniuyajnbfhijabnfhijabnfhiuanbfiujaghbnfuijanbhfiuyhnbauoifhniuawhnfihjanwhiuyfbnaowuihfncucyahnbfiouajhbngwfuyianwmhfjisbeduhogvnbirsuydhgbnaijosuzdrgbhniurszjdnbgo8uy9dszghnijazswebghniouyersdbngiuhyswAZBGONFIVHJuAZSWBGNIYHUEWBNRSfgijkbhnosziouybnfgiuhjoserdhbgnfvhijkeszboguybnsdehijrgbisuyzhbnghisudberghiuvyszDBgiuyhbzsniouhyjgbnrsdoifhjugbnipejrsuzdhfgnbpuz8deiorsfbhngoipuy8defjrszbgntdeijoprsuyzfbngiopuydefhjrzsbhngiuygiuybhnzr6ezgs41zr8ds54g15+64z1drs56g14z56dr1ghbzdr41h58914dr984158dzr41h98d56r14h589d14rt895h6149d8rt4f1h895dz41r98ht4158drzf4hg789d41rh5894dz89rf5h4158dzsr41h896", -1);
 
     //将文本视图添加到滚动窗格中
     gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
-    gtk_table_attach(GTK_TABLE(table), scoller, 0, 3, 0, 3,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), scoller, 5, 6, 5, 10,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+
+    GtkWidget *button = gtk_button_new_with_label("登录");
+    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_table_attach(GTK_TABLE(table), button, 8, 10, 8, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,5 , 5 );
+
 
     gtk_widget_show_all(window);
     gtk_main();
