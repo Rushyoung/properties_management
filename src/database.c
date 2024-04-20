@@ -442,3 +442,55 @@ int jump_to_position(FILE* fp, int column, int line){
     fp_move(fp, (info.line_width + 2) * (line - 1 + 2) + width_skip);
     return ftell(fp);
 }
+
+
+
+db init(){
+    db this = database_connect("data.db");
+    if(this.master.keys[1] == NULL){
+        //创建账号数据库
+        map account = map_create();
+        map_set(&account, "username", 16); // 16 is the max length of the
+        map_set(&account, "password", 16); // username and password
+        map_set(&account, "auth", 6); // auth token
+        database_insert_table(&this, "account", account);
+        map_free(&account);
+
+        list admin = list_create(sizeof(char*));
+        char* string1 = "admin";
+        char* string2 = "000000";
+        char* string3 = "0";
+        list_append(&admin, &string1);
+        list_append(&admin, &string2);
+        list_append(&admin, &string3);
+        database_insert_line(&this, "account", admin);
+        list_free(&admin);
+
+        map resident = map_create();
+        map_set(&resident, "username", 16);
+        map_set(&resident, "name", 10);
+        map_set(&resident, "region", 10);
+        map_set(&resident, "room", 8);
+        map_set(&resident, "fee", 16);
+        database_insert_table(&this, "resident", resident);
+        map_free(&resident);
+
+        map worker = map_create();
+        map_set(&worker, "username", 16);
+        map_set(&worker, "name", 10);
+        map_set(&worker, "content", 16);
+        map_set(&worker, "region", 10);
+        database_insert_table(&this, "worker", worker);
+        map_free(&worker);
+
+        map bill = map_create();
+        map_set(&bill, "ID", 16);
+        map_set(&bill, "amount", 10);
+        map_set(&bill, "time", 16);
+        map_set(&bill, "username", 16);
+        database_insert_table(&this, "bill", bill);
+        map_free(&bill);
+    }
+    return this;
+}
+

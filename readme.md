@@ -109,7 +109,12 @@ inquire --> fee_standard
 
 bill_include_id_time_username_money
 ```
-
+## User authority(auth)
+#### admin = 0
+#### worker = 1
+#### guard = 2
+#### cleaner = 3
+#### residents = 4
 ## User data content
 
 
