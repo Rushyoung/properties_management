@@ -19,6 +19,7 @@ list list_create(int);
 
 void list_set(list*, int, void*);
 void* list_get(list*, int);
+str list_get_str(list*, int);
 void list_expand(list*);
 void list_append(list*, void*);
 void list_free(list*);
@@ -51,5 +52,6 @@ void dict_free(dict*);
 
 
 #define STRING_EXTRA_LIMIT 128
+#define STRING_SHORT_STD 4
 str string(str);
 #endif //PROPERTY_BASE_TYPE_H

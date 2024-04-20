@@ -34,7 +34,12 @@ void* list_get(list* l, int index){
     }
     return l->data + index * l->type_size;
 }
-
+str list_get_str(list* l, int index){
+    if(index < 0 || index >= l->length){
+        return NULL; // error process
+    }
+    return *(char**)(l->data + index * l->type_size);
+}
 void list_expand(list* l){
     if(l->capacity < 64){
         l->capacity *= 2;
@@ -220,12 +225,29 @@ void dict_free(dict* d){
 str string(str s) {
     static int cursor = 0;
     static str strings[STRING_EXTRA_LIMIT] = {};
-    if(strings[cursor] != NULL){
-        free(strings[cursor]);
+    static int str_len[STRING_EXTRA_LIMIT] = {};
+    static int str_use[STRING_EXTRA_LIMIT] = {};
+    int len = strlen(s);
+    for(int i = 0; len <= STRING_SHORT_STD && i < STRING_EXTRA_LIMIT; i++){
+        if(len == str_len[i] && strings[i] != NULL && strcmp(strings[i], s) == 0){
+            str_use[i]++;
+            return strings[i];
+        }
     }
-    strings[cursor] = malloc(strlen(s) + 1);
+    for(; strings[cursor] != NULL;cursor = (cursor + 1) % STRING_EXTRA_LIMIT) {
+        if (str_use[cursor] <= 1) {
+            free(strings[cursor]);
+            strings[cursor] = NULL;
+            break;
+        } else {
+            str_use[cursor]--;
+        }
+    }
+    strings[cursor] = malloc(len + 1);
     strcpy(strings[cursor], s);
-    int id = cursor;
+    str_len[cursor] = len;
+    str_use[cursor] = 1;
+    int ret = cursor;
     cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
-    return strings[id];
+    return strings[ret];
 }
