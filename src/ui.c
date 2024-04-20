@@ -3,7 +3,54 @@
 //
 
 #include <gtk/gtk.h>
+#include <stdio.h>
+#include <windows.h>
+#include "../include/ui.h"
 
+typedef struct {
+    int auth;
+    int argc;
+    char **argv;
+    GtkWidget *window;
+} LoginData;
+
+void login_change(GtkWidget *widget, gpointer user_data) {
+    LoginData *data = (LoginData *) user_data;
+    int auth = data->auth;
+    int argc = data->argc;
+    char **argv = data->argv;
+    GtkWidget *window = data->window;
+
+    if(auth == -1){
+        MessageBox(
+                NULL,
+                TEXT("该用户不存在！"),  // 显示的文本
+                TEXT("出错了！"),                // 标题
+                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+        );
+    }
+    if(auth == -2){
+        MessageBox(
+                NULL,
+                TEXT("密码错误！"),  // 显示的文本
+                TEXT("出错了！"),                // 标题
+                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+        );
+    }
+    if(auth == 0){
+        gtk_widget_destroy(window);
+        admin_main(argc,argv);
+    }
+    if(auth == 1){
+
+    }
+    if(auth == 2){
+
+    }
+    if(auth == 3){
+
+    }
+}
 
 static void destroy_window_callback(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
@@ -22,9 +69,9 @@ void widget_destory(GtkWidget *widget, gpointer data){
 }
 
 //创建登录页面
-int login_main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-/* 创建主窗口 */
+    //创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
@@ -32,11 +79,15 @@ int login_main(int argc, char *argv[]) {
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
-/* 创建一个10x10的布局容器 */
+    LoginData login_data = { .auth = 0, .window = window };
+
+    //创建一个10x10的布局容器
+
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window), table);
 
-/*创建一个标签*/
+//创建一个标签
+
     GtkWidget *label = gtk_label_new("");
     gtk_table_attach(GTK_TABLE(table), label, 9, 10, 1, 2, GTK_FILL, GTK_FILL, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
@@ -47,14 +98,16 @@ int login_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-/* 创建一个按钮 */
+ //创建一个按钮
+
 
     GtkWidget *button = gtk_button_new_with_label("登录");
-    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    g_signal_connect(button, "clicked", G_CALLBACK(login_change), &login_data);
     gtk_table_attach(GTK_TABLE(table), button, 8, 10, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,5 , 5 );
 
-/* 创建两个文本框 */
+ //创建两个文本框
+
 
     GtkWidget *username_entry1 = gtk_entry_new();
     g_signal_connect(username_entry1, "activate", G_CALLBACK(entry_callback), username_entry1);
@@ -65,7 +118,8 @@ int login_main(int argc, char *argv[]) {
     GtkWidget *lable1 = gtk_label_new("用户名：");
     GtkWidget *lable2 = gtk_label_new("密码：");
 
-/* 将文本框添加到布局容器中 */
+ //将文本框添加到布局容器中
+
 
 
     gtk_table_attach(GTK_TABLE(table), username_entry1, 6, 14, 4, 5,
@@ -80,10 +134,13 @@ int login_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-/* 显示所有窗口部件 */
+
+ //显示所有窗口部件
+
     gtk_widget_show_all(window);
 
-/* 运行主循环 */
+ //运行主循环
+
     gtk_main();
 
     return 0;
@@ -92,7 +149,7 @@ int login_main(int argc, char *argv[]) {
 
 
 //创建管理员页面
-int main(int argc, char *argv[]) {
+int admin_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //创建主窗口
@@ -109,10 +166,10 @@ int main(int argc, char *argv[]) {
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
     GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
-    gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
+                     GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
-    GtkWidget *label = gtk_label_new("admin");
+    GtkWidget *label = gtk_label_new("管理员");
     gtk_table_attach(GTK_TABLE(table), label, 1, 2, 4, 5, GTK_FILL, GTK_FILL, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 
@@ -121,13 +178,62 @@ int main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), label1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-    GtkWidget *label2 = gtk_label_new( shuchu);
-    gtk_table_attach(GTK_TABLE(table), label2, 4, 10, 5, 10,
+    GtkWidget *label2 = gtk_label_new("刘海柱");
+    gtk_table_attach(GTK_TABLE(table), label2, 2, 3, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(label2), GTK_JUSTIFY_LEFT);
-    gtk_label_set_line_wrap(GTK_LABEL(label2), TRUE);
 
-    GtkWidget *button = gtk_button_new_with_label("liuhaizhu");
+    GtkWidget *menubar = gtk_menu_bar_new();
+    gtk_container_add(GTK_CONTAINER(window), menubar);
+
+    GtkWidget *file_menu_item = gtk_menu_item_new_with_label("选择您要执行的任务——");
+    GtkWidget *file_menu = gtk_menu_new();
+
+    GtkWidget *open_item = gtk_menu_item_new_with_label("工人管理");
+    g_signal_connect(open_item, "activate", G_CALLBACK(destroy_window_callback), NULL);
+
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
+
+    GtkWidget *save_item = gtk_menu_item_new_with_label("费用管理");
+    g_signal_connect(save_item, "activate", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
+
+    GtkWidget *exit_item = gtk_menu_item_new_with_label("居民管理");
+    g_signal_connect(exit_item, "activate", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), exit_item);
+
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu_item);
+
+    gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 1, 2,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+
+    GtkWidget *button2 = gtk_button_new_with_label("数据备份");
+    g_signal_connect(button2, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_table_attach(GTK_TABLE(table), button2, 8, 9, 2, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *button1 = gtk_button_new_with_label("数据恢复");
+    g_signal_connect(button1, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_table_attach(GTK_TABLE(table), button1, 8, 9, 3, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    //创建一个带有滚动条的文本框
+    GtkWidget *scoller = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scoller), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+    //创建一个文本框
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);  // 设置自动换行
+
+    //将文本框添加到滚动条中
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, "awful", -1);
+
+    //将文本视图添加到滚动窗格中
+    gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
+    gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+
+    GtkWidget *button = gtk_button_new_with_label("密码维护");
     g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
@@ -136,6 +242,10 @@ int main(int argc, char *argv[]) {
     gtk_widget_show_all(window);
     gtk_main();
     return 0;
+}
+
+int admin_work( int argc, char *argv[]){
+    gtk_init(&argc, &argv);
 }
 
 //创建带有滚轮的输出窗口（模板）
