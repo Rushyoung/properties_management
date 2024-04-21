@@ -16,7 +16,7 @@
 #include "include/auth.h"
 
 
-int main() {
+int _Atomicmain() {
     db the = init();
 /*    str string3 = "username";
     str string1 = "admin";

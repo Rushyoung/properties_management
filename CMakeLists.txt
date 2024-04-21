@@ -12,7 +12,9 @@ add_executable(property main.c
         src/base_type.c
         include/database.h
         src/database.c
-        src/ui.c
+        src/admin_ui.c
+        src/login_ui.c
+        src/ui_functions.c
         include/query.h
         src/query.c
         src/auth.c
