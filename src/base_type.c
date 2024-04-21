@@ -28,17 +28,17 @@ void list_set(list* l, int index, void* _data){
     memcpy(l->data + index * l->type_size, _data, l->type_size);
 }
 
-void* list_get(list* l, int index){
-    if(index < 0 || index >= l->length){
+void* list_get_ptr(list* l, int index){
+    if(index < 0 || index > l->length){
         return NULL; // error process
     }
-    return l->data + index * l->type_size;
+    return l->data + (index - 1) * l->type_size;
 }
 str list_get_str(list* l, int index){
     if(index < 0 || index >= l->length){
         return NULL; // error process
     }
-    return *(char**)(l->data + index * l->type_size);
+    return string(l->data + index * l->type_size);
 }
 void list_expand(list* l){
     if(l->capacity < 64){

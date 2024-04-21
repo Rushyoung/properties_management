@@ -16,9 +16,9 @@ typedef struct{
 } list;
 
 list list_create(int);
-
+#define list_get(type, l, index) ({*(type*)list_get_ptr((l), (index));})
 void list_set(list*, int, void*);
-void* list_get(list*, int);
+void* list_get_ptr(list* l, int index);
 str list_get_str(list*, int);
 void list_expand(list*);
 void list_append(list*, void*);
@@ -53,5 +53,5 @@ void dict_free(dict*);
 
 #define STRING_EXTRA_LIMIT 128
 #define STRING_SHORT_STD 4
-str string(str);
+str string(str s);
 #endif //PROPERTY_BASE_TYPE_H

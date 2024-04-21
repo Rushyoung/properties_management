@@ -17,11 +17,10 @@
 
 int main() {
     db the = init();
+    str string3 = "username";
     str string1 = "admin";
     str string2 = "000000";
     printf("%d", login_verify(&the, string1, string2));
-
-
 
     /*map user_info = map_create();
     map_set(&user_info, "username", 16);
@@ -30,15 +29,10 @@ int main() {
     //向数据库中插入新表（table类型）（user_info）
     database_insert_table(&the, "user_info", user_info);
     map_free(&user_info);
-    list admin = list_create(sizeof(char*));
-    char* string1 = "what";
-    char* string2 = "114514191919";
-    char* string3 = "19d19h";
-    list_append(&admin, &string1);
-    list_append(&admin, &string2);
-    list_append(&admin, &string3);
+
+
     database_insert_line(&the, "user_info", admin);
-    list_free(&admin);
+
 
     map fee = map_create();
     map_set(&fee, "username", 16);

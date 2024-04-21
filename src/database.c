@@ -123,8 +123,8 @@ void database_insert_line(db* _db, str _table, list values){
     for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
-//        printf("here: %s\n", *(char**)list_get(&values, i));
-        sprintf(insert_data + insert_len, format, *(char**)list_get(&values, i));
+//        printf("here: %s\n", *(char**)list_get_ptr(&values, i));
+        sprintf(insert_data + insert_len, format, *(char**) list_get_ptr(&values, i));
         insert_len += width;
     }
     fseek(fp, info.head, SEEK_SET);
@@ -242,7 +242,7 @@ list database_select_column(db* _db, str _table, str _column){
     fseek(fp, info.start, SEEK_SET);
     int skip_width = 0, column_pos = -1;
     char column_name[256] = {};
-    for(int i = 0; i < info.line_width; i++){
+    for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%s", column_name);
         if(strcmp(_column, column_name) == 0){
             column_pos = i;
@@ -262,11 +262,11 @@ list database_select_column(db* _db, str _table, str _column){
     for(int line_no = 0;; line_no++){
         fseek(fp, info.start, SEEK_SET);
         fp_move(fp, (info.line_width + 2) * (line_no + 2));
-        c = fgetc(fp);
-        if(c == '=') break;
+        if((c = fgetc(fp)) == '=') break;
         fp_move(fp, skip_width);
         fscanf(fp, "%s", temp);
-        list_append(&result, temp);
+        str temp_ptr = string(temp);
+        list_append(&result, &temp_ptr);
     }
     fclose(fp);
     return result;
@@ -355,7 +355,7 @@ void database_update_line(db* _db, str _table, int line_no, list _value){
     for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
-        sprintf(update + update_len, format, list_get(&_value, i));
+        sprintf(update + update_len, format, list_get_ptr(&_value, i));
         update_len += width;
     }
     fseek(fp, info.head, SEEK_SET);
@@ -381,7 +381,7 @@ void database_vacuum(db* _db){
     }
     char line[65536];
     for(int i = 0; i < tables.length; i++){
-        int* _temp = (int*)list_get(&tables, i);
+        int* _temp = (int*) list_get_ptr(&tables, i);
         fseek(input, *_temp, SEEK_SET);
         table_info info = table_info_get(input);
         if(map_get(&(_db->master), info.table_name) == -1){
