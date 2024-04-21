@@ -13,6 +13,10 @@ add_executable(property main.c
         include/database.h
         src/database.c
         src/ui.c
+        include/query.h
+        src/query.c
+        src/auth.c
+        include/auth.h
 )
 add_definitions (${GTK2_CFLAGS_OTHER})
 target_link_libraries (property ${GTK2_LIBRARIES})
