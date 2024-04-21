@@ -16,3 +16,8 @@ int database_query_by_column(db* _this, str _table, str _column, str _keyword){
     }
     return -1;
 }
+
+str database_query_by_column_to_column(db* _this, str _table, str src_column, str src_keyword, str dst_column){
+    int line_no = database_query_by_column(_this, _table, src_column, src_keyword);
+    return string(database_select(_this, _table, dst_column, line_no));
+}

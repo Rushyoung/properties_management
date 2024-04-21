@@ -9,6 +9,6 @@
 
 int database_query_by_column(db* _this, str _table, str _column, str _keyword);
 
-
+str database_query_by_column_to_column(db* _this, str _table, str src_column, str src_keyword, str dst_column);
 
 #endif //PROPERTY_QUERY_H

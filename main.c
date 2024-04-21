@@ -12,15 +12,17 @@
 
 #include <stdio.h>
 #include "include/database.h"
+#include "include/query.h"
 #include "include/auth.h"
 
 
 int main() {
-    db the = init();
+    /*db the = init();*/
     str string3 = "username";
     str string1 = "admin";
     str string2 = "000000";
-    printf("%d", login_verify(&the, string1, string2));
+    printf("%s\n", database_query_by_column_to_column(&the, "account", "username", "admin", "password"));
+    printf("%d", login_verify(&the, string1, string2));*/
 
     /*map user_info = map_create();
     map_set(&user_info, "username", 16);

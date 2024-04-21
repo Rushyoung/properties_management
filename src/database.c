@@ -124,7 +124,7 @@ void database_insert_line(db* _db, str _table, list values){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
 //        printf("here: %s\n", *(char**)list_get_ptr(&values, i));
-        sprintf(insert_data + insert_len, format, *(char**) list_get_ptr(&values, i));
+        sprintf(insert_data + insert_len, format, *(char**) list_get_ptr(&values, i+1));
         insert_len += width;
     }
     fseek(fp, info.head, SEEK_SET);
