@@ -29,7 +29,7 @@ void list_set(list* l, int index, void* _data){
 }
 
 void* list_get_ptr(list* l, int index){
-    if(index < 0 || index >= l->length){
+    if(index <= 0 || index > l->length){
         return NULL; // error process
     }
     return l->data + (index - 1) * l->type_size;
