@@ -186,3 +186,68 @@ int admin_work( int argc, char *argv[]){
     gtk_main();
     return 0;
 }
+
+void get_worker_data(GtkWidget* widget, gpointer data){
+    LoginData *da = (LoginData *) data;
+
+}
+
+int main(int argc, char *argv[]){
+    gtk_init(&argc, &argv);
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
+    gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+    GtkWidget *table = gtk_table_new(5, 5, FALSE);
+    gtk_container_add(GTK_CONTAINER(window), table);
+
+    gtk_table_set_row_spacings(GTK_TABLE(table), 30);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 30);
+
+    GtkWidget *lable1 = gtk_label_new("用户名：");
+    gtk_table_attach(GTK_TABLE(table), lable1, 0, 1, 0, 1,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(lable1), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *lable2 = gtk_label_new("密码：");
+    gtk_table_attach(GTK_TABLE(table), lable2, 0, 1, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(lable2), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *label3 = gtk_label_new(" 姓名：");
+    gtk_table_attach(GTK_TABLE(table), label3, 0, 1, 2, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(label3), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *label4 = gtk_label_new(" 权限：");
+    gtk_table_attach(GTK_TABLE(table), label4, 0, 1, 3, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(label4), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *entry1 = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 0, 1,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(entry1), 20);
+
+    GtkWidget *entry2 = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(entry2), 20);
+
+    GtkWidget *entry3 = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(table), entry3, 1, 2, 2, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(entry3), 20);
+
+    GtkWidget *entry4 = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(table), entry4, 1, 2, 3, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(entry4), 20);
+
+    gtk_widget_show_all(window);
+    gtk_main();
+    return 0;
+}
