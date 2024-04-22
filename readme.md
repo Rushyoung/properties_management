@@ -20,8 +20,8 @@ G["UI"] --> H
 ``` 
 #### Base Type
 It should include some commonly used data structures, such as string, list, stack, deque and others.  
-All of structures(except str) should get a sizeof the detail data struct, and is should return a void pointer.  
-The void pointer should be change to the data on its own, then be read and operated.  
+All structures(except str) should get a sizeof the detail data struct, and it should return a void pointer.  
+The void pointer should be changed to the data on its own, then be read and operated.  
 #### DateBase Operate  
 This is a module for operating databases.  
 We assume that the data to be stored is always of string type.  
@@ -33,6 +33,123 @@ Specific business of the project.
 #### UI  
 a UI module. 
 
+## Our work flowchart
+
+```mermaid
+graph LR
+start --> login
+login --> verify{username&password} 
+verify -->|admin| admin
+verify --> |residents| residents
+verify --> |workers| workers
+verify --> |fail| login
+
+admin --> admin_main
+admin_main --> work_select1{work_select}
+admin_main --> password_maintain1
+admin_main --> password_change1
+work_select1 --> |to_residents| residents_manage
+work_select1 --> |to_workers| worker_manage
+work_select1 --> |to_fee| fee
+work_select1 --> |to_data| data
+data --> backup
+data --> restore
+residents_manage --> repair_request
+residents_manage --> add_resident
+residents_manage --> remove_resident
+residents_manage --> inquire_resident
+fee --> select
+fee --> sort
+fee --> to_singal
+select --> List_of_unpaid
+select --> List_of_paid_overtime
+sort --> sort_by_name
+sort --> sort_by_lastest_paytime
+to_singal --> bil
+to_singal --> Paid_overtime
+to_singal --> unpaid
+worker_manage --> work_assignments
+worker_manage --> add_worker
+worker_manage --> remove_worker
+work_assignments --> repair
+work_assignments --> clean
+work_assignments --> remind_payment
+
+workers --> worker_main
+worker_main --> inquire_work
+worker_main --> sort2
+worker_main --> count_work
+worker_main --> complete_work
+worker_main --> password_change2
+worker_main --> password_maintain2
+inquire_work --> region
+inquire_work --> content
+
+residents -->  residents_main
+residents_main --> fee1
+residents_main --> problem_report
+residents_main --> inquire
+residents_main --> password_change3
+residents_main --> password_maintain3
+fee1 --> unpaid_bills
+fee1 --> paid_overtime
+fee1 --> pay
+fee1 --> history1
+history1 --> sort3
+history1 --> select2
+history1 --> count1
+problem_report --> add_problem
+problem_report --> view_problem
+problem_report --> history2
+history2 --> sort4
+history2 --> select3
+history2 --> count2
+inquire --> workers_list
+inquire --> fee_standard
+
+bill_include_id_time_username_money
+```
+## User authority(auth)
+#### admin = 0
+#### worker = 1
+#### guard = 2
+#### cleaner = 3
+#### residents = 4
+## User data content
+
+
+```mermaid
+graph LR
+A[["admin"]]
+A --> A1(role: admin)
+A --> A2(username/password)
+
+B[[workers]]
+B ---> B1(role: workers)
+B ---> B2(username/password)
+B --> B3(work regions)
+B --> B4(patrol route)
+B --> B5(shift time)
+
+C[[residents]]
+C ---> C1(role: residents)
+C ---> C2(username/password)
+C --> C3(name)
+C --> C4(gender)
+C --> C5(address)
+C --> C6(phone number)
+C --> C7(fee record:link list)
+C --> C8(servant)
+C --> C9(region)
+C --> C10(parking space)
+C --> C11(problem list)
+C7 --> c1(fee times)
+C7 --> c2(owe fee times)
+C7 --> c4(trade ID)
+C7 --> c3(pointers)
+```
+
+need an analysis function to change some statues(fee or not) in database
 
 ## coding standard  
 The code should strive for beauty and elegance indirectly.  
@@ -50,8 +167,8 @@ Indentation should be done using 4 spaces instead of one tab.
 Reason: spaces have a consistent width of one character on all devices, while tabs depend on platform implementation. 
 
 #### braces and code blocks
-The left brace should direcly follow control statements or the defination of function.  
-The right brace should be one the same indentationlevel as the corresponding statement.  
+The left brace should directly follow control statements or the definition of function.  
+The right brace should be one of the same indentation level as the corresponding statement.  
 Indent inside the code block by adding 4 spaces.
 For example:
 ```C
@@ -74,7 +191,7 @@ The `<type>` should be one of the following:
 - feat: a new feature
 - fix: a bug fix
 - docs: documentation only changes
-- style: changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- style: changes that do not affect the meaning of the code (white-space, formatting, missing semicolons, etc.)
 - refactor: a code change that neither fixes a bug nor adds a feature
 - perf: a code change that improves performance
 - chore: changes to the build process or auxiliary tools and libraries such as documentation generation
