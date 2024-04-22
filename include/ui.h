@@ -4,7 +4,7 @@
 #include "../include/auth.h"
 #ifndef PROPERTY_UI_H
 #define PROPERTY_UI_H
-
+extern db database;
 
 
 typedef struct {
@@ -20,7 +20,7 @@ typedef struct {
 } LoginData;
 
 
-int main(int argc, char *argv[]);
+int login_main(int argc, char *argv[]);
 int admin_main(int argc, char *argv[]);
 int admin_work( int argc, char *argv[]);
 
