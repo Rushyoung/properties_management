@@ -8,7 +8,7 @@
 #include "../include/ui.h"
 db database;
 
-void jiexi(GtkWidget *widget, LoginData *a){
+void login_analysis(GtkWidget *widget, LoginData *a){
     a->auth = login_verify(a->the,a->username,a->password);
 }
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
 
     g_signal_connect(button, "clicked", G_CALLBACK(username_entry_callback), &a);
     g_signal_connect(button, "clicked", G_CALLBACK(password_entry_callback), &a);
-    g_signal_connect(button, "clicked", G_CALLBACK(jiexi), &a);
+    g_signal_connect(button, "clicked", G_CALLBACK(login_analysis), &a);
     gtk_table_attach(GTK_TABLE(table), button, 8, 10, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,5 , 5 );
 
