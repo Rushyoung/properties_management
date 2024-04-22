@@ -8,7 +8,7 @@
 #include "../include/ui.h"
 db database;
 
-void jiexi(GtkWidget *widget, LoginData *a){
+void login_analysis(GtkWidget *widget, LoginData *a){
     a->auth = login_verify(a->the,a->username,a->password);
 }
 
@@ -23,7 +23,7 @@ void login_change(GtkWidget *widget, gpointer user_data) {
                 NULL,
                 TEXT("The user is not existed."),  // 显示的文本
                 TEXT("WARNING!"),                // 标题
-                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
         );
     }
     if(auth == -2){
@@ -31,7 +31,7 @@ void login_change(GtkWidget *widget, gpointer user_data) {
                 NULL,
                 TEXT("The password is incorrect."),  // 显示的文本
                 TEXT("WARNING!"),                // 标题
-                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
         );
     }
     if(auth == 0){
@@ -113,7 +113,7 @@ int login_main(int argc, char *argv[]) {
 
     g_signal_connect(button, "clicked", G_CALLBACK(username_entry_callback), &a);
     g_signal_connect(button, "clicked", G_CALLBACK(password_entry_callback), &a);
-    g_signal_connect(button, "clicked", G_CALLBACK(jiexi), &a);
+    g_signal_connect(button, "clicked", G_CALLBACK(login_analysis), &a);
     gtk_table_attach(GTK_TABLE(table), button, 8, 10, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,5 , 5 );
 
