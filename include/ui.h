@@ -22,7 +22,6 @@ typedef struct {
 
 int main(int argc, char *argv[]);
 int admin_main(int argc, char *argv[]);
-int scoller_main(int argc, char *argv[]);
 int admin_work( int argc, char *argv[]);
 
 
