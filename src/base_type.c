@@ -363,7 +363,7 @@ void dict_free(dict* this) {
  * @param s 字符串
  * @return str 返回创建的字符串
  */
-str string(str s) {
+str str_static(str s) {
     static int cursor = 0;
     static str strings[STRING_EXTRA_LIMIT] = {};
     static int str_len[STRING_EXTRA_LIMIT] = {};
@@ -392,3 +392,14 @@ str string(str s) {
     cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
     return strings[ret];
 }
+
+
+/**
+ * @brief 统一字符串的创建方式
+*/
+#define string(s) ({_Generic((s),\
+    int: ({char _s[256]; sprintf(_s, "%d", s); str_static(_s);}),\
+    double: ({char _s[256]; sprintf(_s, "%lf", s); str_static(_s);}),\
+    float: ({char _s[256]; sprintf(_s, "%f", s); str_static(_s);}),\
+    char*: str_static((char*)(long long)s)\
+);})

@@ -69,6 +69,6 @@ void dict_free(dict*);
 
 #define STRING_EXTRA_LIMIT 128
 #define STRING_SHORT_STD   8
-str string(str);
+str str_static(str);
 
 #endif
