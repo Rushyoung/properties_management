@@ -50,12 +50,8 @@ void login_change(GtkWidget *widget, gpointer user_data) {
 }
 
 //创建登录页面
-int main(int argc, char *argv[]) {
+int login_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-    LoginData a;
-    database = init();
-    a.the = &database;
-
     //创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -64,7 +60,9 @@ int main(int argc, char *argv[]) {
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
-
+    LoginData a;
+    database = init();
+    a.the = &database;
 
     //创建一个10x10的布局容器
 
