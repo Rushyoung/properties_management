@@ -13,3 +13,15 @@ int login_verify(db* _database, str username, str password){
     return -2;
 }
 
+int add_user(db* _database, str username, str password, str auth){
+    if(database_query_by_column(_database, "account", "username", username) != -1){
+        return -1;
+    }
+    list data = list_create(sizeof(char*));
+    list_append(&data, username);
+    list_append(&data, password);
+    list_append(&data, auth);
+    database_insert_line(_database, "account", data);
+    list_free(&data);
+    return 0;
+}

@@ -16,8 +16,12 @@
 #include "include/auth.h"
 
 
-int _Atomicmain() {
+int _main() {
     db the = init();
+    str string1 = "user1";
+    str string2 = "1145141919";
+    str string3 = "3";
+    add_user(&the, &string1, &string2, &string3);
 /*    str string3 = "username";
     str string1 = "admin";
     str string2 = "000000";

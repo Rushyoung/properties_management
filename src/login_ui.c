@@ -23,7 +23,7 @@ void login_change(GtkWidget *widget, gpointer user_data) {
                 NULL,
                 TEXT("The user is not existed."),  // 显示的文本
                 TEXT("WARNING!"),                // 标题
-                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
         );
     }
     if(auth == -2){
@@ -31,7 +31,7 @@ void login_change(GtkWidget *widget, gpointer user_data) {
                 NULL,
                 TEXT("The password is incorrect."),  // 显示的文本
                 TEXT("WARNING!"),                // 标题
-                MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
         );
     }
     if(auth == 0){
