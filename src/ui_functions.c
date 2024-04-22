@@ -2,7 +2,7 @@
 // Created by Administrator on 2024/4/21.
 //
 
-#include <gtk/gtk.h>
+
 #include <stdio.h>
 #include "../include/ui.h"
 

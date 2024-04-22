@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include "../include/ui.h"
-db database;
+
 
 void login_analysis(GtkWidget *widget, LoginData *a){
     a->auth = login_verify(a->the,a->username,a->password);
@@ -61,7 +61,6 @@ int login_main(int argc, char *argv[]) {
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     LoginData a;
-    database = init();
     a.the = &database;
 
     //创建一个10x10的布局容器
