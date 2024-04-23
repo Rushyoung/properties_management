@@ -1,7 +1,10 @@
 //
 // Created by Administrator on 2024/4/20.
 //
+#include "../include/database.h"
+#include "../include/query.h"
 #include "../include/auth.h"
+
 #include <gtk/gtk.h>
 #ifndef PROPERTY_UI_H
 #define PROPERTY_UI_H
@@ -23,6 +26,8 @@ int admin_work( int argc, char *argv[]);
 int admin_resident(int argc, char *argv[]);
 int admin_fee(int argc, char *argv[]);
 int password_change(int argc, char *argv[]);
+int guard_main(int argc, char *argv[]);
+int cleaner_main(int argc, char *argv[]);
 
 typedef struct{
     const char *username;
