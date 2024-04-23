@@ -25,7 +25,8 @@ str database_query_by_column_to_column(db* _this, str _table, str src_column, st
 
 list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyword){
     list final = list_create(sizeof(int));
-    int tempnum = 0;
+    //test
+    /*int tempnum = 0;*/
     int answer = database_query_by_column(_this, _table, _column, keyword);
     if(answer == -1){
         list result = database_select_column(_this, _table, _column);
