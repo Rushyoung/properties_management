@@ -474,6 +474,7 @@ db init(){
         map_set(&resident, "region", 10);
         map_set(&resident, "room", 8);
         map_set(&resident, "fee", 16);
+        map_set(&resident, "last_time", 16);
         database_insert_table(&this, "resident", resident);
         map_free(&resident);
 
