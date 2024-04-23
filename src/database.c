@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base_type.h"
+
 /**
  * @brief 用于打开文件的宏
 */
@@ -365,7 +367,11 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
 
 
 /**
- * 
+ * @brief 在数据库中查找数据
+ * @param _db 数据库对象
+ * @param _table 表名
+ * @param _column 列名
+ * @param _value 值
 */
 int db_select_where(db* _db, const str _table, const str _column, const str _value){
     if(map_get(&(_db->_master), _table) == 0){

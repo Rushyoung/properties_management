@@ -17,4 +17,6 @@ if not "%errorlevel%"=="0" (
     echo Info: compile the project success
 )
 
+move property.exe ../
+cd ..
 property.exe

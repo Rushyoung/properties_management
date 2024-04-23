@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "base_type.h"
-
 #include "database.h"
-
 #include "auth.h"
 
 #include <gtk/gtk.h>
@@ -41,12 +42,19 @@ void init_create_database(){
     list admin = list_init(string("admin"), string("ttakods"), string("0"));
     db_insert_lin(&goal, "status", admin);
     list_free(&admin);
+
+    db_close(&goal);
 }
 
 int main() {
     gtk_init(NULL, NULL);
-    // set windows
-    login("username", "password");
+    // check if the database file do not exist
+    printf("Checking database file...\n");
+    if (access("data.db", F_OK) == -1){
+        init_create_database();
+    }
+    char username[16], password[16];
+    login(username, password);
 }
 
 void login(str username, str password){
@@ -54,7 +62,7 @@ void login(str username, str password){
     GObject *window;
 
     builder = gtk_builder_new();
-    gtk_builder_add_from_file (builder, "C:/Users/wujun/Desktop/propert/assets/login.ui", NULL);
+    gtk_builder_add_from_file (builder, "assets/login.ui", NULL);
 
     window  = gtk_builder_get_object (builder, "window");
 
