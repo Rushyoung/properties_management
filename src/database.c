@@ -1,4 +1,5 @@
 #ifndef DEBUG
+#include "base_type.h"
 #include "database.h"
 #endif
 
@@ -6,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base_type.h"
 
 /**
  * @brief 用于打开文件的宏
@@ -190,6 +190,7 @@ void db_insert_table(db* _db, const str _table, const map _columns){
 */
 void db_insert_lin(db* _db, const str _table, list _values){
     if(map_get(&(_db->_master), _table) == 0){
+        printf("error");
         return;
     }
     _file_safe_open(file_ptr, _db->_file_name, "rb+", );
@@ -259,7 +260,7 @@ void db_remove_lin(db* _db, const str _table, const int _oid){
     _file_safe_open(file_ptr, _db->_file_name, "rb+", );
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
-    _table_skip_to_position(file_ptr, 1, _oid);
+    _table_skip_to_position(file_ptr, 0, _oid);
     char format[256];
     sprintf(format, "%%%ds", info.lin_width);
     fprintf(file_ptr, format, "");
@@ -286,8 +287,8 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
         fclose(file_ptr);
         return NULL;
     }
-    _table_word_local(file_ptr, info, _column);
     fseek(file_ptr, info.head, SEEK_SET);
+    printf("%d, oid %d", col_position, _oid);
     _table_skip_to_position(file_ptr, col_position, _oid);
     char result[256];
     fscanf(file_ptr, "%s", result);
@@ -462,7 +463,7 @@ void db_update_lin(db* _db, const str _table, const int _oid, list _values){
         result_len += each_width;
     } 
     fseek(file_ptr, info.head, SEEK_SET);
-    _table_skip_to_position(file_ptr, 1, _oid); 
+    _table_skip_to_position(file_ptr, 0, _oid); 
     fprintf(file_ptr, "%s", result);
     fclose(file_ptr);
 }
@@ -581,7 +582,7 @@ static int _table_skip_to_position(FILE* _fp, const int _column, const int _oid)
     table_info info = table_get_info(_fp);
     fseek(_fp, info.start, SEEK_SET);
     fmove(_fp,2 + info.lin_width + 2);
-    for(int i=1; i<_column; i++){
+    for(int i=0; i<_column; i++){
         fscanf(_fp, "%d", &temp_int);
         lin_skip += temp_int;
     }
