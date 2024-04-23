@@ -19,9 +19,9 @@ int add_user(db* _database, str username, str password, str auth){
         return -1;
     }
     list data = list_create(sizeof(char*));
-    list_append(&data, username);
-    list_append(&data, password);
-    list_append(&data, _auth);
+    list_append(&data, &username);
+    list_append(&data, &password);
+    list_append(&data, &_auth);
     database_insert_line(_database, "account", data);
     list_free(&data);
     return 0;
@@ -37,10 +37,10 @@ int update_password(db* _database, str username, str new_password){
     return 0;
 }
 
-int add_guard(db* _database, str username, str password, str name, str region){
+int add_guard(db* _database, str username, str password, str name, str region, str time){
     str temp = "2";
-    if(add_user(_database, &username, &password, &temp) == -1) return -1;
-    list data = list_init(username, name, region);
+    if(add_user(_database, username, password, temp) == -1) return -1;
+    list data = list_init(username, name, region, time);
     database_insert_line(_database, "guard", data);
     return 0;
 }

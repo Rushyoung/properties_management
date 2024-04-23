@@ -123,6 +123,7 @@ void database_insert_line(db* _db, str _table, list values){
     for(int i = 0; i < info.column_count; i++){
         fscanf(fp, "%d", &width);
         sprintf(format, "%%%ds", width);
+        //test
         printf("here: %s\n", *(char**)list_get_ptr(&values, i+1));
         sprintf(insert_data + insert_len, format, list_get(char*, &values, i+1));
         insert_len += width;

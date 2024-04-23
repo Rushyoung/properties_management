@@ -16,7 +16,7 @@ int login_verify(db* _database, str username, str password);
  * */
 int add_user(db* _database, str username, str password, str auth);
 
-int add_guard(db* _database, str username, str password, str name, str region);
+int add_guard(db* _database, str username, str password, str name, str region, str time);
 
 
 #endif //PROPERTY_AUTH_H
