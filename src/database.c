@@ -469,7 +469,7 @@ db init(){
 
         map resident = map_create();
         map_set(&resident, "username", 16);
-        map_set(&resident, "name", 10);
+        map_set(&resident, "name", 16);
         map_set(&resident, "region", 10);
         map_set(&resident, "room", 8);
         map_set(&resident, "fee", 16);
@@ -478,8 +478,9 @@ db init(){
 
         map guard = map_create();
         map_set(&guard, "username", 16);
-        map_set(&guard, "name", 10);
+        map_set(&guard, "name", 16);
         map_set(&guard, "region", 10);
+        map_set(&guard, "work time", 16);
         database_insert_table(&this, "guard", guard);
         map_free(&guard);
 
