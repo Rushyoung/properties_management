@@ -38,7 +38,7 @@ int update_password(db* _database, str username, str new_password){
 }
 
 int add_guard(db* _database, str username, str password, str name, str region, str time){
-    str temp = "2";
+    str temp = "1";
     if(add_user(_database, username, password, temp) == -1) return -1;
     list data = list_init(username, name, region, time);
     database_insert_line(_database, "guard", data);
