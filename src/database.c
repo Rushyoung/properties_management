@@ -482,7 +482,7 @@ db init(){
         map_set(&guard, "username", 16);
         map_set(&guard, "name", 16);
         map_set(&guard, "region", 10);
-        map_set(&guard, "work time", 16);
+        map_set(&guard, "work_time", 16);
         database_insert_table(&this, "guard", guard);
         map_free(&guard);
 
