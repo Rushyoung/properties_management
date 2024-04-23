@@ -190,7 +190,6 @@ void db_insert_table(db* _db, const str _table, const map _columns){
 */
 void db_insert_lin(db* _db, const str _table, list _values){
     if(map_get(&(_db->_master), _table) == 0){
-        printf("error");
         return;
     }
     _file_safe_open(file_ptr, _db->_file_name, "rb+", );
@@ -288,7 +287,6 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
         return NULL;
     }
     fseek(file_ptr, info.head, SEEK_SET);
-    printf("%d, oid %d", col_position, _oid);
     _table_skip_to_position(file_ptr, col_position, _oid);
     char result[256];
     fscanf(file_ptr, "%s", result);
