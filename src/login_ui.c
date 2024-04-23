@@ -15,8 +15,6 @@ void login_analysis(GtkWidget *widget, LoginData *a){
 void login_change(GtkWidget *widget, gpointer user_data) {
     LoginData *data = (LoginData *) user_data;
     int auth = data->auth;
-    int argc = data->argc;
-    char **argv = data->argv;
     GtkWidget *window = data->window;
     if(auth == -1){
         MessageBox(
@@ -36,7 +34,7 @@ void login_change(GtkWidget *widget, gpointer user_data) {
     }
     if(auth == 0){
         gtk_widget_destroy(window);
-        admin_main(argc,argv);
+        admin_main(0,NULL);
     }
     if(auth == 1){
         

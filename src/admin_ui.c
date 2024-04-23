@@ -9,18 +9,20 @@
 
 void change_window1(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
-    int argc;
-    char **argv;
     gtk_widget_destroy(window);
-    admin_work(argc,argv);
+    admin_work(0,NULL);
 }
 
 void change_window2(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
-    int argc;
-    char **argv;
     gtk_widget_destroy(window);
-    admin_resident(argc,argv);
+    admin_resident(0,NULL);
+}
+
+void change_window3(GtkWidget *widget, gpointer widget1){
+    GtkWidget *window = widget1;
+    gtk_widget_destroy(window);
+    admin_fee(0,NULL);
 }
 
 //创建管理员页面
@@ -64,19 +66,17 @@ int admin_main(int argc, char *argv[]) {
     GtkWidget *file_menu_item = gtk_menu_item_new_with_label("选择您要执行的任务——");
     GtkWidget *file_menu = gtk_menu_new();
 
-    GtkWidget *open_item = gtk_menu_item_new_with_label("工人管理");
-    g_signal_connect(open_item, "activate", G_CALLBACK(change_window1), window);
+    GtkWidget *worker_item = gtk_menu_item_new_with_label("工人管理");
+    g_signal_connect(worker_item, "activate", G_CALLBACK(change_window1), window);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), worker_item);
 
+    GtkWidget *fee_item = gtk_menu_item_new_with_label("费用管理");
+    g_signal_connect(fee_item, "activate", G_CALLBACK(change_window3), window);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), fee_item);
 
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_item);
-
-    GtkWidget *save_item = gtk_menu_item_new_with_label("费用管理");
-    g_signal_connect(save_item, "activate", G_CALLBACK(destroy_window_callback), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_item);
-
-    GtkWidget *exit_item = gtk_menu_item_new_with_label("居民管理");
-    g_signal_connect(exit_item, "activate", G_CALLBACK(change_window2), window);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), exit_item);
+    GtkWidget *resident_item = gtk_menu_item_new_with_label("居民管理");
+    g_signal_connect(resident_item, "activate", G_CALLBACK(change_window2), window);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), resident_item);
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu_item);
@@ -110,7 +110,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
     GtkWidget *button = gtk_button_new_with_label("密码维护");
-    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    g_signal_connect(button, "clicked", G_CALLBACK(password_page), NULL);
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button), GTK_JUSTIFY_LEFT);
@@ -203,12 +203,6 @@ int get_worker(int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
-
-    GtkWidget *button2 = gtk_button_new_with_label("取消");
-    g_signal_connect(button2, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
     gtk_widget_show_all(window);
     gtk_main();
@@ -389,12 +383,6 @@ int get_resident(int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
 
-    GtkWidget *button2 = gtk_button_new_with_label("取消");
-    g_signal_connect(button2, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_table_attach(GTK_TABLE(table), button2, 3, 4, 5, 6,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
-
     gtk_widget_show_all(window);
     gtk_main();
     return 0;
@@ -490,7 +478,7 @@ int admin_resident(int argc, char *argv[]){
     return 0;
 }
 
-int admin_fee(){
+int admin_fee(int argc, char *argv[]){
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -504,4 +492,38 @@ int admin_fee(){
 
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
+
+    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
+                     GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
+
+    GtkWidget *lable = gtk_label_new("请设定收费金额：");
+    gtk_table_attach(GTK_TABLE(table), lable, 2, 3, 4, 5,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(lable), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *entry = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(entry), 20);
+    gtk_table_attach(GTK_TABLE(table), entry, 5, 7, 4, 5,
+                     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
+
+    GtkWidget *button = gtk_button_new_with_label("确定");
+    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    gtk_table_attach(GTK_TABLE(table), button, 12, 17, 8, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *button1 = gtk_button_new_with_label("返回上一级");
+    g_signal_connect(button1, "clicked", G_CALLBACK(page_change), window);
+    gtk_table_attach(GTK_TABLE(table), button1, 1, 3, 8, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *lable1 = gtk_label_new("当前页面：管理员-收费管理");
+    gtk_table_attach(GTK_TABLE(table), lable1, 10, 19, 3, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(lable1), GTK_JUSTIFY_LEFT);
+
+    gtk_widget_show_all(window);
+    gtk_main();
+    return 0;
 }
+

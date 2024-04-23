@@ -7,11 +7,8 @@
 #define PROPERTY_UI_H
 extern db database;
 
-
 typedef struct {
     int auth;
-    int argc;
-    char **argv;
     GtkWidget *window;
     GtkWidget *widget1;
     GtkWidget *widget2;
@@ -24,6 +21,8 @@ int login_main(int argc, char *argv[]);
 int admin_main(int argc, char *argv[]);
 int admin_work( int argc, char *argv[]);
 int admin_resident(int argc, char *argv[]);
+int admin_fee(int argc, char *argv[]);
+int password_change(int argc, char *argv[]);
 
 typedef struct{
     const char *username;
@@ -46,6 +45,7 @@ void username_entry_callback(GtkWidget *widget, LoginData * data);
 void password_entry_callback(GtkWidget *widget, LoginData * data);
 void entry_callback(GtkWidget *widget, gpointer entry);
 void widget_destory(GtkWidget *widget, gpointer data);
+void password_page(GtkWidget *widget, gpointer data);
 
 
 #endif //PROPERTY_UI_H
