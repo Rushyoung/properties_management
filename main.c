@@ -9,6 +9,8 @@
 
 #include <gtk/gtk.h>
 
+#include <windows.h>
+
 GtkBuilder *builder;
 GObject *window;
 char username[16], password[16];
@@ -109,11 +111,18 @@ void get_login_info(){
     strcpy(username, username_text);
     strcpy(password, password_text);
 
+    if(username[0] == '\0' || password[0] == '\0'){
+        printf("Please input username and password\n");
+        MessageBox(NULL, "Please input username and password", "warning", MB_OK);
+        return;
+    }
+
     db data = db_connect("data.db");
     int oid = db_select_where(&data, "status", "username", username);
 
     if(oid == -1){
         printf("User not found\n");
+        MessageBox(NULL, "Login error", "Error", MB_OK);
         db_close(&data);
         return;
     }
@@ -125,6 +134,7 @@ void get_login_info(){
         builder = NULL;
         window = NULL;
     }else{
+        MessageBox(NULL, "Login error", "Error", MB_OK);
         printf("Password error\n");
     }
     db_close(&data);
@@ -140,7 +150,8 @@ int get_user_auth(str username){
 }
 
 void call_admin(){
-    printf("Admin\n");
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "assets/admin.ui", NULL);
 }
 
 void call_worker(){
