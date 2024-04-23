@@ -22,7 +22,7 @@
 #define _table_word_check(fp, info, word) \
     int col_position = -1; \
     fseek((fp), (info).start, SEEK_SET); \
-    for(int i = 0; i < (count); i++){ \
+    for(int i = 0; i < (info).col_count; i++){ \
         char temp_str[256]; \
         fscanf((fp), "%s", temp_str); \
         if(strcmp(temp_str, (word)) == 0){ \
@@ -37,7 +37,7 @@
 #define _table_word_local(fp, info, word) \
     int col_before = 0, col_after = 0, col_local = 0; \
     fseek((fp), (info).start + (info).lin_width + 2, SEEK_SET); \
-    for(int i = 0; i < (count); i++){ \
+    for(int i = 0; i < (info).col_count; i++){ \
         int temp_int; \
         fscanf((fp), "%d", &temp_int); \
         if(i < col_position){ \
@@ -281,6 +281,7 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     table_info info = table_get_info(file_ptr);
     _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
+        fclose(file_ptr);
         return NULL;
     }
     _table_word_local(file_ptr, info, _column);
@@ -308,6 +309,7 @@ list db_select_col(db* _db, const str _table, const str _column){
     table_info info = table_get_info(file_ptr);
     _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
+        fclose(file_ptr);
         return list_create(void);
     }
     _table_word_local(file_ptr, info, _column);
@@ -357,6 +359,7 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
         fscanf(file_ptr, "%s", temp_str);
         dict_set(&result, result.keys[i], temp_str);
     }
+    fclose(file_ptr);
     return result;
 }
 
@@ -373,10 +376,11 @@ int db_select_where(db* _db, const str _table, const str _column, const str _val
     table_info info = table_get_info(file_ptr);
     _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
+        fclose(file_ptr);
         return 0;
     }
     _table_word_local(file_ptr, info, _column);
-    char result[256] = {}, first = '';
+    char result[256] = {}, first = ' ';
     fseek(file_ptr, info.start, SEEK_SET);
     fmove(file_ptr, (info.lin_width+2)*2);
     for(int oid=1; ; oid++){
@@ -387,6 +391,7 @@ int db_select_where(db* _db, const str _table, const str _column, const str _val
         fmove(file_ptr, col_before);
         fscanf(file_ptr, "%s", result);
         if(strcmp(result, _value) == 0){
+            fclose(file_ptr);
             return oid;
         }
         fmove(file_ptr, col_after+2);
@@ -413,6 +418,7 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
     table_info info = table_get_info(file_ptr);
     _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
+        fclose(file_ptr);
         return;
     }
     _table_word_local(file_ptr, info, _column);
