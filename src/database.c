@@ -17,6 +17,40 @@
 
 
 /**
+ * @brief 用于定位表头的宏
+*/
+#define _table_word_check(fp, info, word) \
+    int col_position = -1; \
+    fseek((fp), (info).start, SEEK_SET); \
+    for(int i = 0; i < (count); i++){ \
+        char temp_str[256]; \
+        fscanf((fp), "%s", temp_str); \
+        if(strcmp(temp_str, (word)) == 0){ \
+            col_position = i; \
+        } \
+    }
+
+
+/**
+ * @brief 用于定位前后的宏
+*/
+#define _table_word_local(fp, info, word) \
+    int col_before = 0, col_after = 0, col_local = 0; \
+    fseek((fp), (info).start + (info).lin_width + 2, SEEK_SET); \
+    for(int i = 0; i < (count); i++){ \
+        int temp_int; \
+        fscanf((fp), "%d", &temp_int); \
+        if(i < col_position){ \
+            col_before += temp_int; \
+        } else if(i > col_position){ \
+            col_after += temp_int; \
+        } else { \
+            col_local = temp_int; \
+        } \
+    } \
+
+
+/**
  * @brief 在文件中移动指定的字节数
  * @param _file 文件指针
  * @param _offset 移动的字节数
@@ -245,18 +279,11 @@ str db_select(db* _db, const str _table, const str _column, const int _oid){
     _file_safe_open(file_ptr, _db->_file_name, "rb", NULL);
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
-    int col_position = -1;
-    char column_name[256];
-    fseek(file_ptr, info.start, SEEK_SET);
-    for(int i = 1; i <= info.col_count; i++){
-        fscanf(file_ptr, "%s", column_name);
-        if(strcmp(column_name, _column) == 0){
-            col_position = i;
-        }
-    }
+    _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
         return NULL;
     }
+    _table_word_local(file_ptr, info, _column);
     fseek(file_ptr, info.head, SEEK_SET);
     _table_skip_to_position(file_ptr, col_position, _oid);
     char result[256];
@@ -279,36 +306,24 @@ list db_select_col(db* _db, const str _table, const str _column){
     _file_safe_open(file_ptr, _db->_file_name, "rb", list_create(void));
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
-    fseek(file_ptr, info.start, SEEK_SET);
-    int col_position = -1, lin_skip = 0;
-    char column_name[256];
-    for(int i = 0; i < info.col_count; i++){
-        fscanf(file_ptr, "%s", column_name);
-        if(strcmp(column_name, _column) == 0){
-            col_position = i;
-        }
-    }
+    _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
         return list_create(void);
-    } 
-    for(int i=0; i<col_position; i++){
-        int temp_int;
-        fscanf(file_ptr, "%d", &temp_int);
-        lin_skip += temp_int;
     }
+    _table_word_local(file_ptr, info, _column);
     char temp_char, temp_str[256];
     list result = list_create(str);
+    fseek(file_ptr, info.start, SEEK_SET);
+    fmove(file_ptr, (info.lin_width+2)*2);
     for(int oid=0; ; oid++){
-        fseek(file_ptr, info.start, SEEK_SET);
-        fmove(file_ptr, (info.lin_width+2)*2);
-        fmove(file_ptr, (info.lin_width+2)*oid);
         temp_char = fgetc(file_ptr);
         if(temp_char == '='){
             break;
         }
-        fmove(file_ptr, lin_skip);
+        fmove(file_ptr, col_before);
         fscanf(file_ptr, "%s", temp_str);
         list_append(&result, string(temp_str));
+        fmove(file_ptr, col_after+2);
     }
     fclose(file_ptr);
     return result;
@@ -347,6 +362,41 @@ dict db_select_lin(db* _db, const str _table, const int _oid){
 
 
 /**
+ * 
+*/
+int db_select_where(db* _db, const str _table, const str _column, const str _value){
+    if(map_get(&(_db->_master), _table) == 0){
+        return 0;
+    }
+    _file_safe_open(file_ptr, _db->_file_name, "rb", 0);
+    _table_skip_to_table(file_ptr, _table);
+    table_info info = table_get_info(file_ptr);
+    _table_word_check(file_ptr, info, _column);
+    if(col_position == -1){
+        return 0;
+    }
+    _table_word_local(file_ptr, info, _column);
+    char result[256] = {}, first = '';
+    fseek(file_ptr, info.start, SEEK_SET);
+    fmove(file_ptr, (info.lin_width+2)*2);
+    for(int oid=1; ; oid++){
+        fscanf(file_ptr, "%c", &first);
+        if(first == '='){
+            break;
+        }
+        fmove(file_ptr, col_before);
+        fscanf(file_ptr, "%s", result);
+        if(strcmp(result, _value) == 0){
+            return oid;
+        }
+        fmove(file_ptr, col_after+2);
+    }
+    fclose(file_ptr);
+    return -1;
+}
+
+
+/**
  * @brief 在数据库中更新一个数据
  * @param _db 数据库对象
  * @param _table 表名
@@ -361,26 +411,15 @@ void db_update(db* _db, const str _table, const str _column, const int _oid, con
     _file_safe_open(file_ptr, _db->_file_name, "rb+",);
     _table_skip_to_table(file_ptr, _table);
     table_info info = table_get_info(file_ptr);
-    int col_position = -1;
-    fseek(file_ptr, info.start, SEEK_SET);
-    char column_name[256];
-    for(int i = 1; i <= info.col_count; i++){
-        fscanf(file_ptr, "%s", column_name);
-        if(strcmp(column_name, _column) == 0){
-            col_position = i;
-        }
-    }
+    _table_word_check(file_ptr, info, _column);
     if(col_position == -1){
         return;
     }
-    int word_width;
-    for(int i = 0; i < col_position; i++){
-        fscanf(file_ptr, "%d", &word_width);
-    }
+    _table_word_local(file_ptr, info, _column);
     fseek(file_ptr, info.head, SEEK_SET);
     _table_skip_to_position(file_ptr, col_position, _oid);
     char format[16];
-    sprintf(format, "%%%ds", word_width);
+    sprintf(format, "%%%ds", col_local);
     fprintf(file_ptr, format, value);
     fclose(file_ptr);
 }
@@ -470,7 +509,7 @@ void db_vacuum(db* _db){
 /**
  * @brief 关闭数据库
  * @param _db 数据库对象
- */
+*/
 void db_close(db* _db){
     map_free(&(_db->_master));
 }
