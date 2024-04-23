@@ -175,7 +175,7 @@ void database_remove_line(db* _db, str _table, int line_no){
     }
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
-    jump_to_position(fp, 1, line_no);
+    jump_to_position(fp, 0, line_no);//1 to 0
     char format[256] = {};
     sprintf(format, "%%%ds", info.line_width);
     fprintf(fp, format, "");
@@ -440,6 +440,7 @@ int jump_to_position(FILE* fp, int column, int line){
     }
     fseek(fp, info.start, SEEK_SET);
     fp_move(fp, (info.line_width + 2) * (line - 1 + 2) + width_skip);
+    /*printf("%ld", ftell(fp)); //test*/
     return ftell(fp);
 }
 

@@ -23,7 +23,7 @@ str database_query_by_column_to_column(db* _this, str _table, str src_column, st
 }
 
 
-list database_wide_query(db* _this, str _table, str _column, str keyword){
+list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyword){
     list final = list_create(sizeof(int));
     int tempnum = 0;
     int answer = database_query_by_column(_this, _table, _column, keyword);
@@ -35,10 +35,23 @@ list database_wide_query(db* _this, str _table, str _column, str keyword){
                 answer = i;
                 list_append(&final, &i);
                 //test
-                tempnum++;
-                printf("%d\n", list_get(int, &final, tempnum));
+                /*tempnum++;
+                printf("%d\n", list_get(int, &final, tempnum));*/
             }
-
         }
     }
+    else{
+        list result = database_select_column(_this, _table, _column);
+        for (int i = 1; i <= result.length; i++) {
+            str temp = list_get(char*, &result, i);
+            if (strcmp(temp, keyword) == 0) {
+                answer = i;
+                list_append(&final, &i);
+                //test
+                /*tempnum++;
+                printf("%d\n", list_get(int, &final, tempnum));*/
+            }
+        }
+    }
+    return final;
 }
