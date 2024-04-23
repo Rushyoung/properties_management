@@ -15,7 +15,10 @@ typedef struct{
     void* data;
 } list;
 
+#define list_create_by_size(size) list_create(sizeof(size));
 list list_create(int);
+#define list_init(values, ...) ({typeof(values) _l[]={values, ##__VA_ARGS__}; list_init_by(sizeof(values), sizeof(_l)/sizeof(values), _l);})
+list list_init_by(int sizeof_type, int length, void* values);
 #define list_get(type, l, index) ({*(type*)list_get_ptr((l), (index));})
 void list_set(list*, int, void*);
 void* list_get_ptr(list* l, int index);

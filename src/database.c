@@ -476,13 +476,20 @@ db init(){
         database_insert_table(&this, "resident", resident);
         map_free(&resident);
 
-        map worker = map_create();
-        map_set(&worker, "username", 16);
-        map_set(&worker, "name", 10);
-        map_set(&worker, "content", 16);
-        map_set(&worker, "region", 10);
-        database_insert_table(&this, "worker", worker);
-        map_free(&worker);
+        map guard = map_create();
+        map_set(&guard, "username", 16);
+        map_set(&guard, "name", 10);
+        map_set(&guard, "region", 10);
+        database_insert_table(&this, "guard", guard);
+        map_free(&guard);
+
+        map content = map_create();
+        map_set(&content, "ID", 16);
+        map_set(&content, "work content", 32);
+        map_set(&content, "room", 16);
+        map_set(&content, "time", 16);
+        database_insert_table(&this, "content", content);
+        map_free(&content);
 
         map bill = map_create();
         map_set(&bill, "ID", 16);

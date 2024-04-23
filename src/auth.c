@@ -27,10 +27,20 @@ int add_user(db* _database, str username, str password, str auth){
     return 0;
 }
 
-
+/**
+ * @return: user do not existed -1
+ * */
 int update_password(db* _database, str username, str new_password){
     int line_no = database_query_by_column(_database, "account", "username", username);
     if(line_no == -1) return -1;
     database_update(_database, "account", "password", line_no, new_password);
+    return 0;
+}
+
+int add_guard(db* _database, str username, str password, str name, str region){
+    str temp = "2";
+    if(add_user(_database, &username, &password, &temp) == -1) return -1;
+    list data = list_init(username, name, region);
+    database_insert_line(_database, "guard", data);
     return 0;
 }

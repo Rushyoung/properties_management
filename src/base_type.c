@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define list_create_by_size(size) list_create(sizeof(size));
+
 
 list list_create(int sizeof_type){
     list l;
@@ -57,6 +57,17 @@ void list_append(list* l, void* _data){
     memcpy(l->data + l->type_size * l->length, _data, l->type_size);
     l->length++;
 }
+
+list list_init_by(int sizeof_type, int length, void* values){
+list l = list_create(sizeof_type);
+while(l.capacity < length){
+list_expand(&l);
+}
+l.length = length;
+memcpy(l.data, values, sizeof_type * length);
+return l;
+}
+
 
 void list_free(list* l){
     free(l->data);
