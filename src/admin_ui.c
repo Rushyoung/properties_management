@@ -3,7 +3,6 @@
 //
 
 #include <gtk/gtk.h>
-#include <stdio.h>
 #include <windows.h>
 #include "../include/ui.h"
 
@@ -114,6 +113,11 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *button3 = gtk_button_new_with_label("返回上一级");
+    g_signal_connect(button3, "clicked", G_CALLBACK(change_page), window);
+    gtk_table_attach(GTK_TABLE(table), button3, 1, 2, 7, 8,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     gtk_widget_show_all(window);
     gtk_main();

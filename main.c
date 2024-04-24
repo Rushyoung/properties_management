@@ -30,6 +30,6 @@ int main(int argc, char *argv[]) {
     string4 = "01";
     string5 = "19410614";
     add_guard(&database, string1, string2, string3, string4, string5);
-    //login_main(argc, argv);
+    login_main(argc, argv);
     return 0;
 }
