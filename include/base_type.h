@@ -19,6 +19,8 @@ void*list_get_ptr(list*, int);
 void list_append_ptr(list*, void*);
 void list_erase(list*, int);
 void list_expand(list*);
+void list_sort(list*, int(*)(const void*, const void*));
+void list_reverse(list*);
 void list_free(list*);
 #define list_create(type) ({list_create_by(sizeof(type));})
 #define list_init(values, ...) ({typeof(values) _l[]={values, ##__VA_ARGS__}; list_init_by(sizeof(values), sizeof(_l)/sizeof(values), _l);})
@@ -76,5 +78,9 @@ str str_static(str);
     float: ({char _s[256]; sprintf(_s, "%f", s); str_static(_s);}),\
     char*: str_static((char*)(long long)s)\
 );})
+
+int sort_as_int(const void*, const void*);
+int sort_as_str(const void*, const void*);
+int sort_as_double(const void*, const void*);
 
 #endif

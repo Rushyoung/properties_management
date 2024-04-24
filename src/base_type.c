@@ -103,6 +103,30 @@ void list_expand(list* this) {
 
 
 /**
+ * @brief 排序链表
+ * @param l 链表
+ * @param cmp 比较函数
+*/
+void list_sort(list* this, int(*cmp)(const void*, const void*)) {
+    qsort(this->_data, this->length, this->_type_size, cmp);
+}
+
+
+/**
+ * @brief 反转链表
+ * @param l 链表
+*/
+void list_reverse(list* this) {
+    void* temp = malloc(this->_type_size);
+    for(int i = 0; i < this->length / 2; i++){
+        memcpy(temp, this->_data + i * this->_type_size, this->_type_size);
+        memcpy(this->_data + i * this->_type_size, this->_data + (this->length - i - 1) * this->_type_size, this->_type_size);
+        memcpy(this->_data + (this->length - i - 1) * this->_type_size, temp, this->_type_size);
+    }
+    free(temp);
+}
+
+/**
  * @brief 释放链表
  * @param l 链表
 */
@@ -391,4 +415,18 @@ str str_static(str s) {
     int ret = cursor;
     cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
     return strings[ret];
+}
+
+
+/**
+ * @brief 内置排序函数
+*/
+int sort_as_int(const void* a, const void* b) {
+    return *(int*)a - *(int*)b;
+}
+int sort_as_str(const void* a, const void* b) {
+    return strcmp(*(str*)a, *(str*)b);
+}
+int sort_as_double(const void* a, const void *b){
+    return *(double*)a - *(double*)b;
 }
