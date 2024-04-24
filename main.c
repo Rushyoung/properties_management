@@ -90,13 +90,13 @@ void login(){
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "assets/login.ui", NULL);
     window  = gtk_builder_get_object(builder, "window");
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-
     GObject *login_button = gtk_builder_get_object(builder, "login_button");
+
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(login_button, "clicked", G_CALLBACK(get_login_info), NULL);
 
     //show the window
-    gtk_widget_show_all (GTK_WIDGET(window));
+    gtk_widget_show_all(GTK_WIDGET(window));
 
     gtk_main();
 }
@@ -129,8 +129,8 @@ void get_login_info(){
     str auth = db_select(&data, "status", "password", oid);
     if(strcmp(auth, password) == 0){
         printf("Login success\n");
-        //结束mainloop
-        gtk_main_quit();
+        //关闭窗口
+        gtk_widget_destroy(GTK_WIDGET(window));
         builder = NULL;
         window = NULL;
     }else{
@@ -150,8 +150,16 @@ int get_user_auth(str username){
 }
 
 void call_admin(){
+    printf("Admin\n");
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "assets/admin.ui", NULL);
+    if(builder == NULL){
+        printf("builder is NULL\n");
+    }
+    window  = gtk_builder_get_object(builder, "window");
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    gtk_widget_show_all(GTK_WIDGET(window));
+    gtk_main();
 }
 
 void call_worker(){
