@@ -7,6 +7,8 @@
 #include "database.h"
 #include "auth.h"
 
+#include "user_logic.h"
+
 #include <gtk/gtk.h>
 
 #include <windows.h>
@@ -150,14 +152,48 @@ int get_user_auth(str username){
 }
 
 void call_admin(){
-    printf("Admin\n");
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "assets/admin.ui", NULL);
-    if(builder == NULL){
-        printf("builder is NULL\n");
-    }
-    window  = gtk_builder_get_object(builder, "window");
+    window = gtk_builder_get_object(builder, "window");
+
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(
+        gtk_builder_get_object(builder, "query_but"),
+        "clicked", G_CALLBACK(admin_query_info), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "stati_but"), 
+        "clicked", G_CALLBACK(admin_statistic), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "find_but"),
+        "clicked", G_CALLBACK(admin_find_user), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "new_but"),
+        "clicked", G_CALLBACK(admin_add_user), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "change_but"),
+        "clicked", G_CALLBACK(admin_change_user), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "del_but"),
+        "clicked", G_CALLBACK(admin_del_user_password), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "back_but"),
+        "clicked", G_CALLBACK(admin_db_backup), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "rev_but"),
+        "clicked", G_CALLBACK(admin_db_restore), NULL
+    );
+    g_signal_connect(
+        gtk_builder_get_object(builder, "view_but"),
+        "clicked", G_CALLBACK(admin_db_view), NULL
+    );
+
     gtk_widget_show_all(GTK_WIDGET(window));
     gtk_main();
 }
