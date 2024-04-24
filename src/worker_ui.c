@@ -2,10 +2,9 @@
 // Created by 小灰灰 on 24-4-23.
 //
 
-//#include "include/database.h"
-//#include "include/query.h"
-//#include "include/auth.h"
+
 //#include "include/ui.h"
+/*
 #include "../include/database.h"
 #include <gtk/gtk.h>
 
@@ -20,6 +19,7 @@ void entry_callback(GtkWidget *widget, gpointer entry)
     entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
     printf("entry content:%s\n", entry_text);
 }
+*/
 
 //static void on_button3_clicked(GtkButton *button, gpointer user_data) {
 //    gtk_widget_show_all(user_data);
@@ -407,6 +407,7 @@ void widget_destory(GtkWidget *widget, gpointer data){
 //    refill_clist();
 //}
 
+/*
 
 #include <string.h>
 
@@ -483,4 +484,4 @@ void on_search_clicked(GtkWidget *button, gpointer user_data) {
     // 清空列表
     gtk_clist_clear(GTK_CLIST(user_data));
     refill_clist();
-}
+}*/

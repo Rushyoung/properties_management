@@ -7,8 +7,10 @@
 #include <windows.h>
 #include "../include/ui.h"
 
+extern password_data passwordData;
 
 void login_analysis(GtkWidget *widget, LoginData *a){
+    passwordData.username = a->username;
     a->auth = login_verify(a->the,a->username,a->password);
 }
 
@@ -36,15 +38,18 @@ void login_change(GtkWidget *widget, gpointer user_data) {
         gtk_widget_destroy(window);
         admin_main(0,NULL);
     }
-    if(auth == 1){
-        
-    }
-    if(auth == 2){
-
-    }
-    if(auth == 3){
-
-    }
+/*    if(auth == 1){
+        gtk_widget_destroy(window);
+        guard_main(0,NULL);
+    }*/
+/*    if(auth == 2){
+        gtk_widget_destroy(window);
+        cleaner_main(0,NULL);
+    }*/
+/*    if(auth == 3){
+        gtk_widget_destroy(window);
+        resident_main(0,NULL);
+    }*/
 }
 
 //创建登录页面
@@ -62,14 +67,10 @@ int login_main(int argc, char *argv[]) {
     a.the = &database;
 
     //创建一个10x10的布局容器
-
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window), table);
 
-
     //创建两个文本框
-
-
     GtkWidget *username_entry1 = gtk_entry_new();
     GtkWidget *password_entry1 = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(password_entry1), FALSE);
@@ -78,9 +79,6 @@ int login_main(int argc, char *argv[]) {
     GtkWidget *lable2 = gtk_label_new("密码：");
 
     //将文本框添加到布局容器中
-
-
-
     gtk_table_attach(GTK_TABLE(table), username_entry1, 6, 14, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(table), password_entry1, 6, 14, 6, 7,
@@ -90,8 +88,7 @@ int login_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), lable2, 4, 6, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-//创建一个标签
-
+    //创建一个标签
     GtkWidget *label = gtk_label_new("");
     gtk_table_attach(GTK_TABLE(table), label, 9, 10, 1, 2, GTK_FILL, GTK_FILL, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
@@ -106,6 +103,7 @@ int login_main(int argc, char *argv[]) {
     a.widget1 = username_entry1;
     a.widget2 = password_entry1;
     a.window = window;
+
     GtkWidget *button = gtk_button_new_with_label("登录");
 
     g_signal_connect(button, "clicked", G_CALLBACK(username_entry_callback), &a);
@@ -114,21 +112,14 @@ int login_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), button, 8, 10, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,5 , 5 );
 
-
-
     g_signal_connect(button, "clicked", G_CALLBACK(login_change), &a);
 
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-
-    //显示所有窗口部件
-
     gtk_widget_show_all(window);
-
-    //运行主循环
-
     gtk_main();
-
     return 0;
 }
+
+
