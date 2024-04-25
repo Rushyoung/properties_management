@@ -10,16 +10,19 @@
 //保洁页面
 int cleaner_main(int argc, char *argv[]){
     gtk_init(&argc, &argv);
+
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
+    gtk_window_set_title(GTK_WINDOW(window), "保洁界面");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
+    //将生成的窗口居中
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
 
     // 创建一个10x10的布局容器
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
+    //把容器添加到窗口中去
     gtk_container_add(GTK_CONTAINER(window), table);
 
     //创建6个标签
@@ -32,10 +35,11 @@ int cleaner_main(int argc, char *argv[]){
 
     //创建一个按钮
     GtkWidget *button = gtk_button_new_with_label("密码维护");
+    //绑定按钮事件，触发回调函数
     g_signal_connect(button, "clicked", G_CALLBACK(password_change), NULL);
 
 
-    //系统性定位
+    //对标签和按钮系统性定位
     gtk_table_attach(GTK_TABLE(table), label1_1, 2, 11, 2, 4,
                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(table), label1_2, 10, 18, 2, 4,
@@ -67,17 +71,16 @@ int cleaner_main(int argc, char *argv[]){
 
 
 //保安界面兼二级跳转
+#define COLUMN_ID    0//列索引
+#define COLUMN_NAME  1//列索引
+gboolean window1_opened = FALSE;//标记窗口1是否已打开
+gboolean window3_opened = FALSE;//标记窗口3是否已打开
 
-#define COLUMN_ID    0
-#define COLUMN_NAME  1
-gboolean window1_opened = FALSE;
-gboolean window3_opened = FALSE;
-
+//为window3的下拉菜单创建选项
 typedef struct {
     const gchar *text;
     int id;
 } MenuItem;
-
 MenuItem sort_options[] = {
         {"按最后一次缴费时间", 1},
         {"按居住的楼栋号", 2},
@@ -86,14 +89,19 @@ MenuItem sort_options[] = {
         {"按正序",5}
 };
 
+//记录选中的排列方式的ID
 static int last_selected_id = -1;
 
-//双击
+
+//window1中双击事件响应
 static void on_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data) {
+
+    //控件，可操作；树形数据结构
     GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
     GtkTreeIter iter;
 
-    // 确保路径有效，并从模型中获取对应行的迭代器
+    // 确保路径有效，并从模型中获取对应行的迭代器，如果能够成功获取到迭代器，则条件为真
+    //通过给定的模型（model）和路径（path），获取对应的迭代器（iter）
     if (gtk_tree_model_get_iter(model, &iter, path)) {
         int id;
         gtk_tree_model_get(model, &iter, COLUMN_ID, &id, -1);
@@ -107,42 +115,52 @@ static void on_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeV
 }
 
 
+//window1中删除按钮响应，user_data传入tree_view以获取该GtkTreeView控件的数据模型
 static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
     if (last_selected_id != -1) {
+
         GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(user_data));
         GtkTreeIter iter;
 
-        // 遍历模型，查找与last_selected_id匹配的行
+        // 获取模型中的第一个迭代器存在iter中
         gboolean found = gtk_tree_model_get_iter_first(model, &iter);
+        // 遍历模型，查找与last_selected_id匹配的行
         while (found) {
             int id;
             gtk_tree_model_get(model, &iter, COLUMN_ID, &id, -1);
 
             if (id == last_selected_id) {
                 // 找到了匹配的行，移除它
+                //将指定行从列表存储中删除，并释放相关资源
                 gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
                 break;
             }
-
+            //函数返回一个布尔值，如果成功找到下一个节点，则返回TRUE，否则返回FALSE。
+            // 当返回FALSE时，表示已经遍历完了树型模型中的所有节点。
             found = gtk_tree_model_iter_next(model, &iter);
         }
 
-        // 清零last_selected_id，表示已清除选中行
+        // 已清除选中行,重新标记为-1
         last_selected_id = -1;
 
-        // 重新排列剩余数据的COLUMN_ID
+        // 重新排列剩余数据的COLUMN_ID为正常顺序
         int new_id = 1;
+        //获取第一个迭代器
         found = gtk_tree_model_get_iter_first(model, &iter);
         while (found) {
+            //把当前迭代器列的值为COLUMU_ID的值设置为new_id
             gtk_list_store_set(GTK_LIST_STORE(model), &iter, COLUMN_ID, new_id++, -1);
+            //获取下一个迭代器
             found = gtk_tree_model_iter_next(model, &iter);
         }
 
     } else {
+        //单击或者未选中行时报错
         g_print("No row is currently selected.\n");
     }
 }
 
+//仅关闭窗口1，重新标记window1为未打开
 void close_window1_only(GtkWidget *window1) {
     gtk_widget_destroy(window1);
     window1=NULL;
@@ -150,9 +168,17 @@ void close_window1_only(GtkWidget *window1) {
     gtk_main();
 }
 
+//仅关闭窗口3，重新标记window3为未打开
+void close_window3_only(GtkWidget *window3) {
+    gtk_widget_destroy(window3);
+    window3=NULL;
+    window3_opened=FALSE;
+    gtk_main();
+}
+
+//创建window1
 GtkWidget *window1=NULL;
 static void generate_window1(void){
-
     // 创建主窗口
     window1 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_container_set_border_width(GTK_CONTAINER(window1), 10);
@@ -185,44 +211,39 @@ static void generate_window1(void){
     // 创建GtkTreeView并设置数据模型
     GtkWidget *tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
 
-    // 创建列
+    // 在列表视图等组件中渲染文本
     GtkCellRenderer *renderer_text = gtk_cell_renderer_text_new();
+
+    //创建列，添加到tree_view视图中
     GtkTreeViewColumn *column_id = gtk_tree_view_column_new_with_attributes("工作编号", renderer_text, "text", COLUMN_ID, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_id);
+
     GtkTreeViewColumn *column_name = gtk_tree_view_column_new_with_attributes("工作内容", renderer_text, "text", COLUMN_NAME, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_name);
 
-    // 为GtkTreeView添加“row-activated”信号处理器
+    // 为GtkTreeView添加“row-activated”信号处理器，即双击时获取其id
     g_signal_connect(tree_view, "row-activated", G_CALLBACK(on_row_activated), NULL);
 
-
     // 为了在窗口中正常显示，将GtkTreeView放入GtkScrolledWindow中，并设置固定大小
+    //数据过多时可进行滚轮滑动，没有父窗口
     GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_container_add(GTK_CONTAINER(scrolled_window), tree_view);
     gtk_widget_set_size_request(scrolled_window, 200, 200);
 
-    // 使用GtkVBox布局
+    // 使用GtkVBox布局，vbox->window1
     GtkWidget *vbox = gtk_vbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(window1), vbox);
 
-    // 创建一个空的顶部空间
-    GtkWidget *top_space = gtk_label_new("");
-    gtk_misc_set_alignment(GTK_MISC(top_space), 0.5, 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), top_space, FALSE, FALSE, 0);
-
-
-    // 添加GtkScrolledWindow
+    // 添加GtkScrolledWindow到VBox，即scrolled_window->vbox
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
-
+    //删除按键
     GtkWidget *delete_button = gtk_button_new_with_label("删除");
     g_signal_connect(delete_button, "clicked", G_CALLBACK(on_delete_button_clicked), tree_view);
 
-
-    // 创建一个HBox用于水平布局两个按钮
+    // 创建一个HBox用于水平布局按钮，delete_button->hbox->vbox
     GtkWidget *hbox = gtk_hbox_new(FALSE, 10);  // 设置间距为5
     gtk_box_pack_start(GTK_BOX(hbox), delete_button, FALSE, FALSE, 0);
-
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     // 显示窗口
@@ -230,19 +251,29 @@ static void generate_window1(void){
 };
 
 
+//下拉菜单排序选项
 
+//按最后一次缴费时间
 void on_paytime_activated(GtkMenuItem *item, gpointer user_data) {
     printf("Based on the last time of paying\n");
 }
+
+//按楼栋号
 void  on_building_activated(GtkMenuItem *item, gpointer user_data) {
     printf("Based on the region of the building\n");
 }
+
+//按名字
 void on_name_activated(GtkMenuItem *item, gpointer user_data) {
     printf("Based on the name of guards\n");
 }
+
+//按倒序
 void on_inverted_order_activated(GtkMenuItem *item, gpointer user_data){
     printf("Based on the inverted order\n");
 }
+
+//按顺序
 void on_sequence_activated(GtkMenuItem *item, gpointer user_data){
     printf("Based on the sequence\n");
 }
@@ -254,6 +285,7 @@ void parsing_data(int selected_id){
 }
 gchar *resident_data[6];
 
+//window3——下拉菜单
 void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
     const gchar *selected_text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
     int selected_id = -1;
@@ -291,15 +323,6 @@ void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
     } else {
         printf("Invalid selection. Could not find a matching ID.\n");
     }
-}
-
-
-
-void close_window3_only(GtkWidget *window3) {
-    gtk_widget_destroy(window3);
-    window3=NULL;
-    window3_opened=FALSE;
-    gtk_main();
 }
 
 size_t i;
@@ -460,7 +483,7 @@ int guard_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
+    gtk_window_set_title(GTK_WINDOW(window), "保安界面");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 

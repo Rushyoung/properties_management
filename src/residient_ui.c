@@ -163,7 +163,6 @@ int _main(int argc, char *argv[]) {
 
 
 
-
     clist = gtk_clist_new_with_titles(2, title);
     gtk_table_attach_defaults(GTK_TABLE(table), clist, 2, 18, 2, 9);
 
