@@ -107,7 +107,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
     gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
-    GtkWidget *button = gtk_button_new_with_label("修改维护");
+    GtkWidget *button = gtk_button_new_with_label("密码维护");
     g_signal_connect(button, "clicked", G_CALLBACK(password_page), NULL);
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
@@ -166,15 +166,10 @@ int get_worker(int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label3), GTK_JUSTIFY_LEFT);
 
-    GtkWidget *label4 = gtk_label_new(" 权限：");
-    gtk_table_attach(GTK_TABLE(table), label4, 0, 1, 3, 4,
+    GtkWidget *lable4 = gtk_label_new("区域：");
+    gtk_table_attach(GTK_TABLE(table), lable4, 0, 1, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(label4), GTK_JUSTIFY_LEFT);
-
-    GtkWidget *lable5 = gtk_label_new("区域：");
-    gtk_table_attach(GTK_TABLE(table), lable5, 0, 1, 4, 5,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(lable5), GTK_JUSTIFY_LEFT);
+    gtk_label_set_justify(GTK_LABEL(lable4), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry1 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 0, 1,
@@ -192,14 +187,9 @@ int get_worker(int argc, char *argv[]){
     gtk_entry_set_max_length(GTK_ENTRY(entry3), 10);
 
     GtkWidget *entry4 = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(table), entry4, 1, 2, 3, 4,
+    gtk_table_attach(GTK_TABLE(table), entry4, 1, 2, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry4), 6);
-
-    GtkWidget *entry5 = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(table), entry5, 1, 2, 4, 5,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry5), 10);
+    gtk_entry_set_max_length(GTK_ENTRY(entry4), 10);
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_worker_data), NULL);
@@ -217,6 +207,8 @@ void page_change2(GtkWidget *widget, gpointer data){
     gtk_widget_destroy(window);
     get_worker(0,NULL);
 }
+
+
 
 int admin_work( int argc, char *argv[]){
     gtk_init(&argc, &argv);
@@ -237,11 +229,26 @@ int admin_work( int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
-    GtkWidget *button1 = gtk_button_new_with_label("录入工人信息");
-    g_signal_connect(button1, "clicked", G_CALLBACK(page_change2), NULL);
-    gtk_table_attach(GTK_TABLE(table), button1, 2, 3, 4, 5,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *menubar2 = gtk_menu_bar_new();
+    gtk_container_add(GTK_CONTAINER(window), menubar2);
+
+    GtkWidget *file_menu_item2 = gtk_menu_item_new_with_label("录入工人信息");
+    GtkWidget *file_menu2 = gtk_menu_new();
+
+    GtkWidget *auth2_item = gtk_menu_item_new_with_label("保安");
+    g_signal_connect(auth2_item, "activate", G_CALLBACK(page_change2), window);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), auth2_item);
+
+    GtkWidget *auth3_item = gtk_menu_item_new_with_label("保洁");
+    g_signal_connect(auth3_item, "activate", G_CALLBACK(page_change2), window);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), auth3_item);
+
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item2), file_menu2);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar2), file_menu_item2);
+
+    gtk_table_attach(GTK_TABLE(table), menubar2, 2, 3, 4, 5,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+
 
     GtkWidget *button2 = gtk_button_new_with_label("工人信息查询");
     g_signal_connect(button2, "clicked", G_CALLBACK(destroy_window_callback), NULL);
