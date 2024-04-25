@@ -68,7 +68,6 @@ int admin_main(int argc, char *argv[]) {
     GtkWidget *worker_item = gtk_menu_item_new_with_label("工人管理");
     g_signal_connect(worker_item, "activate", G_CALLBACK(change_window1), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), worker_item);
-
     GtkWidget *fee_item = gtk_menu_item_new_with_label("费用管理");
     g_signal_connect(fee_item, "activate", G_CALLBACK(change_window3), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), fee_item);
@@ -108,7 +107,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
     gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
-    GtkWidget *button = gtk_button_new_with_label("密码维护");
+    GtkWidget *button = gtk_button_new_with_label("修改维护");
     g_signal_connect(button, "clicked", G_CALLBACK(password_page), NULL);
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
@@ -180,27 +179,27 @@ int get_worker(int argc, char *argv[]){
     GtkWidget *entry1 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 0, 1,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry1), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry1), 16);
 
     GtkWidget *entry2 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 1, 2,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry2), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry2), 16);
 
     GtkWidget *entry3 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry3, 1, 2, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry3), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry3), 10);
 
     GtkWidget *entry4 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry4, 1, 2, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry4), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry4), 6);
 
     GtkWidget *entry5 = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(table), entry5, 1, 2, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_entry_set_max_length(GTK_ENTRY(entry5), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry5), 10);
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_worker_data), NULL);
@@ -431,7 +430,7 @@ int admin_resident(int argc, char *argv[]){
     gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry1 = gtk_entry_new();
-    gtk_entry_set_max_length(GTK_ENTRY(entry1), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry1), 10);
     gtk_entry_set_text(GTK_ENTRY(entry1), "姓名：");
     g_signal_connect(entry1, "activate", G_CALLBACK(entry_callback), entry1);
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 5, 6,
@@ -444,7 +443,7 @@ int admin_resident(int argc, char *argv[]){
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry2 = gtk_entry_new();
-    gtk_entry_set_max_length(GTK_ENTRY(entry2), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry2), 16);
     gtk_entry_set_text(GTK_ENTRY(entry2), "用户名：");
     g_signal_connect(entry2, "activate", G_CALLBACK(entry_callback), entry2);
     gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 6, 7,
@@ -507,7 +506,7 @@ int admin_fee(int argc, char *argv[]){
     gtk_label_set_justify(GTK_LABEL(lable), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry = gtk_entry_new();
-    gtk_entry_set_max_length(GTK_ENTRY(entry), 20);
+    gtk_entry_set_max_length(GTK_ENTRY(entry), 16);
     gtk_table_attach(GTK_TABLE(table), entry, 5, 7, 4, 5,
                      GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
 
