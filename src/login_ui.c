@@ -46,10 +46,10 @@ void login_change(GtkWidget *widget, gpointer user_data) {
         gtk_widget_destroy(window);
         cleaner_main(0,NULL);
     }*/
-/*    if(auth == 3){
+    if(auth == 3){
         gtk_widget_destroy(window);
         resident_main(0,NULL);
-    }*/
+    }
 }
 
 //创建登录页面
