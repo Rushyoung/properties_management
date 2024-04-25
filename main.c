@@ -31,11 +31,19 @@ int main(int argc, char *argv[]) {
     string5 = "19410614";
     add_guard(&database, string1, string2, string3, string4, string5);
     update_password(&database, "mycomputerdad", "114514");
-    list result = database_qsort(&database, "account", "username");
-    printf("%s\n", list_get(char*, &result, 1));
-    printf("%s\n", list_get(char*, &result, 4));
-    printf("%s\n", list_get(char*, &result, 7));
-    login_main(argc, argv);
-
+    list_link_head result = database_qsort(&database, "account", "username");
+    struct list_link_node* cur = result.next;
+    printf("%s\n", list_get(char*, &(cur->data), 1));
+    cur = cur->next;
+    printf("%s\n", list_get(char*, &(cur->data), 1));
+    cur = cur->next;
+    printf("%s\n", list_get(char*, &(cur->data), 1));
+//    login_main(argc, argv);
+    string1 = "manba";
+    string2 = "000000";
+    string3 = "kobe";
+    string4 = "1d";
+    string5 =  "101";
+    add_residents(&database, string1, string2, string3, string4, string5);
     return 0;
 }
