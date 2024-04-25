@@ -294,9 +294,8 @@ temp_data da;
 temp_data *data = &da;
 
 //window3——解析数据
-list sort_data;
-char *resident_data[6];
-
+list_link_head result;
+char *resident_data[4];
 
 static int menu1_id=-1;
 static int menu2_id=-1;
@@ -336,26 +335,10 @@ void return22(GtkWidget *widget){
     data->j = 2;
 }
 
-
-
 static GtkWidget *entry;
 static GtkWidget *clist;
 static gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
 
-//struct Resident {
-//    char name[50];          // 姓名
-//    int building_number;    // 楼栋号
-//    int room_number;        // 房间号
-//    double payment_amount;  // 缴费费用
-//    // 可以添加其他字段，如最后一次缴费时间等
-//};
-//struct Resident residents[5]={
-//        {"张三", 1, 101, 1000.0},
-//        {"李四", 2, 201, 2000.0},
-//        {"王五", 3, 301, 3000.0},
-//        {"赵六", 4, 401, 4000.0},
-//        {"孙七", 5, 501, 5000.0}
-//};
 
 //window3——创建窗口3
 GtkWidget *window3 = NULL;
@@ -589,9 +572,10 @@ void on_button4_clicked(GtkButton *button, gpointer *user_data) {
 }
 
 
-int ga_main(int argc, char *argv[]) {
+int guard_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-
+    //temp
+    database = init();
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "保安界面");
@@ -681,77 +665,71 @@ void refill_clist() {
     printf("%d %d\n",m,n);
     if(n==2){
         if(m==1){
-            sort_data = database_qsort(&database, "resident","region");
-            for (i = 0; i < sort_data.length ; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                printf("%s\n", resident_data[0]);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort(&database, "resident","region");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
         else if(m==2){
-            sort_data=database_qsort(&database, "resident","name");
-            for (i = 0;i < sort_data.length ; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort(&database, "resident","name");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
             }
         }
         else{
-            sort_data=database_qsort(&database, "resident","paytime");
-            for (i = 0;i < sort_data.length ; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort(&database, "resident","fee");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
             }
         }
     }
     else{
         if(m==1){
-            sort_data=database_qsort_reverse(&database, "resident","region");
-            for (i = 0; i < sort_data.length; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort_reverse(&database, "resident","region");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
             }
         }
         else if(m==2){
-            sort_data=database_qsort_reverse(&database, "resident","name");
-            for (i = 0;i < sort_data.length ; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort_reverse(&database, "resident","name");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
             }
         }
         else{
-            sort_data=database_qsort_reverse(&database, "resident","paytime");
-            for (i = 0;i < sort_data.length ; i=i+6) {
-                resident_data[0] = list_get(char*, &sort_data,i+1);
-                resident_data[1] = list_get(char*, &sort_data,i+2);
-                resident_data[2] = list_get(char*, &sort_data,i+3);
-                resident_data[3] = list_get(char*, &sort_data,i+4);
-                resident_data[4] = list_get(char*, &sort_data,i+5);
-                resident_data[5] = list_get(char*, &sort_data,i+6);
+            result = database_qsort_reverse(&database, "resident","fee");
+            struct list_link_node* cur=result.next;
+            for (i = 0; i < result.length ; i++) {
+                resident_data[0] = list_get(char*, &(cur->data),2);
+                resident_data[1] = list_get(char*, &(cur->data),3);
+                resident_data[2] = list_get(char*, &(cur->data),4);
+                resident_data[3] = list_get(char*, &(cur->data),5);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
             }
         }
