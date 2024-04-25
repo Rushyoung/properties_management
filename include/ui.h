@@ -59,7 +59,7 @@ void widget_destory(GtkWidget *widget, gpointer data);
 void password_page(GtkWidget *widget, gpointer data);
 void change_page(GtkWidget *widget, gpointer data);
 char* get_time();
-char* print_time();
+int check_time(char* a);
 
 
 #endif //PROPERTY_UI_H
