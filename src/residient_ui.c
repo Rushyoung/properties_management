@@ -245,9 +245,6 @@ int resident(int argc, char *argv[]) {
 }
 
 
-void on_button_clicked(GtkWidget *widget, gpointer data) {
-    g_print("Button clicked!\n");
-}
 
 
 
@@ -297,7 +294,25 @@ static gchar *title[2] = {"工作人员列表","费用标准"};
 //}
 
 
-int p_main(int argc, char *argv[]) {
+
+void refill_clist_o() {
+
+}
+
+void on_worker_list_clicked(GtkWidget *widget, gpointer user_data) {
+    g_print("Button clicked!\n");
+    gtk_clist_clear(GTK_CLIST(user_data));
+    refill_clist_o();
+}
+
+void on_fee_standard_clicked(GtkWidget *widget, gpointer user_data) {
+    g_print("Button clicked!\n");
+    gtk_clist_clear(GTK_CLIST(user_data));
+    refill_clist_o();
+}
+
+
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口
@@ -310,20 +325,6 @@ int p_main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(window), table);
 
 
-    // 创建第一个按钮
-    GtkWidget *button1 = gtk_button_new_with_label("工作人员列表");
-    g_signal_connect(button1, "clicked", G_CALLBACK(on_button_clicked), NULL);
-    gtk_table_attach(GTK_TABLE(table), button1, 2, 9, 1, 2,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-
-    // 创建第二个按钮
-    GtkWidget *button2 = gtk_button_new_with_label("费用标准");
-    g_signal_connect(button2, "clicked", G_CALLBACK(on_button_clicked), NULL);
-    gtk_table_attach(GTK_TABLE(table), button2, 11, 18, 1, 2,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-
-
-
     clist = gtk_clist_new_with_titles(2, title);
     gtk_table_attach_defaults(GTK_TABLE(table), clist, 2, 18, 2, 9);
 
@@ -331,8 +332,17 @@ int p_main(int argc, char *argv[]) {
     gtk_clist_set_column_width(clist, 0, 260);
     gtk_clist_set_column_width(clist, 1, 260);
 
-//    g_signal_connect(button1, "clicked", G_CALLBACK(worker_list_callback), clist);
-//    g_signal_connect(button2, "clicked", G_CALLBACK(fee_standard_callback), clist);
+// 创建第一个按钮
+    GtkWidget *button1 = gtk_button_new_with_label("工作人员列表");
+    g_signal_connect(button1, "clicked", G_CALLBACK(on_worker_list_clicked), clist);
+    gtk_table_attach(GTK_TABLE(table), button1, 2, 9, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    // 创建第二个按钮
+    GtkWidget *button2 = gtk_button_new_with_label("费用标准");
+    g_signal_connect(button2, "clicked", G_CALLBACK(on_fee_standard_clicked), clist);
+    gtk_table_attach(GTK_TABLE(table), button2, 11, 18, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
 
     gtk_table_set_row_spacings(GTK_TABLE(table), 20);

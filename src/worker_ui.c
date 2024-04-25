@@ -7,6 +7,8 @@
 
 #include <gtk/gtk.h>
 
+size_t i;
+
 //保洁页面
 int cleaner_main(int argc, char *argv[]){
     gtk_init(&argc, &argv);
@@ -75,25 +77,12 @@ int cleaner_main(int argc, char *argv[]){
 #define COLUMN_NAME  1//列索引
 gboolean window1_opened = FALSE;//标记窗口1是否已打开
 gboolean window3_opened = FALSE;//标记窗口3是否已打开
+gboolean window4_opened = FALSE;//标记窗口4是否已打开
 
-//为window3的下拉菜单创建选项
-typedef struct {
-    const gchar *text;
-    int id;
-} MenuItem;
-MenuItem sort_options[] = {
-        {"按最后一次缴费时间", 1},
-        {"按居住的楼栋号", 2},
-        {"按姓名", 3},
-        {"按倒序",4},
-        {"按正序",5}
-};
-
-//记录选中的排列方式的ID
+//window1——记录选中的排列方式的ID
 static int last_selected_id = -1;
 
-
-//window1中双击事件响应
+//window1——window1中双击事件响应
 static void on_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data) {
 
     //控件，可操作；树形数据结构
@@ -115,7 +104,7 @@ static void on_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeV
 }
 
 
-//window1中删除按钮响应，user_data传入tree_view以获取该GtkTreeView控件的数据模型
+//window1——window1中删除按钮响应，user_data传入tree_view以获取该GtkTreeView控件的数据模型
 static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
     if (last_selected_id != -1) {
 
@@ -165,14 +154,6 @@ void close_window1_only(GtkWidget *window1) {
     gtk_widget_destroy(window1);
     window1=NULL;
     window1_opened=FALSE;
-    gtk_main();
-}
-
-//仅关闭窗口3，重新标记window3为未打开
-void close_window3_only(GtkWidget *window3) {
-    gtk_widget_destroy(window3);
-    window3=NULL;
-    window3_opened=FALSE;
     gtk_main();
 }
 
@@ -251,111 +232,142 @@ static void generate_window1(void){
 };
 
 
-//下拉菜单排序选项
+//window3——为window3的下拉菜单创建选项
+typedef struct {
+    const gchar *text;
+    int id;
+} MenuItem;
+MenuItem sort_options[] = {
+        {"按最后一次缴费时间", 1},
+        {"按居住的楼栋号", 2},
+        {"按姓名", 3},
+        {"按倒序",4},
+        {"按正序",5}
+};
+
+//window3——下拉菜单排序选项
+
+GtkWidget *file_menu_item1=NULL;
+GtkWidget *file_menu_item2=NULL;
+
+void update_menu_item_label(GtkWidget *menu_item, const gchar *new_label) {
+    gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menu_item))), new_label);
+}
 
 //按最后一次缴费时间
 void on_paytime_activated(GtkMenuItem *item, gpointer user_data) {
-    printf("Based on the last time of paying\n");
+    update_menu_item_label(file_menu_item1, "按最后一次缴费时间");
+    //    sort_data = database_qsort()
 }
 
 //按楼栋号
 void  on_building_activated(GtkMenuItem *item, gpointer user_data) {
+    update_menu_item_label(file_menu_item1, "按居住的楼栋号");
     printf("Based on the region of the building\n");
 }
 
 //按名字
 void on_name_activated(GtkMenuItem *item, gpointer user_data) {
+    update_menu_item_label(file_menu_item1, "按名字");
     printf("Based on the name of guards\n");
 }
 
 //按倒序
 void on_inverted_order_activated(GtkMenuItem *item, gpointer user_data){
+    update_menu_item_label(file_menu_item2, "按倒序");
     printf("Based on the inverted order\n");
 }
 
 //按顺序
 void on_sequence_activated(GtkMenuItem *item, gpointer user_data){
+    update_menu_item_label(file_menu_item2, "按顺序");
     printf("Based on the sequence\n");
 }
 
+
+typedef struct {
+    int i;
+    int j;
+}temp_data;
+
+temp_data da;
+temp_data *data = &da;
+
+//window3——解析数据
 list sort_data;
-// 解析数据
-void parsing_data(int selected_id){
-    sort_data = database_qsort(&database, "resident","last_time");
-}
-gchar *resident_data[6];
+char *resident_data[6];
 
-//window3——下拉菜单
-void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
-    const gchar *selected_text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
-    int selected_id = -1;
 
-    for (size_t i = 0; i < sizeof(sort_options) / sizeof(sort_options[0]); ++i) {
-        if (strcmp(selected_text, sort_options[i].text) == 0) {
-            selected_id = sort_options[i].id;
-            break;
-        }
-    }
+static int menu1_id=-1;
+static int menu2_id=-1;
 
-    if (selected_id != -1) {
-        printf("Selected option with ID: %d\n", selected_id);
-        parsing_data(selected_id);
-        // 根据选中的 ID 调用相应的排序函数或其他操作
-        switch (selected_id) {
-            case 1:
-                on_paytime_activated(NULL,NULL);
-                break;
-            case 2:
-                on_building_activated(NULL, NULL);
-                break;
-            case 3:
-                on_name_activated(NULL, NULL);
-                break;
-            case 4:
-                on_inverted_order_activated(NULL, NULL);
-                break;
-            case 5:
-                on_sequence_activated(NULL, NULL);
-                break;
-            default:
-                printf("error");
-        }
-    } else {
-        printf("Invalid selection. Could not find a matching ID.\n");
-    }
+//仅关闭窗口3，重新标记window3为未打开
+void close_window3_only(GtkWidget *window3) {
+    gtk_widget_destroy(window3);
+    window3=NULL;
+    window3_opened=FALSE;
+    menu1_id=-1;
+    menu2_id=-1;
+    gtk_main();
 }
 
-size_t i;
+void on_combobox_changed() {
+    printf("%d %d\n", menu1_id,menu2_id);
+}
+
+
+void return11(GtkWidget *widget){
+    data->i = 1;
+}
+
+void return12(GtkWidget *widget){
+    data->i = 2;
+}
+
+void return13(GtkWidget *widget){
+    data->i = 3;
+}
+
+void return21(GtkWidget *widget){
+    data->j = 1;
+}
+
+void return22(GtkWidget *widget){
+    data->j = 2;
+}
+
+
 
 static GtkWidget *entry;
 static GtkWidget *clist;
 static gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
 
-struct Resident {
-    char name[50];          // 姓名
-    int building_number;    // 楼栋号
-    int room_number;        // 房间号
-    double payment_amount;  // 缴费费用
-    // 可以添加其他字段，如最后一次缴费时间等
-};
-struct Resident residents[5]={
-        {"张三", 1, 101, 1000.0},
-        {"李四", 2, 201, 2000.0},
-        {"王五", 3, 301, 3000.0},
-        {"赵六", 4, 401, 4000.0},
-        {"孙七", 5, 501, 5000.0}
-};
+//struct Resident {
+//    char name[50];          // 姓名
+//    int building_number;    // 楼栋号
+//    int room_number;        // 房间号
+//    double payment_amount;  // 缴费费用
+//    // 可以添加其他字段，如最后一次缴费时间等
+//};
+//struct Resident residents[5]={
+//        {"张三", 1, 101, 1000.0},
+//        {"李四", 2, 201, 2000.0},
+//        {"王五", 3, 301, 3000.0},
+//        {"赵六", 4, 401, 4000.0},
+//        {"孙七", 5, 501, 5000.0}
+//};
+
+//window3——创建窗口3
 GtkWidget *window3 = NULL;
 static void generate_window3(void) {
-    //二级界面_3
     window3 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window3), "业主账单查询");
     gtk_window_set_default_size(GTK_WINDOW(window3), 600, 400);
     g_signal_connect(G_OBJECT(window3), "destroy", G_CALLBACK(close_window3_only), NULL);
-
+    //生成在屏幕中央
     gtk_window_set_position(GTK_WINDOW(window3), GTK_WIN_POS_CENTER);
 
-    // 创建一个16x10的布局容器
+    // 创建一个10x20的布局容器
     GtkWidget *table3 = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window3), table3);
 
@@ -374,60 +386,98 @@ static void generate_window3(void) {
     gtk_table_attach(GTK_TABLE(table3), label4, 14, 17, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-
-    GtkWidget *menubar = gtk_menu_bar_new();
-    gtk_container_add(GTK_CONTAINER(window3), menubar);
+    // 创建菜单，并添加到窗口
+    GtkWidget *menubar1 = gtk_menu_bar_new();
+    gtk_container_add(GTK_CONTAINER(window3), menubar1);
 
     // 创建“排列方式”菜单项及其子菜单项
-    GtkWidget *combo = gtk_combo_box_new_text();
+    GtkWidget *combo1 = gtk_combo_box_new_text();
 
     //下拉菜单
-    for (size_t i = 0; i < sizeof(sort_options) / sizeof(sort_options[0]); ++i) {
-        gtk_combo_box_append_text(GTK_COMBO_BOX(combo), sort_options[i].text);
+    for (size_t i = 0; i < 3; ++i) {
+        gtk_combo_box_append_text(GTK_COMBO_BOX(combo1), sort_options[i].text);
     }
 
-
     // 连接“changed”信号处理程序，根据需要实现相应的排序逻辑
-    g_signal_connect(combo, "changed", G_CALLBACK(on_combobox_changed), NULL);
+    g_signal_connect(combo1, "changed", G_CALLBACK(on_combobox_changed), NULL);
+
+    // 创建“排列方式”菜单项，并将 combo1 添加到其右侧
+    file_menu_item1 = gtk_menu_item_new_with_mnemonic("排列方式");
+    gtk_container_add(GTK_CONTAINER(file_menu_item1), combo1);
+    gtk_misc_set_alignment(GTK_MISC(combo1), 0.0, 0.5);
+    gtk_widget_show(combo1);
+    GtkWidget *file_menu1 = gtk_menu_new();
 
     // 将组合框添加到表格
-    gtk_table_attach_defaults(GTK_TABLE(table3), combo, 0, 6, 0, 1);
-
-    // 将输入框添加到表格
-    gtk_table_attach_defaults(GTK_TABLE(table3), entry, 6, 14, 0, 1);
-
-
-    GtkWidget *file_menu_item = gtk_menu_item_new_with_label("排列方式");
-    GtkWidget *file_menu = gtk_menu_new();
+    // 将 combo1 设置为 file_menu_item1 的子菜单
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item1), combo1);
 
     GtkWidget *building_item = gtk_menu_item_new_with_label("按居住的楼栋号");
+    g_signal_connect(building_item, "activate", G_CALLBACK(return11), NULL);
     g_signal_connect(building_item, "activate", G_CALLBACK(on_building_activated), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), building_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu1), building_item);
 
     GtkWidget *name_item = gtk_menu_item_new_with_label("按姓名");
+    g_signal_connect(name_item, "activate", G_CALLBACK(return12), NULL);
     g_signal_connect(name_item, "activate", G_CALLBACK(on_name_activated), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), name_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu1), name_item);
 
     GtkWidget *paytime_item = gtk_menu_item_new_with_label("按最后一次缴费时间");
+    g_signal_connect(paytime_item, "activate", G_CALLBACK(return13), NULL);
     g_signal_connect(paytime_item, "activate", G_CALLBACK(on_paytime_activated), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), paytime_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu1), paytime_item);
+
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item1), file_menu1);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar1), file_menu_item1);
+    gtk_table_attach(GTK_TABLE(table3), menubar1, 1, 6,1 , 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+
+
+    // 创建“排列方式”菜单项及其子菜单项
+    GtkWidget *combo2 = gtk_combo_box_new_text();
+
+    //下拉菜单
+    for (size_t i = 3; i < 5; ++i) {
+        gtk_combo_box_append_text(GTK_COMBO_BOX(combo2), sort_options[i].text);
+    }
+
+    // 连接“changed”信号处理程序，根据需要实现相应的排序逻辑
+    g_signal_connect(combo2, "changed", G_CALLBACK(on_combobox_changed), NULL);
+
+
+// 创建“正序倒序”菜单项，并将 combo2 添加到其右侧
+    file_menu_item2 = gtk_menu_item_new_with_mnemonic("正序倒序");
+    gtk_container_add(GTK_CONTAINER(file_menu_item2), combo2);
+    gtk_misc_set_alignment(GTK_MISC(combo2), 0.5, 1.0);
+    gtk_widget_show(combo2);
+    GtkWidget *file_menu2 = gtk_menu_new();
+
+    // 将组合框添加到表格
+    // 将 combo2 设置为 file_menu_item2 的子菜单
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item2), combo2);
+
 
     GtkWidget *inverted_order_item = gtk_menu_item_new_with_label("按倒序");
+    g_signal_connect(inverted_order_item, "activate", G_CALLBACK(return21), NULL);
     g_signal_connect(inverted_order_item, "activate", G_CALLBACK(on_inverted_order_activated), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), inverted_order_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), inverted_order_item);
 
     GtkWidget *sequence_item = gtk_menu_item_new_with_label("按顺序");
+    g_signal_connect(sequence_item, "activate", G_CALLBACK(return22), NULL);
     g_signal_connect(sequence_item, "activate", G_CALLBACK(on_sequence_activated), NULL);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), sequence_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), sequence_item);
 
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item2), file_menu2);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar1), file_menu_item2);
 
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu_item);
 
 
     //输入框
     entry = gtk_entry_new();
     gtk_table_attach_defaults(GTK_TABLE(table3), entry, 6, 14, 1, 3);
+    // 将输入框添加到表格
+    gtk_table_attach_defaults(GTK_TABLE(table3), entry, 6, 14, 0, 1);
 
 
     GtkWidget *button = gtk_button_new_with_label("搜索");
@@ -441,7 +491,7 @@ static void generate_window3(void) {
 
 
     clist = gtk_clist_new_with_titles(4, title);
-    gtk_table_attach_defaults(GTK_TABLE(table3), clist, 2, 17, 4, 12);
+    gtk_table_attach_defaults(GTK_TABLE(table3), clist, 2, 17, 4, 9);
 
     //调节4个title的位置
     gtk_clist_set_column_width(clist, 0, 80);
@@ -457,6 +507,61 @@ static void generate_window3(void) {
 
 }
 
+
+
+//仅关闭窗口4，重新标记window4为未打开
+void close_window4_only(GtkWidget *window4) {
+    gtk_widget_destroy(window4);
+    window4=NULL;
+    window4_opened=FALSE;
+    gtk_main();
+}
+
+
+//window4——创建window4
+GtkWidget *window4=NULL;
+static void generate_window4(void) {
+    window4 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window4), "未缴费用户查询");
+    gtk_window_set_default_size(GTK_WINDOW(window4), 600, 400);
+    g_signal_connect(G_OBJECT(window4), "destroy", G_CALLBACK(close_window4_only), window4);
+
+    gtk_window_set_position(GTK_WINDOW(window4), GTK_WIN_POS_CENTER);
+
+    // 创建一个10x10的布局容器
+    GtkWidget *table4 = gtk_table_new(12, 20, FALSE);
+    gtk_container_add(GTK_CONTAINER(window4), table4);
+
+    char *str[3]={"1","2","3"};
+    GtkWidget *label1 = gtk_label_new("用户姓名");
+    GtkWidget *label2 = gtk_label_new("楼栋号");
+    GtkWidget *label3 = gtk_label_new("房间号");
+    GtkWidget *label4 = gtk_label_new(str[0]);
+    GtkWidget *label5 = gtk_label_new(str[1]);
+    GtkWidget *label6 = gtk_label_new(str[2]);
+
+    gtk_table_attach(GTK_TABLE(table4), label1, 2, 10, 2, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table4), label2, 2, 10, 5, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table4), label3, 2, 10, 8, 10,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table4), label4, 11, 18, 2, 4,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table4), label5, 11, 18, 5, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table4), label6, 11, 18, 8, 10,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+
+
+    gtk_table_set_row_spacings(GTK_TABLE(table4), 30);
+    gtk_table_set_col_spacings(GTK_TABLE(table4), 30);
+
+    // 显示所有窗口部件
+    gtk_widget_show_all(window4);
+}
+
 void (*generate_window1_ptr)(void)=generate_window1;
 void on_button1_clicked(GtkButton *button, gpointer *user_data) {
     if (!window1_opened&&!window3_opened) {
@@ -468,19 +573,25 @@ void on_button1_clicked(GtkButton *button, gpointer *user_data) {
 
 void (*generate_window3_ptr)(void) = generate_window3;
 void on_button3_clicked(GtkButton *button, gpointer *user_data) {
-    if (!window3_opened&&!window1_opened) {
+    if (!window3_opened&&!window1_opened&&!window4_opened) {
         window3_opened = TRUE;
         generate_window3();
     }
 }
 
-static void generate_windows3(){
-    GtkWidget *window3=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+void (*generate_window4_ptr)(void) = generate_window4;
+void on_button4_clicked(GtkButton *button, gpointer *user_data) {
+    if (!window4_opened&&!window3_opened&&!window1_opened) {
+        window4_opened = TRUE;
+        generate_window4();
+    }
 }
 
 
-int guard_main(int argc, char *argv[]) {
+int ga_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
+
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "保安界面");
@@ -509,6 +620,8 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *button1 = gtk_button_new_with_label("完成业主报修");
     GtkWidget *button2 = gtk_button_new_with_label("密码维护");
     GtkWidget *button3 = gtk_button_new_with_label("业主账单查询");
+    GtkWidget *button4 = gtk_button_new_with_label("未缴费用户查询");
+
 
     //系统定位
     gtk_table_attach(GTK_TABLE(table1), label1_1, 2, 11, 2, 5,
@@ -533,11 +646,13 @@ int guard_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
 
-    gtk_table_attach(GTK_TABLE(table1), button1, 12, 17, 5, 8,
+    gtk_table_attach(GTK_TABLE(table1), button1, 12, 17, 5, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table1), button2, 12, 17, 8, 11,
+    gtk_table_attach(GTK_TABLE(table1), button2, 12, 17, 7, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table1), button3, 12, 17, 11, 14,
+    gtk_table_attach(GTK_TABLE(table1), button3, 12, 17, 9, 11,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table1), button4, 12, 17, 11, 13,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     gtk_table_set_row_spacings(GTK_TABLE(table1), 30);
@@ -547,6 +662,7 @@ int guard_main(int argc, char *argv[]) {
     g_signal_connect(button1, "clicked", G_CALLBACK(on_button1_clicked), window);
     g_signal_connect(button2, "clicked", G_CALLBACK(password_change), NULL);
     g_signal_connect(button3, "clicked", G_CALLBACK(on_button3_clicked), window);
+    g_signal_connect(button4, "clicked", G_CALLBACK(on_button4_clicked), window);
 
 
     // 显示所有窗口部件
@@ -555,20 +671,97 @@ int guard_main(int argc, char *argv[]) {
     gtk_main();
 }
 
+
 void refill_clist() {
-    for (i = 0; ; i=i+6) {
-        resident_data[0] = list_get(char*, &sort_data,i+1);
-        resident_data[1] = list_get(char*, &sort_data,i+2);
-        resident_data[2] = list_get(char*, &sort_data,i+3);
-        resident_data[3] = list_get(char*, &sort_data,i+4);
-        resident_data[4] = list_get(char*, &sort_data,i+5);
-        resident_data[5] = list_get(char*, &sort_data,i+6);
-        gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+    printf("YES\n");
+    temp_data *a = (temp_data *) data;
+    int m=a->i;
+    int n=a->j;
+    int i,j;
+    printf("%d %d\n",m,n);
+    if(n==2){
+        if(m==1){
+            sort_data = database_qsort(&database, "resident","region");
+            for (i = 0; i < sort_data.length ; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                printf("%s\n", resident_data[0]);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
+        else if(m==2){
+            sort_data=database_qsort(&database, "resident","name");
+            for (i = 0;i < sort_data.length ; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
+        else{
+            sort_data=database_qsort(&database, "resident","paytime");
+            for (i = 0;i < sort_data.length ; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
+    }
+    else{
+        if(m==1){
+            sort_data=database_qsort_reverse(&database, "resident","region");
+            for (i = 0; i < sort_data.length; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
+        else if(m==2){
+            sort_data=database_qsort_reverse(&database, "resident","name");
+            for (i = 0;i < sort_data.length ; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
+        else{
+            sort_data=database_qsort_reverse(&database, "resident","paytime");
+            for (i = 0;i < sort_data.length ; i=i+6) {
+                resident_data[0] = list_get(char*, &sort_data,i+1);
+                resident_data[1] = list_get(char*, &sort_data,i+2);
+                resident_data[2] = list_get(char*, &sort_data,i+3);
+                resident_data[3] = list_get(char*, &sort_data,i+4);
+                resident_data[4] = list_get(char*, &sort_data,i+5);
+                resident_data[5] = list_get(char*, &sort_data,i+6);
+                gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            }
+        }
     }
 }
 
+
 void on_search_clicked(GtkWidget *button, gpointer user_data) {
     // 清空列表
+    printf("YES\n");
     gtk_clist_clear(GTK_CLIST(user_data));
     refill_clist();
 }
