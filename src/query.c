@@ -154,3 +154,34 @@ int qsort_compare(const void* a, const void* b){
     sort_struct* B = (sort_struct*)b;
     return strcmp(A->key, B->key);
 }
+
+list_link_head work_content_query(db* _database){
+    fopen(_database->file_name, "rb");
+
+}
+
+
+
+list user_info_query(db* _database, str username){
+    int auth = atoi(database_query_by_column_to_column(_database, "account", "username", username, "auth"));
+    list result;
+    switch (auth) {
+        case 1:
+            list overtime = check_pay(_database);
+            char over_time[10];
+            sprintf(over_time, "%d", overtime.length);
+            result = list_init(database_query_by_column_to_column(_database, "guard","username", username, "name"),
+                                    database_query_by_column_to_column(_database, "guard","username", username, "region"),
+                                    database_query_by_column_to_column(_database, "guard","username", username, "work_time"),
+                                    over_time);
+            return result;
+        case 3:
+            result = list_init(database_query_by_column_to_column(_database, "resident","username", username, "name"),
+                                    database_query_by_column_to_column(_database, "resident","username", username, "region"),
+                                    database_query_by_column_to_column(_database, "resident","username", username, "room"),
+                                    database_query_by_column_to_column(_database, "resident","username", username, "fee"));
+            return result;
+    }
+}
+
+

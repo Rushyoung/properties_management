@@ -57,6 +57,8 @@ int database_restore(db* _database);
 void copy_file(const char *src, const char *dst);
 
 
+int count_line(FILE* fp);
+
 int skip_to_next_table(FILE*);
 int jump_to_table(FILE *_fp, str _table);
 int jump_to_position(FILE*, int, int);

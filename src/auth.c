@@ -2,6 +2,7 @@
 // Created by 小小喵姬 on 2024/4/20.
 //
 #include "../include/query.h"
+#include "../include/ui.h"
 #include <stdlib.h>
 int login_verify(db* _database, str username, str password){
     int line_no = database_query_by_column(_database, "account", "username", username);
@@ -65,20 +66,60 @@ int add_cleaner(db* _database, str username, str password, str name, str region,
 void set_fee(db* _database, str fee){
     FILE* fp = fopen(_database->file_name, "rb+");
     jump_to_table(fp, "resident");
-    table_info info = table_info_get(fp);
-    fseek(fp, info.start, SEEK_SET);
-    fp_move(fp, (info.line_width+2) * 2);
-    int line_count = 0;
-    char c;
-    while(1){
-        fp_move(fp, info.line_width + 2);
-        line_count++;
-        if((c = fgetc(fp)) == '=') break;
-        else{
-            fp_move(fp, -1);
-        }
-    }
+    int line_count = count_line(fp);
     for(int i = 1; i <= line_count; i++){
         database_update(_database, "resident", "fee", i, fee);
     }
+}
+
+
+
+
+void problem_report(db* database, str username, str content){
+    int line_no = database_query_by_column(database, "resident", "username", username);
+    FILE* fp = fopen(database->file_name, "rb+");
+    jump_to_table(fp, "content");
+    int line_count = count_line(fp);
+    str id;
+    if(line_count == 0) id = "10000000";
+    else{
+        char format[10];
+        sprintf(format, "%d", atoi(database_select(database, "content", "ID", line_count)) + 1);
+        id = format;
+    }
+    list data = list_init(id, database_select(database, "resident", "region", line_no), database_select(database, "resident", "room", line_no), content, get_time());
+    database_insert_line(database, "content", data);
+}
+
+
+void pay(db* _database, str username){
+    FILE* fp = fopen(_database->file_name, "rb+");
+    jump_to_table(fp, "bill");
+    int line_count = count_line(fp);
+    str id;
+    if(line_count == 0) id = "10000000";
+    else{
+        char format[10];
+        sprintf(format, "%d", atoi(database_select(_database, "content", "ID", line_count)) + 1);
+        id = format;
+    }
+    list data = list_init(id, database_query_by_column_to_column(_database, "resident", "username", username, "fee"), get_time(), username);
+    database_insert_line(_database, "bill", data);
+    int line_no = database_query_by_column(_database, "resident", "username", username);
+    database_update(_database, "resident", "last_time", line_no, get_time());
+}
+
+
+list check_pay(db* _database){
+    FILE* fp = fopen(_database->file_name, "rb");
+    jump_to_table(fp, "resident");
+    int line_count = count_line(fp);
+    list result = list_create_by_size(int);
+    for(int i = 1; i <= line_count; i++){
+        //?
+        if(check_time(database_select(_database, "resident", "last_time", i)) == 1){
+            list_append(&result, &i);
+        }
+    }
+    return result;
 }

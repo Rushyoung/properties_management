@@ -22,7 +22,9 @@ list qsort_by_map(map* _data);
 list_link_head database_qsort(db* _database, str _table, str _column);
 list_link_head database_qsort_reverse(db* _database, str _table, str _column);
 
+list_link_head work_content_query(db* _database);
 
+list user_info_query(db* _database, str username);
 
 int qsort_compare(const void* a, const void* b);
 #endif //PROPERTY_QUERY_H

@@ -520,7 +520,7 @@ db init(){
         map_set(&content, "ID", 16);
         map_set(&content, "region", 10);
         map_set(&content, "room", 16);
-        map_set(&content, "work content", 32);
+        map_set(&content, "work_content", 32);
         map_set(&content, "time", 16);
         database_insert_table(&this, "content", content);
         map_free(&content);
@@ -546,6 +546,23 @@ db init(){
         list_free(&bills);
     }
     return this;
+}
+
+int count_line(FILE* fp){
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, info.line_width+2);
+    int line_count = -1;
+    char c;
+    while(1){
+        fp_move(fp, info.line_width + 2);
+        line_count++;
+        if((c = fgetc(fp)) == '=') break;
+        else{
+            fp_move(fp, -1);
+        }
+    }
+    return line_count;
 }
 
 

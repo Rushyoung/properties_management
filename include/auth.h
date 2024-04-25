@@ -26,6 +26,10 @@ void set_fee(db* _database, str fee);
 
 int update_password(db* _database, str username, str new_password);
 
+void problem_report(db* database, str username, str content);
 
+void pay(db* _database, str username);
+
+list check_pay(db* _database);
 
 #endif //PROPERTY_AUTH_H
