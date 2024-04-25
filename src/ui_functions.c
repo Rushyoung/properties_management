@@ -101,3 +101,13 @@ void password_page(GtkWidget *widget, gpointer data)
 {
     password_change(0, NULL);
 }
+
+char* get_time(){
+    time_t t;
+    struct tm *tmp;
+    time(&t);
+    tmp = localtime(&t);
+    char *time = malloc(sizeof(char) * 20);
+    sprintf(time, "%d%02d%02d%02d%02d", tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday, tmp->tm_hour, tmp->tm_min);
+    return time;
+}

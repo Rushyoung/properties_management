@@ -29,6 +29,9 @@ int password_change(int argc, char *argv[]);
 int guard_main(int argc, char *argv[]);
 int cleaner_main(int argc, char *argv[]);
 int resident_main(int argc, char *argv[]);
+int resident_fee(int argc, char *argv[]);
+int resident_problem(int argc, char *argv[]);
+int resident_inquire(int argc, char *argv[]);
 
 typedef struct{
     const char *username;
@@ -55,6 +58,8 @@ void entry_callback(GtkWidget *widget, gpointer entry);
 void widget_destory(GtkWidget *widget, gpointer data);
 void password_page(GtkWidget *widget, gpointer data);
 void change_page(GtkWidget *widget, gpointer data);
+char* get_time();
+char* print_time();
 
 
 #endif //PROPERTY_UI_H
