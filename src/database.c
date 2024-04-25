@@ -445,7 +445,30 @@ int jump_to_position(FILE* fp, int column, int line){
     return ftell(fp);
 }
 
+int database_backup(db* _database){
+    copy_file(_database->file_name, "restore.db");
+}
 
+
+void copy_file(const char *src, const char *dst) {
+    FILE *srcFile = fopen(src, "rb");
+    FILE *dstFile = fopen(dst, "wb");
+
+    if (srcFile == NULL || dstFile == NULL) {
+        printf("File could not be opened.\n");
+        return;
+    }
+
+    char buffer[1024];
+    size_t bytesRead;
+
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), srcFile)) > 0) {
+        fwrite(buffer, 1, bytesRead, dstFile);
+    }
+
+    fclose(srcFile);
+    fclose(dstFile);
+}
 
 db init(){
     db this = database_connect("data.db");
