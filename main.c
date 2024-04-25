@@ -17,7 +17,7 @@
 db database;
 
 int main(int argc, char *argv[]) {
-/*    database = init();
+    database = init();
     str string1 = "user1";
     str string2 = "1919810";
     str string3 = "liuhao";
@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
     printf("%s\n", list_get(char*, &result, 1));
     printf("%s\n", list_get(char*, &result, 4));
     printf("%s\n", list_get(char*, &result, 7));
-    login_main(argc, argv);*/
-    char* time = get_time();
-    printf("%s\n", time);
+    login_main(argc, argv);
+
     return 0;
 }
