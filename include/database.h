@@ -51,11 +51,13 @@ void database_update_line(db* _db, str _table, int line_no, list _value);
 
 void database_vacuum(db* _db);
 
+int database_backup(db* _database);
+void copy_file(const char *src, const char *dst);
+
 
 int skip_to_next_table(FILE*);
 int jump_to_table(FILE *_fp, str _table);
 int jump_to_position(FILE*, int, int);
-
 db init();
 
 
