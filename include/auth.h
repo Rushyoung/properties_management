@@ -22,6 +22,8 @@ int add_residents(db* _database, str username, str password, str name, str regio
 
 int add_cleaner(db* _database, str username, str password, str name, str region, str time);
 
+void set_fee(db* _database, str fee);
+
 int update_password(db* _database, str username, str new_password);
 
 
