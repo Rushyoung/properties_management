@@ -111,10 +111,9 @@ bill_include_id_time_username_money
 ```
 ## User authority(auth)
 #### admin = 0
-#### worker = 1
-#### guard = 2
-#### cleaner = 3
-#### residents = 4
+#### guard = 1
+#### cleaner = 2
+#### residents = 3
 ## User data content
 
 

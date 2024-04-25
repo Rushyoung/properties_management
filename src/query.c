@@ -86,9 +86,6 @@ list database_qsort(db* _database, str _table, str _column){
         map_set(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
-    //TODO:format
-
-
     if(map_get(&(_database->master), _table) == -1){
         perror("unknown table");
         return list_create_by_size(void);
@@ -115,6 +112,38 @@ list database_qsort(db* _database, str _table, str _column){
     return result;
 }
 
+list database_qsort_reverse(db* _database, str _table, str _column){
+    list query = database_select_column(_database, _table, _column);
+    map temp = map_create();
+    for(int i = 1; i <= query.length; i++){
+        map_set(&temp, list_get(char*, &query, i), i);
+    }
+    list line_no_result = qsort_by_map(&temp);
+    if(map_get(&(_database->master), _table) == -1){
+        perror("unknown table");
+        return list_create_by_size(void);
+    }
+    FILE* fp = fopen(_database->file_name, "rb");
+    if(fp == NULL){
+        perror("select");
+        return list_create_by_size(void);
+    }
+    jump_to_table(fp, _table);
+    table_info info = table_info_get(fp);
+    list result = list_create_by_size(char*);
+    for(int line_no = line_no_result.length-1; line_no >= line_no_result.length; line_no--){
+        char temp_char[256];
+        fseek(fp, info.start, SEEK_SET);
+        fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&line_no_result, line_no + 1) + 1));
+        for (int i = 0; i < info.column_count; i++) {
+            fscanf(fp, "%s", temp_char);
+            str ttemp = string(temp_char);
+            list_append(&result, &ttemp);
+        }
+    }
+    fclose(fp);
+    return result;
+}
 
 int qsort_compare(const void* a, const void* b){
     sort_struct* A = (sort_struct*)a;
