@@ -671,6 +671,12 @@ int admin_resident(int argc, char *argv[]){
     return 0;
 }
 
+void get_fee(GtkWidget *widget, gpointer data) {
+    GtkWidget *entry = (GtkWidget *)data;
+    char* da = gtk_entry_get_text(GTK_ENTRY(entry));
+    set_fee(&database, da);
+}
+
 int admin_fee(int argc, char *argv[]){
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -701,7 +707,7 @@ int admin_fee(int argc, char *argv[]){
                      GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
 
     GtkWidget *button = gtk_button_new_with_label("确定");
-    g_signal_connect(button, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    g_signal_connect(button, "clicked", G_CALLBACK(get_fee), entry);
     gtk_table_attach(GTK_TABLE(table), button, 12, 17, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
