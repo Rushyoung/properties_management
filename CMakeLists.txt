@@ -18,6 +18,7 @@ add_executable(property #[[WIN32]] main.c
         src/auth.c
         include/auth.h
         src/residient_ui.c
+        src/worker_ui.c
 )
 add_definitions (${GTK2_CFLAGS_OTHER})
 target_link_libraries (property ${GTK2_LIBRARIES})

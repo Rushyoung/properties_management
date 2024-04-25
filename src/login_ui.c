@@ -38,14 +38,14 @@ void login_change(GtkWidget *widget, gpointer user_data) {
         gtk_widget_destroy(window);
         admin_main(0,NULL);
     }
-/*    if(auth == 1){
+    if(auth == 1){
         gtk_widget_destroy(window);
         guard_main(0,NULL);
-    }*/
-/*    if(auth == 2){
+    }
+    if(auth == 2){
         gtk_widget_destroy(window);
         cleaner_main(0,NULL);
-    }*/
+    }
     if(auth == 3){
         gtk_widget_destroy(window);
         resident_main(0,NULL);

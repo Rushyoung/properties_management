@@ -12,6 +12,25 @@ void change_window(GtkWidget *widget, gpointer data){
     resident_main(0, NULL);
 }
 
+void resident_page_change1(GtkWidget *widget, gpointer data){
+    GtkWidget *window = data;
+    gtk_widget_destroy(window);
+    resident_fee(0, NULL);
+}
+
+
+void resident_page_change2(GtkWidget *widget, gpointer data){
+    GtkWidget *window = data;
+    gtk_widget_destroy(window);
+    resident_problem(0, NULL);
+}
+
+void resident_page_change3(GtkWidget *widget, gpointer data){
+    GtkWidget *window = data;
+    gtk_widget_destroy(window);
+    resident_inquire(0, NULL);
+}
+
 int resident_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
@@ -59,15 +78,15 @@ int resident_main(int argc, char *argv[]) {
     GtkWidget *file_menu = gtk_menu_new();
 
     GtkWidget *fee_item = gtk_menu_item_new_with_label("费用缴纳");
-    g_signal_connect(fee_item, "activate", G_CALLBACK(destroy_window_callback), window);
+    g_signal_connect(fee_item, "activate", G_CALLBACK(resident_page_change1), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), fee_item);
 
     GtkWidget *problem_item = gtk_menu_item_new_with_label("问题上报");
-    g_signal_connect(problem_item, "activate", G_CALLBACK(destroy_window_callback), window);
+    g_signal_connect(problem_item, "activate", G_CALLBACK(resident_page_change2), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), problem_item);
 
     GtkWidget *inquire_item = gtk_menu_item_new_with_label("信息查询");
-    g_signal_connect(inquire_item, "activate", G_CALLBACK(destroy_window_callback), window);
+    g_signal_connect(inquire_item, "activate", G_CALLBACK(resident_page_change3), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), inquire_item);
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
@@ -83,7 +102,7 @@ int resident_main(int argc, char *argv[]) {
     return 0;
 }
 
-int submit(int argc, char *argv[]) {
+int fee_submit(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -149,12 +168,12 @@ int resident_fee(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button2 = gtk_button_new_with_label("缴费");
-    g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(submit), NULL);
+    g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(fee_submit), NULL);
     gtk_table_attach(GTK_TABLE(table), button2, 4, 15, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button3 = gtk_button_new_with_label("缴费记录");
-    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(submit), NULL);
+    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(fee_submit), NULL);
     gtk_table_attach(GTK_TABLE(table), button3, 4, 15, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
@@ -163,7 +182,7 @@ int resident_fee(int argc, char *argv[]) {
     return 0;
 }
 
-int _main(int argc, char *argv[]){
+int problem_submit(int argc, char *argv[]){
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -199,7 +218,7 @@ int _main(int argc, char *argv[]){
     gtk_main();
     return 0;
 }
-int resident(int argc, char *argv[]) {
+int resident_problem(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口
@@ -230,12 +249,12 @@ int resident(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button2 = gtk_button_new_with_label("上报");
-    g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(submit), NULL);
+    g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(problem_submit), NULL);
     gtk_table_attach(GTK_TABLE(table), button2, 4, 15, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button3 = gtk_button_new_with_label("上报记录");
-    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(submit), NULL);
+    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(problem_submit), NULL);
     gtk_table_attach(GTK_TABLE(table), button3, 4, 15, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
@@ -297,7 +316,7 @@ static gchar *title[2] = {"工作人员列表","费用标准"};
 //}
 
 
-int p_main(int argc, char *argv[]) {
+int resident_inquire(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口
