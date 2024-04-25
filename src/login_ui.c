@@ -72,7 +72,9 @@ int login_main(int argc, char *argv[]) {
 
     //创建两个文本框
     GtkWidget *username_entry1 = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(username_entry1), 16);
     GtkWidget *password_entry1 = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(password_entry1), 16);
     gtk_entry_set_visibility(GTK_ENTRY(password_entry1), FALSE);
 
     GtkWidget *lable1 = gtk_label_new("用户名：");
