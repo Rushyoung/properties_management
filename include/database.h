@@ -52,6 +52,8 @@ void database_update_line(db* _db, str _table, int line_no, list _value);
 void database_vacuum(db* _db);
 
 int database_backup(db* _database);
+int database_restore(db* _database);
+
 void copy_file(const char *src, const char *dst);
 
 

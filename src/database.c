@@ -321,7 +321,6 @@ void database_update(db* _db, str _table, str _column, int line_no, str value){
         fscanf(fp, "%s", column_name);
         if(strcmp(column_name, _column) == 0){
             column_pos = i;
-            
         }
     }
     if(column_pos == -1) return;
@@ -382,7 +381,7 @@ void database_vacuum(db* _db){
     }
     char line[65536];
     for(int i = 0; i < tables.length; i++){
-        int* _temp = (int*) list_get_ptr(&tables, i);
+        int* _temp = (int*) list_get_ptr(&tables, i+1);
         fseek(input, *_temp, SEEK_SET);
         table_info info = table_info_get(input);
         if(map_get(&(_db->master), info.table_name) == -1){
@@ -446,7 +445,8 @@ int jump_to_position(FILE* fp, int column, int line){
 }
 
 int database_backup(db* _database){
-    copy_file(_database->file_name, "restore.db");
+    copy_file(_database->file_name, "../restore.db");
+    perror("backup");
 }
 
 
@@ -468,6 +468,13 @@ void copy_file(const char *src, const char *dst) {
 
     fclose(srcFile);
     fclose(dstFile);
+}
+
+int database_restore(db* _database){
+    FILE* restore_FILE = fopen("../restore.db", "rb");
+    if(restore_FILE == NULL) return -1;
+    copy_file("../restore.db", _database->file_name);
+    return 0;
 }
 
 db init(){
@@ -518,12 +525,24 @@ db init(){
         map_free(&content);
 
         map bill = map_create();
-        map_set(&bill, "ID", 16);
+        map_set(&bill, "ID", 10);
         map_set(&bill, "amount", 10);
         map_set(&bill, "time", 16);
         map_set(&bill, "username", 16);
         database_insert_table(&this, "bill", bill);
         map_free(&bill);
+
+        list bills = list_create(sizeof(char*));
+        char* string11 = "10000000";
+        char* string22 = "0";
+        char* string33 = "0";
+        char* string44 = "NULL";
+        list_append(&bills, &string11);
+        list_append(&bills, &string22);
+        list_append(&bills, &string33);
+        list_append(&bills, &string44);
+        database_insert_line(&this, "bill", bills);
+        list_free(&bills);
     }
     return this;
 }

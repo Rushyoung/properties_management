@@ -38,9 +38,47 @@ int update_password(db* _database, str username, str new_password){
 }
 
 int add_guard(db* _database, str username, str password, str name, str region, str time){
-    str temp = "1";
-    if(add_user(_database, username, password, temp) == -1) return -1;
+    str auth = "1";
+    if(add_user(_database, username, password, auth) == -1) return -1;
     list data = list_init(username, name, region, time);
     database_insert_line(_database, "guard", data);
     return 0;
+}
+
+int add_residents(db* _database, str username, str password, str name, str region, str room){
+    str auth = "3";
+    str fee = database_select(_database, "resident", "fee", 1);
+    if(add_user(_database, username, password, auth) == -1) return -1;
+    list data = list_init(username, name, region, room, fee, "0");
+    database_insert_line(_database, "resident", data);
+    return 0;
+}
+
+int add_cleaner(db* _database, str username, str password, str name, str region, str time){
+    str auth = "2";
+    if(add_user(_database, username, password, auth) == -1) return -1;
+    list data = list_init(username, name, region, time);
+    database_insert_line(_database, "guard", data);
+    return 0;
+}
+
+void set_fee(db* _database, str fee){
+    FILE* fp = fopen(_database->file_name, "rb+");
+    jump_to_table(fp, "resident");
+    table_info info = table_info_get(fp);
+    fseek(fp, info.start, SEEK_SET);
+    fp_move(fp, (info.line_width+2) * 2);
+    int line_count = 0;
+    char c;
+    while(1){
+        fp_move(fp, info.line_width + 2);
+        line_count++;
+        if((c = fgetc(fp)) == '=') break;
+        else{
+            fp_move(fp, -1);
+        }
+    }
+    for(int i = 1; i <= line_count; i++){
+        database_update(_database, "resident", "fee", i, fee);
+    }
 }
