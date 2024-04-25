@@ -18,6 +18,12 @@ int add_user(db* _database, str username, str password, str auth);
 
 int add_guard(db* _database, str username, str password, str name, str region, str time);
 
+int add_residents(db* _database, str username, str password, str name, str region, str room);
+
+int add_cleaner(db* _database, str username, str password, str name, str region, str time);
+
 int update_password(db* _database, str username, str new_password);
+
+
 
 #endif //PROPERTY_AUTH_H

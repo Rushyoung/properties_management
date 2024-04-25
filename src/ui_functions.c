@@ -25,11 +25,14 @@ void entry_callback(GtkWidget *widget, gpointer entry)
 void username_entry_callback(GtkWidget *widget, LoginData * data)
 {
     const char *entry_text = gtk_entry_get_text(GTK_ENTRY(data->widget1));
+    data->username = g_malloc(sizeof(char) * strlen(entry_text));
     strcpy(data->username, entry_text);
 }
 
 void password_entry_callback(GtkWidget *widget, LoginData * data){
     const char *entry_text = gtk_entry_get_text(GTK_ENTRY(data->widget2));
+    //need to free
+    data->password = g_malloc(sizeof(char) * strlen(entry_text));
     strcpy(data->password, entry_text);
 }
 

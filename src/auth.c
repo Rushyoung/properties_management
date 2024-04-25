@@ -38,8 +38,24 @@ int update_password(db* _database, str username, str new_password){
 }
 
 int add_guard(db* _database, str username, str password, str name, str region, str time){
-    str temp = "1";
-    if(add_user(_database, username, password, temp) == -1) return -1;
+    str auth = "1";
+    if(add_user(_database, username, password, auth) == -1) return -1;
+    list data = list_init(username, name, region, time);
+    database_insert_line(_database, "guard", data);
+    return 0;
+}
+
+int add_residents(db* _database, str username, str password, str name, str region, str room){
+    str auth = "3";
+    if(add_user(_database, username, password, auth) == -1) return -1;
+    list data = list_init(username, name, region, room, "50", "0");
+    database_insert_line(_database, "resident", data);
+    return 0;
+}
+
+int add_cleaner(db* _database, str username, str password, str name, str region, str time){
+    str auth = "2";
+    if(add_user(_database, username, password, auth) == -1) return -1;
     list data = list_init(username, name, region, time);
     database_insert_line(_database, "guard", data);
     return 0;

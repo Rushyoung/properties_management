@@ -7,7 +7,7 @@
 #include <windows.h>
 #include "../include/ui.h"
 
-extern password_data passwordData;
+
 
 void login_analysis(GtkWidget *widget, LoginData *a){
     passwordData.username = a->username;

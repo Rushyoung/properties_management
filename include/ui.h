@@ -45,6 +45,8 @@ typedef struct{
     GtkWidget *widget2;
 }password_data;
 
+extern password_data passwordData;
+
 void login_change(GtkWidget *widget, gpointer user_data);
 void destroy_window_callback(GtkWidget *widget, gpointer data);
 void username_entry_callback(GtkWidget *widget, LoginData * data);

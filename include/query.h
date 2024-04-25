@@ -22,5 +22,7 @@ list qsort_by_map(map* _data);
 list database_qsort(db* _database, str _table, str _column);
 list database_qsort_reverse(db* _database, str _table, str _column);
 
+
+
 int qsort_compare(const void* a, const void* b);
 #endif //PROPERTY_QUERY_H
