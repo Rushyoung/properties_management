@@ -81,7 +81,9 @@ typedef struct {
 MenuItem sort_options[] = {
         {"按最后一次缴费时间", 1},
         {"按居住的楼栋号", 2},
-        {"按姓名", 3}
+        {"按姓名", 3},
+        {"按倒序",4},
+        {"按正序",5}
 };
 
 static int last_selected_id = -1;
@@ -238,6 +240,19 @@ void  on_building_activated(GtkMenuItem *item, gpointer user_data) {
 void on_name_activated(GtkMenuItem *item, gpointer user_data) {
     printf("Based on the name of guards\n");
 }
+void on_inverted_order_activated(GtkMenuItem *item, gpointer user_data){
+    printf("Based on the inverted order\n");
+}
+void on_sequence_activated(GtkMenuItem *item, gpointer user_data){
+    printf("Based on the sequence\n");
+}
+
+list sort_data;
+// 解析数据
+void parsing_data(int selected_id){
+    sort_data = database_qsort(&database, "resident","last_time");
+}
+gchar *resident_data[6];
 
 void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
     const gchar *selected_text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
@@ -252,7 +267,7 @@ void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
 
     if (selected_id != -1) {
         printf("Selected option with ID: %d\n", selected_id);
-
+        parsing_data(selected_id);
         // 根据选中的 ID 调用相应的排序函数或其他操作
         switch (selected_id) {
             case 1:
@@ -264,6 +279,12 @@ void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
             case 3:
                 on_name_activated(NULL, NULL);
                 break;
+            case 4:
+                on_inverted_order_activated(NULL, NULL);
+                break;
+            case 5:
+                on_sequence_activated(NULL, NULL);
+                break;
             default:
                 printf("error");
         }
@@ -271,6 +292,8 @@ void on_combobox_changed(GtkComboBox *combo, gpointer user_data) {
         printf("Invalid selection. Could not find a matching ID.\n");
     }
 }
+
+
 
 void close_window3_only(GtkWidget *window3) {
     gtk_widget_destroy(window3);
@@ -280,7 +303,6 @@ void close_window3_only(GtkWidget *window3) {
 }
 
 size_t i;
-gchar *resident_data[4];
 
 static GtkWidget *entry;
 static GtkWidget *clist;
@@ -336,24 +358,20 @@ static void generate_window3(void) {
     // 创建“排列方式”菜单项及其子菜单项
     GtkWidget *combo = gtk_combo_box_new_text();
 
-
+    //下拉菜单
     for (size_t i = 0; i < sizeof(sort_options) / sizeof(sort_options[0]); ++i) {
         gtk_combo_box_append_text(GTK_COMBO_BOX(combo), sort_options[i].text);
     }
 
 
-
-// 连接“changed”信号处理程序，根据需要实现相应的排序逻辑
+    // 连接“changed”信号处理程序，根据需要实现相应的排序逻辑
     g_signal_connect(combo, "changed", G_CALLBACK(on_combobox_changed), NULL);
 
-// 将组合框添加到表格
+    // 将组合框添加到表格
     gtk_table_attach_defaults(GTK_TABLE(table3), combo, 0, 6, 0, 1);
 
-// ... 创建输入框（entry）的代码不变
-
-// 将输入框添加到表格
+    // 将输入框添加到表格
     gtk_table_attach_defaults(GTK_TABLE(table3), entry, 6, 14, 0, 1);
-
 
 
     GtkWidget *file_menu_item = gtk_menu_item_new_with_label("排列方式");
@@ -370,6 +388,14 @@ static void generate_window3(void) {
     GtkWidget *paytime_item = gtk_menu_item_new_with_label("按最后一次缴费时间");
     g_signal_connect(paytime_item, "activate", G_CALLBACK(on_paytime_activated), NULL);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), paytime_item);
+
+    GtkWidget *inverted_order_item = gtk_menu_item_new_with_label("按倒序");
+    g_signal_connect(inverted_order_item, "activate", G_CALLBACK(on_inverted_order_activated), NULL);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), inverted_order_item);
+
+    GtkWidget *sequence_item = gtk_menu_item_new_with_label("按顺序");
+    g_signal_connect(sequence_item, "activate", G_CALLBACK(on_sequence_activated), NULL);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), sequence_item);
 
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
@@ -430,7 +456,7 @@ static void generate_windows3(){
 }
 
 
-int main(int argc, char *argv[]) {
+int guard_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -507,11 +533,13 @@ int main(int argc, char *argv[]) {
 }
 
 void refill_clist() {
-    for (i = 0; i < 5; ++i) {
-        resident_data[0] = g_strdup(residents[i].name);
-        resident_data[1] = g_strdup_printf("%d", residents[i].building_number);
-        resident_data[2] = g_strdup_printf("%d", residents[i].room_number);
-        resident_data[3] = g_strdup_printf("%.2f", residents[i].payment_amount);
+    for (i = 0; ; i=i+6) {
+        resident_data[0] = list_get(char*, &sort_data,i+1);
+        resident_data[1] = list_get(char*, &sort_data,i+2);
+        resident_data[2] = list_get(char*, &sort_data,i+3);
+        resident_data[3] = list_get(char*, &sort_data,i+4);
+        resident_data[4] = list_get(char*, &sort_data,i+5);
+        resident_data[5] = list_get(char*, &sort_data,i+6);
         gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
     }
 }

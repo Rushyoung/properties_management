@@ -82,3 +82,103 @@ int resident_main(int argc, char *argv[]) {
     gtk_main();
     return 0;
 }
+
+
+void on_button_clicked(GtkWidget *widget, gpointer data) {
+    g_print("Button clicked!\n");
+}
+
+
+
+const int NUM_COLUMNS = 4;
+static GtkWidget *clist;
+static gchar *title[2] = {"工作人员列表","费用标准"};
+//size_t i;
+//
+//struct Resident {
+//    char name[50];          // 姓名
+//    int building_number;    // 楼栋号
+//    int room_number;        // 房间号
+//    double payment_amount;  // 缴费费用
+//    // 可以添加其他字段，如最后一次缴费时间等
+//};
+//struct Resident residents[5]={
+//        {"张三", 1, 101, 1000.0},
+//        {"李四", 2, 201, 2000.0},
+//        {"王五", 3, 301, 3000.0},
+//        {"赵六", 4, 401, 4000.0},
+//        {"孙七", 5, 501, 5000.0}
+//};
+
+//gchar *resident_data[6];
+
+//void refill_clist() {
+//    for (i = 0; ; i++) {
+//        resident_data[0] =
+//        resident_data[1] =
+//        resident_data[2] =
+//        resident_data[3] =
+//        resident_data[4] =
+//        resident_data[5] =
+//        gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+//    }
+//}
+
+
+//void worker_list_callback(GtkWidget *widget, gpointer user_data) {
+//    gtk_clist_clear(GTK_CLIST(user_data));
+//    refill_clist();
+//}
+//
+//void fee_standard_callback(GtkWidget *widget, gpointer user_data) {
+//    gtk_clist_clear(GTK_CLIST(user_data));
+//    refill_clist();
+//}
+
+
+int _main(int argc, char *argv[]) {
+    gtk_init(&argc, &argv);
+
+    //  创建主窗口
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "用户查询");
+    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    GtkWidget *table = gtk_table_new(10, 20, FALSE);
+    gtk_container_add(GTK_CONTAINER(window), table);
+
+
+    // 创建第一个按钮
+    GtkWidget *button1 = gtk_button_new_with_label("工作人员列表");
+    g_signal_connect(button1, "clicked", G_CALLBACK(on_button_clicked), NULL);
+    gtk_table_attach(GTK_TABLE(table), button1, 2, 9, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    // 创建第二个按钮
+    GtkWidget *button2 = gtk_button_new_with_label("费用标准");
+    g_signal_connect(button2, "clicked", G_CALLBACK(on_button_clicked), NULL);
+    gtk_table_attach(GTK_TABLE(table), button2, 11, 18, 1, 2,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+
+
+
+    clist = gtk_clist_new_with_titles(2, title);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist, 2, 18, 2, 9);
+
+    //调节4个title的相对位置
+    gtk_clist_set_column_width(clist, 0, 260);
+    gtk_clist_set_column_width(clist, 1, 260);
+
+//    g_signal_connect(button1, "clicked", G_CALLBACK(worker_list_callback), clist);
+//    g_signal_connect(button2, "clicked", G_CALLBACK(fee_standard_callback), clist);
+
+
+    gtk_table_set_row_spacings(GTK_TABLE(table), 20);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
+
+    gtk_widget_show_all(window);
+    gtk_main();
+    return 0;
+}
