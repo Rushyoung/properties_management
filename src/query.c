@@ -2,7 +2,7 @@
 // Created by 小小喵姬 on 2024/4/20.
 //
 #include "../include/query.h"
-
+#include <stdlib.h>
 /*
  * @return NO. of line
  */
@@ -55,4 +55,43 @@ list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyw
         }
     }
     return final;
+}
+
+
+list qsort_by_map(map* _data){
+    int length = 0;
+    for(int i = 0; i < _data->capacity; i++){
+        if(_data->keys[i] == NULL) continue;
+        length++;
+    }
+    sort_struct* pairs = malloc(sizeof(sort_struct) * length);
+    for(int i = 0, cur = 0; i < _data->capacity; i++){
+        if(_data->keys[i] == NULL) continue;
+        pairs[cur].key = _data->keys[i];
+        pairs[cur].value = _data->values[i];
+         cur++;
+    }
+    qsort(pairs, length, sizeof(sort_struct), qsort_compare);
+    list result = list_create_by_size(int);
+    for(int i = 0; i < length; i++){
+        list_append(&result, &pairs[i].value);
+    }
+    return result;
+}
+
+list database_qsort(db* _database, str _table, str _column){
+    list query = database_select_column(_database, _table, _column);
+    map temp = map_create();
+    for(int i = 0; i < query.length; i++){
+        map_set(&temp, list_get(char*, &query, i), i);
+    }
+    list line_no_result = qsort_by_map(&temp);
+    //TODO:format
+}
+
+
+int qsort_compare(const void* a, const void* b){
+    sort_struct* A = (sort_struct*)a;
+    sort_struct* B = (sort_struct*)b;
+    return strcmp(A->key, B->key);
 }
