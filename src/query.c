@@ -79,7 +79,7 @@ list qsort_by_map(map* _data){
     return result;
 }
 
-list database_qsort(db* _database, str _table, str _column){
+list_link_head database_qsort(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
@@ -88,17 +88,18 @@ list database_qsort(db* _database, str _table, str _column){
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
         perror("unknown table");
-        return list_create_by_size(void);
+        return list_link_create();
     }
     FILE* fp = fopen(_database->file_name, "rb");
     if(fp == NULL){
         perror("select");
-        return list_create_by_size(void);
+        return list_link_create();
     }
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
-    list result = list_create_by_size(char*);
+    list_link_head head = list_link_create();
     for(int line_no = 0; line_no < line_no_result.length; line_no++){
+        list result = list_create_by_size(char*);
         char temp_char[256];
         fseek(fp, info.start, SEEK_SET);
         fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&line_no_result, line_no + 1) + 1));
@@ -107,12 +108,13 @@ list database_qsort(db* _database, str _table, str _column){
             str ttemp = string(temp_char);
             list_append(&result, &ttemp);
         }
+        list_link_append(&head, result);
     }
     fclose(fp);
-    return result;
+    return head;
 }
 
-list database_qsort_reverse(db* _database, str _table, str _column){
+list_link_head database_qsort_reverse(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
@@ -121,17 +123,18 @@ list database_qsort_reverse(db* _database, str _table, str _column){
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
         perror("unknown table");
-        return list_create_by_size(void);
+        return list_link_create();
     }
     FILE* fp = fopen(_database->file_name, "rb");
     if(fp == NULL){
         perror("select");
-        return list_create_by_size(void);
+        return list_link_create();
     }
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
-    list result = list_create_by_size(char*);
-    for(int line_no = line_no_result.length-1; line_no >= line_no_result.length; line_no--){
+    list_link_head head = list_link_create();
+    for(int line_no = line_no_result.length-1; line_no >= 0; line_no++){
+        list result = list_create_by_size(char*);
         char temp_char[256];
         fseek(fp, info.start, SEEK_SET);
         fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&line_no_result, line_no + 1) + 1));
@@ -140,9 +143,10 @@ list database_qsort_reverse(db* _database, str _table, str _column){
             str ttemp = string(temp_char);
             list_append(&result, &ttemp);
         }
+        list_link_append(&head, result);
     }
     fclose(fp);
-    return result;
+    return head;
 }
 
 int qsort_compare(const void* a, const void* b){

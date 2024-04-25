@@ -19,8 +19,8 @@ str database_query_by_column_to_column(db* _this, str _table, str src_column, st
 list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyword);
 
 list qsort_by_map(map* _data);
-list database_qsort(db* _database, str _table, str _column);
-list database_qsort_reverse(db* _database, str _table, str _column);
+list_link_head database_qsort(db* _database, str _table, str _column);
+list_link_head database_qsort_reverse(db* _database, str _table, str _column);
 
 
 

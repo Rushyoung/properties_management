@@ -6,6 +6,11 @@
 #ifndef PROPERTY_BASE_TYPE_H
 #define PROPERTY_BASE_TYPE_H
 
+
+
+
+
+
 typedef char* str;
 
 typedef struct{
@@ -52,6 +57,22 @@ void dict_expand(dict*);
 str dict_get(dict*, str);
 void dict_remove(dict*, str);
 void dict_free(dict*);
+
+
+
+struct list_link_node{
+    list data;
+    struct list_link_node* next;
+};
+
+typedef struct {
+    int length;
+    struct list_link_node* next;
+}list_link_head;
+
+
+list_link_head list_link_create();
+void list_link_append(list_link_head* head,list l);
 
 
 #define STRING_EXTRA_LIMIT 128

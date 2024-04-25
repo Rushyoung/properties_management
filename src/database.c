@@ -518,8 +518,9 @@ db init(){
 
         map content = map_create();
         map_set(&content, "ID", 16);
-        map_set(&content, "work content", 32);
+        map_set(&content, "region", 10);
         map_set(&content, "room", 16);
+        map_set(&content, "work content", 32);
         map_set(&content, "time", 16);
         database_insert_table(&this, "content", content);
         map_free(&content);
@@ -547,3 +548,30 @@ db init(){
     return this;
 }
 
+
+
+list_link_head list_link_create(){
+    list_link_head head;
+    head.length = 0;
+    head.next = NULL;
+    return head;
+}
+
+void list_link_append(list_link_head* head, list l){
+    struct list_link_node* cur = head->next;
+    if (cur == NULL) {
+        head->next = malloc(sizeof(struct list_link_node));
+        cur = head->next;
+    } else {
+        while(cur->next != NULL){
+            cur = cur->next;
+        }
+        cur->next = malloc(sizeof(struct list_link_node));
+        cur = cur->next;
+    }
+    cur->data = l; // Copy the list structure
+    cur->data.data = malloc(l.type_size * l.capacity); // Allocate new memory for data
+    memcpy(cur->data.data, l.data, l.type_size * l.length); // Copy the data
+    cur->next = NULL;
+    head->length++;
+}

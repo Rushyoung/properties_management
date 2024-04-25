@@ -8,6 +8,9 @@
 
 
 
+
+
+
 list list_create(int sizeof_type){
     list l;
     l.type_size = sizeof_type;
