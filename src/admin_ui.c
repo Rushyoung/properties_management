@@ -5,15 +5,7 @@
 #include <gtk/gtk.h>
 #include <windows.h>
 #include "../include/ui.h"
-
-void notice1(GtkWidget* widget){
-    MessageBox(
-            NULL,
-            TEXT("The data has backup in root directory as restore.db"),  // 显示的文本
-            TEXT("WARNING!"),                // 标题
-            MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
-    );
-}
+#include "../include/auth.h"
 
 void change_window1(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
@@ -31,6 +23,29 @@ void change_window3(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
     gtk_widget_destroy(window);
     admin_fee(0,NULL);
+}
+
+int data_backup(GtkWidget* widget, gpointer data){
+    int a = database_backup(&database);
+    MessageBox(
+                NULL,
+                TEXT("The data has backup in root directory as restore.db"),  // 显示的文本
+                TEXT("NOTICE"),                // 标题
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
+    );
+}
+
+int data_recovery(GtkWidget* widget, gpointer data){
+    int a = database_restore(&database);
+    if(a == -1){
+        MessageBox(
+                NULL,
+                TEXT("Can't find the file."
+                     "Please place the file in your root directory!"),  // 显示的文本
+                TEXT("WARNING!"),                // 标题
+                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
+        );
+    }
 }
 
 //创建管理员页面
@@ -91,12 +106,12 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 1, 2,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
 
     GtkWidget *button2 = gtk_button_new_with_label("数据备份");
-    g_signal_connect(button2, "clicked", G_CALLBACK(database_backup), &database);
+    g_signal_connect(button2, "clicked", G_CALLBACK(data_backup), NULL);
     gtk_table_attach(GTK_TABLE(table), button2, 8, 9, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button1 = gtk_button_new_with_label("数据恢复");
-    g_signal_connect(button1, "clicked", G_CALLBACK(gtk_widget_destroy), NULL);
+    g_signal_connect(button1, "clicked", G_CALLBACK(data_recovery), NULL);
     gtk_table_attach(GTK_TABLE(table), button1, 8, 9, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
