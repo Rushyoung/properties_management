@@ -59,15 +59,6 @@ list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyw
 
 list_link_head database_wide_query(db* _this, str _table, str _column, str keyword){
     list query = database_wide_query_to_line_No(_this, _table, _column, keyword);
-    map temp = map_create();
-    for(int i = 1; i <= query.length; i++){
-        map_set(&temp, list_get(char*, &query, i), i);
-    }
-    list line_no_result = qsort_by_map(&temp);
-    if(map_get(&(_this->master), _table) == -1){
-        perror("unknown table");
-        return list_link_create();
-    }
     FILE* fp = fopen(_this->file_name, "rb");
     if(fp == NULL){
         perror("select");
@@ -76,11 +67,12 @@ list_link_head database_wide_query(db* _this, str _table, str _column, str keywo
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
     list_link_head head = list_link_create();
-    for(int line_no = 0; line_no < line_no_result.length; line_no++){
+    for(int line_no = 0; line_no < query.length; line_no++){
         list result = list_create_by_size(char*);
         char temp_char[256];
         fseek(fp, info.start, SEEK_SET);
-        fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&line_no_result, line_no + 1) + 1));
+        //?
+        fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&query, line_no + 1) + 1));
         for (int i = 0; i < info.column_count; i++) {
             fscanf(fp, "%s", temp_char);
             str ttemp = string(temp_char);
