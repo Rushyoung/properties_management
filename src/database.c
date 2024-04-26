@@ -234,6 +234,7 @@ list database_select_column(db* _db, str _table, str _column){
         return list_create(sizeof(void));
     }
     FILE* fp = fopen(_db->file_name, "rb");
+    perror("file ");
     if(fp == NULL){
         perror("select");
         return list_create(sizeof(void));
