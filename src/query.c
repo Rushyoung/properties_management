@@ -133,7 +133,7 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column){
     jump_to_table(fp, _table);
     table_info info = table_info_get(fp);
     list_link_head head = list_link_create();
-    for(int line_no = line_no_result.length-1; line_no >= 0; line_no++){
+    for(int line_no = line_no_result.length-1; line_no >= 0; line_no--){
         list result = list_create_by_size(char*);
         char temp_char[256];
         fseek(fp, info.start, SEEK_SET);
