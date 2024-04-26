@@ -70,6 +70,7 @@ void set_fee(db* _database, str fee){
     for(int i = 1; i <= line_count; i++){
         database_update(_database, "resident", "fee", i, fee);
     }
+    fclose(fp);
 }
 
 
@@ -88,6 +89,7 @@ void problem_report(db* database, str username, str content){
         id = format;
     }
     list data = list_init(id, database_select(database, "resident", "region", line_no), database_select(database, "resident", "room", line_no), content, get_time());
+    fclose(fp);
     database_insert_line(database, "content", data);
 }
 
@@ -118,6 +120,7 @@ void pay(db* _database, str username){
     database_insert_line(_database, "bill", data);
     int line_no = database_query_by_column(_database, "resident", "username", username);
     database_update(_database, "resident", "last_time", line_no, get_time());
+    fclose(fp);
 }
 
 
@@ -132,5 +135,6 @@ list check_pay(db* _database){
             list_append(&result, &i);
         }
     }
+    fclose(fp);
     return result;
 }

@@ -473,6 +473,7 @@ void copy_file(const char *src, const char *dst) {
 int database_restore(db* _database){
     FILE* restore_FILE = fopen("../restore.db", "rb");
     if(restore_FILE == NULL) return -1;
+    fclose(restore_FILE);
     copy_file("../restore.db", _database->file_name);
     return 0;
 }
