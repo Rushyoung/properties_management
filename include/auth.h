@@ -27,6 +27,7 @@ void set_fee(db* _database, str fee);
 int update_password(db* _database, str username, str new_password);
 
 void problem_report(db* database, str username, str content);
+void problem_finish(db* _database, str id);
 
 void pay(db* _database, str username);
 

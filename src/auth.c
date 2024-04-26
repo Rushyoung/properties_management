@@ -91,6 +91,11 @@ void problem_report(db* database, str username, str content){
     database_insert_line(database, "content", data);
 }
 
+void problem_finish(db* _database, str id){
+    int line_no = database_query_by_column(_database, "content", "ID", id);
+    database_remove_line(_database, "content", line_no);
+    database_vacuum(_database);
+}
 
 void pay(db* _database, str username){
     FILE* fp = fopen(_database->file_name, "rb+");
