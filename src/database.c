@@ -527,6 +527,9 @@ db init(){
 
         map bill = map_create();
         map_set(&bill, "ID", 10);
+        map_set(&bill, "name", 16);
+        map_set(&bill, "region", 10);
+        map_set(&bill, "room", 16);
         map_set(&bill, "amount", 10);
         map_set(&bill, "time", 16);
         map_set(&bill, "username", 16);

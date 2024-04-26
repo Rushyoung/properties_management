@@ -103,7 +103,13 @@ void pay(db* _database, str username){
         sprintf(format, "%d", atoi(database_select(_database, "bill", "ID", line_count)) + 1);
         id = format;
     }
-    list data = list_init(id, database_query_by_column_to_column(_database, "resident", "username", username, "fee"), get_time(), username);
+    list data = list_init(id,
+                          database_query_by_column_to_column(_database, "resident", "username", username, "name"),
+                          database_query_by_column_to_column(_database, "resident", "username", username, "reigion"),
+                          database_query_by_column_to_column(_database, "resident", "username", username, "room"),
+                          database_query_by_column_to_column(_database, "resident", "username", username, "fee"),
+                          get_time(),
+                          username);
     database_insert_line(_database, "bill", data);
     int line_no = database_query_by_column(_database, "resident", "username", username);
     database_update(_database, "resident", "last_time", line_no, get_time());
