@@ -60,8 +60,7 @@ list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyw
 list_link_head database_wide_query(db* _this, str _table, str _column, str keyword){
     list query = database_wide_query_to_line_No(_this, _table, _column, keyword);
     map temp = map_create();
-    for(int
-                i = 1; i <= query.length; i++){
+    for(int i = 1; i <= query.length; i++){
         map_set(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
@@ -220,7 +219,7 @@ list_link_head work_content_query(db* _database){
 
 
 list user_info_query(db* _database, str username){
-    int auth = atoi(database_query_by_column_to_column(_database, "account", "username", username, "auth"));
+    int auth = get_auth(_database, username);
     list result;
     switch (auth) {
         case 1:

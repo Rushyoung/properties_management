@@ -138,3 +138,26 @@ list check_pay(db* _database){
     fclose(fp);
     return result;
 }
+
+
+int delete_user(db* _database, str username){
+    int auth = get_auth(_database, username);
+    if(auth == -1) return -1;
+    switch (auth) {
+        case 1:
+            database_remove_line(_database, "guard", database_query_by_column(_database, "guard", "username", username));
+            database_remove_line(_database, "account", database_query_by_column(_database, "account", "username", username));
+            database_vacuum(_database);
+            return 0;
+        case 3:
+            database_remove_line(_database, "resident", database_query_by_column(_database, "resident", "username", username));
+            database_remove_line(_database, "account", database_query_by_column(_database, "account", "username", username));
+            return 0;
+    }
+    return -1;
+}
+
+inline int get_auth(db* _database, str username){
+    if(database_query_by_column(_database, "account", "username", username) == -1) return -1;
+    return atoi(database_query_by_column_to_column(_database, "account", "username", username, "auth"));
+}

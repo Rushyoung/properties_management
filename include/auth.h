@@ -31,6 +31,10 @@ void problem_finish(db* _database, str id);
 
 void pay(db* _database, str username);
 
-list check_pay(db* _database);
+int delete_user(db* _database, str username);
 
+list check_pay(db* _database);
+list check_pay_list();
+
+int get_auth(db* _database, str username);
 #endif //PROPERTY_AUTH_H
