@@ -267,6 +267,7 @@ int get_cleaner(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_cleaner_data), data);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy), window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -360,6 +361,7 @@ int get_guard(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_guard_data), data);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -649,6 +651,7 @@ int admin_resident(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("录入居民信息");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_resident), NULL);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 2, 3, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
