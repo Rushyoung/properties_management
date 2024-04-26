@@ -110,8 +110,7 @@ list qsort_by_map(map* _data){
 list_link_head database_qsort(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
-    for(int
-    i = 1; i <= query.length; i++){
+    for(int i = 1; i <= query.length; i++){
         map_set(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
@@ -213,9 +212,10 @@ list_link_head work_content_query(db* _database){
 list user_info_query(db* _database, str username){
     int auth = get_auth(_database, username);
     list result;
+    list overtime;
     switch (auth) {
         case 1:
-            list overtime = check_pay(_database);
+            overtime = check_pay(_database);
             if(overtime.length == 0){
                 result = list_init(database_query_by_column_to_column(_database, "guard","username", username, "name"),
                                    database_query_by_column_to_column(_database, "guard","username", username, "region"),
@@ -240,3 +240,28 @@ list user_info_query(db* _database, str username){
 }
 
 
+list_link_head database_select_line_list_link(db* _database, str table, list query){
+    FILE* fp = fopen(_database->file_name, "rb");
+    if(fp == NULL){
+        perror("select");
+        return list_link_create();
+    }
+    jump_to_table(fp, table);
+    table_info info = table_info_get(fp);
+    list_link_head head = list_link_create();
+    for(int line_no = 0; line_no < query.length; line_no++){
+        list result = list_create_by_size(char*);
+        char temp_char[256];
+        fseek(fp, info.start, SEEK_SET);
+        //?
+        fp_move(fp, (info.line_width + 2) * (*(int*)list_get_ptr(&query, line_no + 1) + 1));
+        for (int i = 0; i < info.column_count; i++) {
+            fscanf(fp, "%s", temp_char);
+            str ttemp = string(temp_char);
+            list_append(&result, &ttemp);
+        }
+        list_link_append(&head, result);
+    }
+    fclose(fp);
+    return head;
+}
