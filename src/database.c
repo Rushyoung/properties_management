@@ -533,17 +533,6 @@ db init(){
         database_insert_table(&this, "bill", bill);
         map_free(&bill);
 
-        list bills = list_create(sizeof(char*));
-        char* string11 = "10000000";
-        char* string22 = "0";
-        char* string33 = "0";
-        char* string44 = "NULL";
-        list_append(&bills, &string11);
-        list_append(&bills, &string22);
-        list_append(&bills, &string33);
-        list_append(&bills, &string44);
-        database_insert_line(&this, "bill", bills);
-        list_free(&bills);
     }
     return this;
 }
