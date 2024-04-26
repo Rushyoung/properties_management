@@ -110,7 +110,7 @@ void pay(db* _database, str username){
     }
     list data = list_init(id,
                           database_query_by_column_to_column(_database, "resident", "username", username, "name"),
-                          database_query_by_column_to_column(_database, "resident", "username", username, "reigion"),
+                          database_query_by_column_to_column(_database, "resident", "username", username, "region"),
                           database_query_by_column_to_column(_database, "resident", "username", username, "room"),
                           database_query_by_column_to_column(_database, "resident", "username", username, "fee"),
                           get_time(),
