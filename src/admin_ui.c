@@ -78,7 +78,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -416,7 +416,7 @@ int admin_work( int argc, char *argv[]){
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -645,7 +645,7 @@ int admin_resident(int argc, char *argv[]){
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -736,7 +736,7 @@ int admin_fee(int argc, char *argv[]){
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 

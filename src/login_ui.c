@@ -97,7 +97,7 @@ int login_main(int argc, char *argv[]) {
     gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
     gtk_label_set_markup(GTK_LABEL(label),"<span foreground='black'  font_desc='20'>欢迎使用世界树物业管理系统！</span>");
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 

@@ -589,8 +589,6 @@ void on_button5_clicked(GtkButton *button, gpointer *user_data) {
 list guard_information;
 int guard_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-    //temp
-    database = init();
 
     guard_information= user_info_query(&database,user_name.username);
     char *Guard_infor[4];

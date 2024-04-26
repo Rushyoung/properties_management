@@ -53,7 +53,7 @@ int resident_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -164,7 +164,7 @@ int fee_submit(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/qrcode.png");
+    GtkWidget *image = gtk_image_new_from_file("../qrcode.png");
     gtk_table_attach(GTK_TABLE(table), image, 1, 4, 1, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(image), GTK_JUSTIFY_LEFT);
@@ -195,7 +195,7 @@ int resident_fee(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -281,7 +281,7 @@ int resident_problem(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("../asset/logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
