@@ -9,6 +9,13 @@
 
 size_t i;
 
+password_data user_name;
+
+void cleaner_return(GtkWidget *button, gpointer user_data) {
+    gtk_widget_destroy(user_data);
+    login_main(0,NULL);
+}
+
 //保洁页面
 int cleaner_main(int argc, char *argv[]){
     gtk_init(&argc, &argv);
@@ -36,9 +43,10 @@ int cleaner_main(int argc, char *argv[]){
     GtkWidget *label3_2 = gtk_label_new("");
 
     //创建一个按钮
-    GtkWidget *button = gtk_button_new_with_label("密码维护");
-    //绑定按钮事件，触发回调函数
-    g_signal_connect(button, "clicked", G_CALLBACK(password_change), NULL);
+    GtkWidget *button1 = gtk_button_new_with_label("密码维护");
+    g_signal_connect(button1, "clicked", G_CALLBACK(password_change), NULL);
+    GtkWidget *button2 = gtk_button_new_with_label("返回上一级");
+    g_signal_connect(button2, "clicked", G_CALLBACK(cleaner_return), window);
 
 
     //对标签和按钮系统性定位
@@ -55,7 +63,9 @@ int cleaner_main(int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table), label3_2, 6, 11, 6, 8,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-    gtk_table_attach(GTK_TABLE(table), button, 12, 17, 5, 7,
+    gtk_table_attach(GTK_TABLE(table), button1, 12, 17, 5, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table), button2, 15, 18, 7, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
@@ -68,7 +78,6 @@ int cleaner_main(int argc, char *argv[]){
 
     return 0;
 }
-
 
 
 
@@ -246,10 +255,11 @@ MenuItem sort_options[] = {
 };
 
 //window3——下拉菜单排序选项
-
 GtkWidget *file_menu_item1=NULL;
 GtkWidget *file_menu_item2=NULL;
 
+
+//替换下拉菜单标签名
 void update_menu_item_label(GtkWidget *menu_item, const gchar *new_label) {
     gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menu_item))), new_label);
 }
@@ -257,7 +267,7 @@ void update_menu_item_label(GtkWidget *menu_item, const gchar *new_label) {
 //按最后一次缴费时间
 void on_paytime_activated(GtkMenuItem *item, gpointer user_data) {
     update_menu_item_label(file_menu_item1, "按最后一次缴费时间");
-    //    sort_data = database_qsort()
+    printf("Based on the last time of paying\n");
 }
 
 //按楼栋号
@@ -429,7 +439,7 @@ static void generate_window3(void) {
     g_signal_connect(combo2, "changed", G_CALLBACK(on_combobox_changed), NULL);
 
 
-// 创建“正序倒序”菜单项，并将 combo2 添加到其右侧
+    // 创建“正序倒序”菜单项，并将 combo2 添加到其右侧
     file_menu_item2 = gtk_menu_item_new_with_mnemonic("正序倒序");
     gtk_container_add(GTK_CONTAINER(file_menu_item2), combo2);
     gtk_misc_set_alignment(GTK_MISC(combo2), 0.5, 1.0);
@@ -570,12 +580,26 @@ void on_button4_clicked(GtkButton *button, gpointer *user_data) {
         generate_window4();
     }
 }
+void on_button5_clicked(GtkButton *button, gpointer *user_data) {
+    gtk_widget_destroy(user_data);
+    login_main(0,NULL);
+}
 
 
-int guard_main(int argc, char *argv[]) {
+list guard_information;
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     //temp
     database = init();
+
+    guard_information= user_info_query(&database,user_name.username);
+    char *Guard_infor[4];
+    int i;
+    for(i=0;i<3;i++){
+        Guard_infor[i]=list_get(char*,guard_information.data,i+2);
+    }
+
+
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "保安界面");
@@ -595,9 +619,12 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *label3_1 = gtk_label_new("工作区域");
     GtkWidget *label4_1 = gtk_label_new("工作时间");
     GtkWidget *label5_1 = gtk_label_new("未缴费用户数量");
-    GtkWidget *label2_2 = gtk_label_new("");
-    GtkWidget *label3_2 = gtk_label_new("");
-    GtkWidget *label4_2 = gtk_label_new("");
+
+
+
+    GtkWidget *label2_2 = gtk_label_new(Guard_infor[0]);
+    GtkWidget *label3_2 = gtk_label_new(Guard_infor[1]);
+    GtkWidget *label4_2 = gtk_label_new(Guard_infor[2]);
     GtkWidget *label5_2 = gtk_label_new("");
 
     //创建3个按钮
@@ -605,6 +632,7 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *button2 = gtk_button_new_with_label("密码维护");
     GtkWidget *button3 = gtk_button_new_with_label("业主账单查询");
     GtkWidget *button4 = gtk_button_new_with_label("未缴费用户查询");
+    GtkWidget *button5 = gtk_button_new_with_label("返回上一级");
 
 
     //系统定位
@@ -638,6 +666,8 @@ int guard_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(table1), button4, 12, 17, 11, 13,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_table_attach(GTK_TABLE(table1), button5, 15, 18, 13, 15,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     gtk_table_set_row_spacings(GTK_TABLE(table1), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table1), 30);
@@ -647,6 +677,7 @@ int guard_main(int argc, char *argv[]) {
     g_signal_connect(button2, "clicked", G_CALLBACK(password_change), NULL);
     g_signal_connect(button3, "clicked", G_CALLBACK(on_button3_clicked), window);
     g_signal_connect(button4, "clicked", G_CALLBACK(on_button4_clicked), window);
+    g_signal_connect(button5, "clicked", G_CALLBACK(on_button5_clicked), window);
 
 
     // 显示所有窗口部件
