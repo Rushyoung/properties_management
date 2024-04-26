@@ -55,7 +55,6 @@ void destroy_window_callback(GtkWidget *widget, gpointer data);
 void username_entry_callback(GtkWidget *widget, LoginData * data);
 void password_entry_callback(GtkWidget *widget, LoginData * data);
 void entry_callback(GtkWidget *widget, gpointer entry);
-void widget_destory(GtkWidget *widget, gpointer data);
 void password_page(GtkWidget *widget, gpointer data);
 void change_page(GtkWidget *widget, gpointer data);
 char* get_time();

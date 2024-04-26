@@ -36,11 +36,6 @@ void password_entry_callback(GtkWidget *widget, LoginData * data){
     strcpy(data->password, entry_text);
 }
 
-
-void widget_destory(GtkWidget *widget, gpointer data){
-    gtk_widget_destroy(widget);
-}
-
 void change_page(GtkWidget *widget, gpointer data) {
     GtkWidget *window = data;
     gtk_widget_destroy(window);

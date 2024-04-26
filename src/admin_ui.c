@@ -6,6 +6,7 @@
 #include <windows.h>
 #include "../include/ui.h"
 #include "../include/auth.h"
+#include "../include/database.h"
 
 void change_window1(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
@@ -31,7 +32,7 @@ int data_backup(GtkWidget* widget, gpointer data){
                 NULL,
                 TEXT("The data has backup in root directory as restore.db"),  // 显示的文本
                 TEXT("NOTICE"),                // 标题
-                MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
+                MB_OK | MB_ICONINFORMATION          // 风格：仅“确定”按钮和信息图标
     );
 }
 
@@ -114,22 +115,6 @@ int admin_main(int argc, char *argv[]) {
     g_signal_connect(button1, "clicked", G_CALLBACK(data_recovery), NULL);
     gtk_table_attach(GTK_TABLE(table), button1, 8, 9, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-
-    //创建一个带有滚动条的文本框
-    GtkWidget *scoller = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scoller), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-
-    //创建一个文本框
-    GtkWidget *text_view = gtk_text_view_new();
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);  // 设置自动换行
-
-    //将文本框添加到滚动条中
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, shuchu, -1);
-
-    //将文本视图添加到滚动窗格中
-    gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
-    gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
     GtkWidget *button = gtk_button_new_with_label("密码维护");
     g_signal_connect(button, "clicked", G_CALLBACK(password_page), NULL);
@@ -444,21 +429,20 @@ int admin_work( int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
-    //创建一个带有滚动条的文本框
-    GtkWidget *scoller = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scoller), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    char* name = gtk_entry_get_text(entry1);
 
-    //创建一个文本框
-    GtkWidget *text_view = gtk_text_view_new();
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);  // 设置自动换行
+    gchar *title[4] = {"姓名", "身份", "工作区域", "工作时间"};
+    GtkWidget *clist = gtk_clist_new_with_titles(4, title);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist, 7, 17, 4, 9);
 
-    //将文本框添加到滚动条中
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, "wall leg shoot gun", -1);
-
-    //将文本视图添加到滚动窗格中
-    gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
-    gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+    //调节4个title的位置
+    gtk_clist_set_column_width(clist, 0, 80);
+    gtk_clist_set_column_width(clist, 1, 80);
+    gtk_clist_set_column_width(clist, 2, 80);
+    gtk_clist_set_column_width(clist, 3, 80);
+    //点击时清空列表，刷新居民信息
+    void on_search_clicked(GtkWidget *button, gpointer user_data);
+    g_signal_connect(button2, "clicked", G_CALLBACK(on_search_clicked), clist);
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-工人管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
@@ -587,8 +571,34 @@ int get_resident(int argc, char *argv[]){
     return 0;
 }
 
+list tempest;
+
+void wide_search1 (GtkWidget* widget, gpointer data){
+    GtkWidget *entry = (GtkWidget*)data;
+    char* temp = gtk_entry_get_text(GTK_ENTRY(entry));
+    tempest = user_info_query(&database, temp);
+}
+
+static GtkWidget *clist;
+static gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
+char *resident_data1[4];
+
+void fill_clist() {
+    resident_data1[0] = list_get(char*, &tempest, 2);
+    resident_data1[1] = list_get(char*, &tempest, 3);
+    resident_data1[2] = list_get(char*, &tempest, 4);
+    resident_data1[3] = list_get(char*, &tempest, 5);
+    gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data1);
+}
+
+void fill(GtkWidget *button, gpointer user_data) {
+    gtk_clist_clear(GTK_CLIST(user_data));
+    fill_clist();
+}
+
 int admin_resident(int argc, char *argv[]){
     gtk_init(&argc, &argv);
+
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
@@ -613,18 +623,19 @@ int admin_resident(int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
 
-    GtkWidget *button2 = gtk_button_new_with_label("居民信息查询");
-    g_signal_connect(button2, "clicked", G_CALLBACK(destroy_window_callback), NULL);
-    gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry1), 10);
-    gtk_entry_set_text(GTK_ENTRY(entry1), "姓名：");
-    g_signal_connect(entry1, "activate", G_CALLBACK(entry_callback), entry1);
+    gtk_entry_set_text(GTK_ENTRY(entry1), "用户名：");
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *button2 = gtk_button_new_with_label("居民信息查询");
+    g_signal_connect(button2, "clicked", G_CALLBACK(wide_search1), entry1);
+    g_signal_connect(button2, "clicked", G_CALLBACK(fill), clist);
+    gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
     GtkWidget *button3 = gtk_button_new_with_label("居民信息删除");
     g_signal_connect(button3, "clicked", G_CALLBACK(destroy_window_callback), NULL);
@@ -635,26 +646,18 @@ int admin_resident(int argc, char *argv[]){
     GtkWidget *entry2 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry2), 16);
     gtk_entry_set_text(GTK_ENTRY(entry2), "用户名：");
-    g_signal_connect(entry2, "activate", G_CALLBACK(entry_callback), entry2);
     gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
-    //创建一个带有滚动条的文本框
-    GtkWidget *scoller = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scoller), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    clist = gtk_clist_new_with_titles(4, title);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist, 7, 17, 4, 9);
 
-    //创建一个文本框
-    GtkWidget *text_view = gtk_text_view_new();
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);  // 设置自动换行
-
-    //将文本框添加到滚动条中
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, "wall leg shoot gun", -1);
-
-    //将文本视图添加到滚动窗格中
-    gtk_container_add(GTK_CONTAINER(scoller), text_view);  // 将文本视图添加到滚动窗格中
-    gtk_table_attach(GTK_TABLE(table), scoller, 5, 19, 5, 9,GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
+    //调节4个title的位置
+    gtk_clist_set_column_width(clist, 0, 80);
+    gtk_clist_set_column_width(clist, 1, 80);
+    gtk_clist_set_column_width(clist, 2, 80);
+    gtk_clist_set_column_width(clist, 3, 80);
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-居民管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
@@ -675,6 +678,12 @@ void get_fee(GtkWidget *widget, gpointer data) {
     GtkWidget *entry = (GtkWidget *)data;
     char* da = gtk_entry_get_text(GTK_ENTRY(entry));
     set_fee(&database, da);
+    MessageBox(
+            NULL,
+            TEXT("SUCCESS!"),  // 显示的文本
+            TEXT("NOTICE"),                // 标题
+            MB_OK | MB_ICONINFORMATION           // 风格：仅“确定”按钮和信息图标
+    );
 }
 
 int admin_fee(int argc, char *argv[]){

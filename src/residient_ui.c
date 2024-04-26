@@ -6,9 +6,15 @@
 #include <windows.h>
 #include "../include/ui.h"
 
+list name;
+
+void get_personal_data(GtkWidget *widget, gpointer data){
+    name = user_info_query(&database,passwordData.username);
+}
+
 void change_window(GtkWidget *widget, gpointer data){
     GtkWidget *window = data;
-    widget_destory(window, NULL);
+    gtk_widget_destroy(window);
     resident_main(0, NULL);
 }
 
@@ -33,7 +39,7 @@ void resident_page_change3(GtkWidget *widget, gpointer data){
 
 int resident_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-
+    get_personal_data(NULL,NULL);
     //  创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
@@ -60,14 +66,44 @@ int resident_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), label1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-    GtkWidget *label2 = gtk_label_new("白傻子");
+    GtkWidget *label2 = gtk_label_new(list_get(char*, &name, 1));
     gtk_table_attach(GTK_TABLE(table), label2, 2, 3, 5, 6,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *label3 = gtk_label_new("楼栋：");
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_table_attach(GTK_TABLE(table), label3, 1, 2, 6, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *label4 = gtk_label_new(list_get(char*, &name, 2));
+    gtk_table_attach(GTK_TABLE(table), label4, 2, 3, 6, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *label5 = gtk_label_new("房间：");
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_table_attach(GTK_TABLE(table), label5, 1, 2, 7, 8,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *label6 = gtk_label_new(list_get(char*, &name, 3));
+    gtk_table_attach(GTK_TABLE(table), label6, 2, 3, 7, 8,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
+
+    GtkWidget *label7 = gtk_label_new("费用：");
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_table_attach(GTK_TABLE(table), label7, 16, 17, 2, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *label8 = gtk_label_new(list_get(char*, &name, 4));
+    gtk_table_attach(GTK_TABLE(table), label8, 17, 18, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
 
     GtkWidget *button1 = gtk_button_new_with_label("修改密码");
     g_signal_connect(G_OBJECT(button1), "clicked", G_CALLBACK(password_change), NULL);
-    gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 6, 7,
+    gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 8, 9,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
 
@@ -102,6 +138,12 @@ int resident_main(int argc, char *argv[]) {
     return 0;
 }
 
+void generate_bill(GtkWidget* widget, gpointer data){
+    pay(&database,passwordData.username);
+    GtkWidget *window = (GtkWidget*)data;
+    gtk_widget_destroy(window);
+};
+
 int fee_submit(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -128,7 +170,7 @@ int fee_submit(int argc, char *argv[]) {
     gtk_label_set_justify(GTK_LABEL(image), GTK_JUSTIFY_LEFT);
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
-    g_signal_connect(button1, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+    g_signal_connect(button1, "clicked", G_CALLBACK(generate_bill), window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -182,6 +224,11 @@ int resident_fee(int argc, char *argv[]) {
     return 0;
 }
 
+void report_problem(GtkWidget* widget, gpointer data){
+    GtkWidget *entry = (GtkWidget*)data;
+    problem_report(&database, passwordData.username, gtk_entry_get_text(GTK_ENTRY(entry)));
+}
+
 int problem_submit(int argc, char *argv[]){
     gtk_init(&argc, &argv);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -209,7 +256,7 @@ int problem_submit(int argc, char *argv[]){
     gtk_entry_set_max_length(GTK_ENTRY(entry), 20);
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
-    g_signal_connect(button1, "clicked", G_CALLBACK(gtk_widget_destroy), NULL);
+    g_signal_connect(button1, "clicked", G_CALLBACK(report_problem), entry);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
