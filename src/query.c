@@ -192,6 +192,7 @@ list user_info_query(db* _database, str username){
                                    database_query_by_column_to_column(_database, "guard","username", username, "region"),
                                    database_query_by_column_to_column(_database, "guard","username", username, "work_time"),
                                    "0");
+                return result;
             }
             char over_time[10];
             sprintf(over_time, "%d", overtime.length);
