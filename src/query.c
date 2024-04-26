@@ -156,10 +156,29 @@ int qsort_compare(const void* a, const void* b){
 }
 
 list_link_head work_content_query(db* _database){
-    fopen(_database->file_name, "rb");
+    FILE* fp = fopen(_database->file_name, "rb");
+    jump_to_table(fp, "content");
+    int line_count = count_line(fp);
+    jump_to_table(fp, "content");
+    table_info info = table_info_get(fp);
+    list_link_head head = list_link_create();
 
+    //?
+    for(int line_no = 0; line_no < line_count; line_no++) {
+        list result = list_create_by_size(char*);
+        char temp_char[256];
+        fseek(fp, info.start, SEEK_SET);
+        fp_move(fp, (info.line_width + 2) * (line_no + 1));
+        for (int i = 0; i < info.column_count; i++) {
+            fscanf(fp, "%s", temp_char);
+            str ttemp = string(temp_char);
+            list_append(&result, &ttemp);
+        }
+        list_link_append(&head, result);
+    }
+    fclose(fp);
+    return head;
 }
-
 
 
 list user_info_query(db* _database, str username){
@@ -168,6 +187,12 @@ list user_info_query(db* _database, str username){
     switch (auth) {
         case 1:
             list overtime = check_pay(_database);
+            if(overtime.length == 0){
+                result = list_init(database_query_by_column_to_column(_database, "guard","username", username, "name"),
+                                   database_query_by_column_to_column(_database, "guard","username", username, "region"),
+                                   database_query_by_column_to_column(_database, "guard","username", username, "work_time"),
+                                   "0");
+            }
             char over_time[10];
             sprintf(over_time, "%d", overtime.length);
             result = list_init(database_query_by_column_to_column(_database, "guard","username", username, "name"),
