@@ -139,6 +139,21 @@ list check_pay(db* _database){
     return result;
 }
 
+list check_pay_user(db* _database, str username){
+    FILE* fp = fopen(_database->file_name, "rb");
+    jump_to_table(fp, "resident");
+    int line_count = count_line(fp);
+    list result = list_create_by_size(int);
+    for(int i = 1; i <= line_count; i++){
+        //?
+        if(strcmp(username, database_select(_database, "account", "username", i)) == 0 && (check_time(database_select(_database, "resident", "last_time", i)) == 1)){
+            list_append(&result, &i);
+        }
+    }
+    fclose(fp);
+    return result;
+}
+
 
 int delete_user(db* _database, str username){
     int auth = get_auth(_database, username);
@@ -160,4 +175,16 @@ int delete_user(db* _database, str username){
 inline int get_auth(db* _database, str username){
     if(database_query_by_column(_database, "account", "username", username) == -1) return -1;
     return atoi(database_query_by_column_to_column(_database, "account", "username", username, "auth"));
+}
+
+
+list_link_head check_pay_list(db* _database, str username){
+    int auth = get_auth(_database, username);
+    list query;
+    switch (auth) {
+        case 1:
+            query = check_pay(_database);
+            return database_select_line_list_link(_database, "resident", query);
+        case 3:
+    }
 }

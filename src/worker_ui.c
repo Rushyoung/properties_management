@@ -722,10 +722,10 @@ int guard_main(int argc, char *argv[]) {
 void refill_clist() {
     printf("YES\n");
     temp_data *a = (temp_data *) data;
-    int m=a->i;
-    int n=a->j;
-    int i,j;
-    printf("%d %d\n",m,n);
+    int m = a->i;
+    int n = a->j;
+    int i, j;
+    printf("%d %d\n", m, n);
     if(n==2){
         if(m==1){
             result = database_qsort(&database, "bill","region");

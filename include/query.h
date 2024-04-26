@@ -26,6 +26,9 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column);
 
 list_link_head work_content_query(db* _database);
 
+list_link_head database_select_line_list_link(db* _database, str table, list query);
+
+
 list user_info_query(db* _database, str username);
 
 int qsort_compare(const void* a, const void* b);

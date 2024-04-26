@@ -265,3 +265,16 @@ str string(str s) {
     cursor = (cursor + 1) % STRING_EXTRA_LIMIT;
     return strings[ret];
 }
+
+
+
+void free_list_link(list_link_head* head){
+    struct list_link_node* cur = head->next;
+    struct list_link_node* temp = head->next;
+    for(int i = 0; i < head->length; i++){
+        list_free(&cur->data);
+        temp = cur;
+        cur = cur->next;
+        free(temp);
+    }
+}

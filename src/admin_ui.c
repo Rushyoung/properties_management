@@ -8,6 +8,17 @@
 #include "../include/auth.h"
 #include "../include/database.h"
 
+void delete(GtkWidget* widget, gpointer data){
+    GtkWidget *entry = (GtkWidget *)data;
+    delete_user(&database, gtk_entry_get_text(entry));
+    MessageBox(
+            NULL,
+            TEXT("The user has been deleted"),  // 显示的文本
+            TEXT("NOTICE"),                // 标题
+            MB_OK | MB_ICONINFORMATION          // 风格：仅“确定”按钮和信息图标
+    );
+}
+
 void change_window1(GtkWidget *widget, gpointer widget1){
     GtkWidget *window = widget1;
     gtk_widget_destroy(window);
@@ -139,8 +150,6 @@ void page_change(GtkWidget *widget, gpointer data){
 }
 
 
-
-
 typedef struct{
     GtkWidget *widget1;
     GtkWidget *widget2;
@@ -258,6 +267,7 @@ int get_cleaner(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_cleaner_data), data);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy), window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -351,6 +361,7 @@ int get_guard(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_guard_data), data);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -360,6 +371,34 @@ int get_guard(int argc, char *argv[]){
     return 0;
 }
 
+char* temp ;
+list_link_head result1;
+GtkWidget *clist2;
+gchar *title2[4] = {"用户名", "姓名", "工作区域", "工作时间"};
+char *resident_data2[4];
+
+void get_keyword(GtkWidget* button, gpointer user_data){
+    GtkWidget *entry = (GtkWidget *) user_data;
+    temp = gtk_entry_get_text(GTK_ENTRY(entry));
+}
+
+void fill_clist2() {
+    result1 = database_wide_query(&database, "guard","username", temp);
+    struct list_link_node* cur=result1.next;
+    for (int i = 0; i < result1.length ; i++) {
+        resident_data2[0] = list_get(char*, &(cur->data),1);
+        resident_data2[1] = list_get(char*, &(cur->data),2);
+        resident_data2[2] = list_get(char*, &(cur->data),3);
+        resident_data2[3] = list_get(char*, &(cur->data),4);
+        gtk_clist_append(GTK_CLIST(clist2), (gchar **) resident_data2);
+        cur=cur->next;
+    }
+}
+
+void fill2(GtkWidget *button, gpointer user_data) {
+    gtk_clist_clear(GTK_CLIST(clist2));
+    fill_clist2();
+}
 
 
 int admin_work( int argc, char *argv[]){
@@ -401,13 +440,6 @@ int admin_work( int argc, char *argv[]){
 
     gtk_table_attach(GTK_TABLE(table), menubar2, 2, 3, 4, 5,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
 
-
-    GtkWidget *button2 = gtk_button_new_with_label("工人信息查询");
-    g_signal_connect(button2, "clicked", G_CALLBACK(destroy_window_callback), NULL);
-    gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
-
     GtkWidget *entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry1), 20);
     gtk_entry_set_text(GTK_ENTRY(entry1), "");
@@ -415,34 +447,35 @@ int admin_work( int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-    GtkWidget *button3 = gtk_button_new_with_label("工人信息删除");
-    g_signal_connect(button3, "clicked", G_CALLBACK(destroy_window_callback), NULL);
-    gtk_table_attach(GTK_TABLE(table), button3, 2, 3, 6, 7,
+    GtkWidget *button2 = gtk_button_new_with_label("工人信息查询");
+    g_signal_connect(button2, "clicked", G_CALLBACK(get_keyword), entry1);
+    g_signal_connect(button2, "clicked", G_CALLBACK(fill_clist2), entry1);
+    g_signal_connect(button2, "clicked", G_CALLBACK(fill2), clist2);
+    gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
+    gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
     GtkWidget *entry2 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry2), 20);
-    gtk_entry_set_text(GTK_ENTRY(entry2), "");
-    g_signal_connect(entry2, "activate", G_CALLBACK(entry_callback), entry2);
     gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *button3 = gtk_button_new_with_label("工人信息删除");
+    g_signal_connect(button3, "clicked", G_CALLBACK(delete),entry2);
+    gtk_table_attach(GTK_TABLE(table), button3, 2, 3, 6, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
-    char* name = gtk_entry_get_text(entry1);
 
-    gchar *title[4] = {"姓名", "身份", "工作区域", "工作时间"};
-    GtkWidget *clist = gtk_clist_new_with_titles(4, title);
-    gtk_table_attach_defaults(GTK_TABLE(table), clist, 7, 17, 4, 9);
+    clist2 = gtk_clist_new_with_titles(4, title2);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist2, 7, 17, 4, 9);
 
     //调节4个title的位置
-    gtk_clist_set_column_width(clist, 0, 80);
-    gtk_clist_set_column_width(clist, 1, 80);
-    gtk_clist_set_column_width(clist, 2, 80);
-    gtk_clist_set_column_width(clist, 3, 80);
-    //点击时清空列表，刷新居民信息
-    void on_search_clicked(GtkWidget *button, gpointer user_data);
-    g_signal_connect(button2, "clicked", G_CALLBACK(on_search_clicked), clist);
+    gtk_clist_set_column_width(clist2, 0, 80);
+    gtk_clist_set_column_width(clist2, 1, 80);
+    gtk_clist_set_column_width(clist2, 2, 80);
+    gtk_clist_set_column_width(clist2, 3, 80);
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-工人管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
@@ -573,27 +606,26 @@ int get_resident(int argc, char *argv[]){
 
 list tempest;
 
-void wide_search1 (GtkWidget* widget, gpointer data){
-    GtkWidget *entry = (GtkWidget*)data;
-    char* temp = gtk_entry_get_text(GTK_ENTRY(entry));
-    tempest = user_info_query(&database, temp);
-}
-
-static GtkWidget *clist;
-static gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
+GtkWidget *clist1;
+gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
 char *resident_data1[4];
 
-void fill_clist() {
-    resident_data1[0] = list_get(char*, &tempest, 2);
-    resident_data1[1] = list_get(char*, &tempest, 3);
-    resident_data1[2] = list_get(char*, &tempest, 4);
-    resident_data1[3] = list_get(char*, &tempest, 5);
-    gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data1);
+void fill_clist1() {
+    result1 = database_wide_query(&database, "resident","username", temp);
+    struct list_link_node* cur=result1.next;
+    for (int i = 0; i < result1.length ; i++) {
+        resident_data1[0] = list_get(char*, &(cur->data),1);
+        resident_data1[1] = list_get(char*, &(cur->data),2);
+        resident_data1[2] = list_get(char*, &(cur->data),3);
+        resident_data1[3] = list_get(char*, &(cur->data),4);
+        gtk_clist_append(GTK_CLIST(clist1), (gchar **) resident_data1);
+        cur=cur->next;
+    }
 }
 
-void fill(GtkWidget *button, gpointer user_data) {
-    gtk_clist_clear(GTK_CLIST(user_data));
-    fill_clist();
+void fill1(GtkWidget *button, gpointer user_data) {
+    gtk_clist_clear(GTK_CLIST(clist1));
+    fill_clist1();
 }
 
 int admin_resident(int argc, char *argv[]){
@@ -619,6 +651,7 @@ int admin_resident(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("录入居民信息");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_resident), NULL);
+    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 2, 3, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -626,38 +659,40 @@ int admin_resident(int argc, char *argv[]){
 
     GtkWidget *entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry1), 10);
-    gtk_entry_set_text(GTK_ENTRY(entry1), "用户名：");
+    gtk_entry_set_text(GTK_ENTRY(entry1), "");
     gtk_table_attach(GTK_TABLE(table), entry1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button2 = gtk_button_new_with_label("居民信息查询");
-    g_signal_connect(button2, "clicked", G_CALLBACK(wide_search1), entry1);
-    g_signal_connect(button2, "clicked", G_CALLBACK(fill), clist);
+    g_signal_connect(button2, "clicked", G_CALLBACK(get_keyword), entry1);
+    g_signal_connect(button2, "clicked", G_CALLBACK(fill_clist1), entry1);
+    g_signal_connect(button2, "clicked", G_CALLBACK(fill1), clist1);
     gtk_table_attach(GTK_TABLE(table), button2, 2, 3, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button2), GTK_JUSTIFY_LEFT);
 
+    GtkWidget *entry2 = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(entry2), 16);
+    gtk_entry_set_text(GTK_ENTRY(entry2), "");
+    gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 6, 7,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+
     GtkWidget *button3 = gtk_button_new_with_label("居民信息删除");
-    g_signal_connect(button3, "clicked", G_CALLBACK(destroy_window_callback), NULL);
+    g_signal_connect(button3, "clicked", G_CALLBACK(delete), entry2);
     gtk_table_attach(GTK_TABLE(table), button3, 2, 3, 6, 7,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
-
-    GtkWidget *entry2 = gtk_entry_new();
-    gtk_entry_set_max_length(GTK_ENTRY(entry2), 16);
-    gtk_entry_set_text(GTK_ENTRY(entry2), "用户名：");
-    gtk_table_attach(GTK_TABLE(table), entry2, 1, 2, 6, 7,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
-    clist = gtk_clist_new_with_titles(4, title);
-    gtk_table_attach_defaults(GTK_TABLE(table), clist, 7, 17, 4, 9);
+    clist1 = gtk_clist_new_with_titles(4, title);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist1, 7, 17, 4, 9);
 
     //调节4个title的位置
-    gtk_clist_set_column_width(clist, 0, 80);
-    gtk_clist_set_column_width(clist, 1, 80);
-    gtk_clist_set_column_width(clist, 2, 80);
-    gtk_clist_set_column_width(clist, 3, 80);
+    gtk_clist_set_column_width(clist1, 0, 80);
+    gtk_clist_set_column_width(clist1, 1, 80);
+    gtk_clist_set_column_width(clist1, 2, 80);
+    gtk_clist_set_column_width(clist1, 3, 80);
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-居民管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,

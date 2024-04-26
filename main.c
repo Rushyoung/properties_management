@@ -38,12 +38,12 @@ int main(int argc, char *argv[]) {
     printf("%s\n", list_get(char*, &(cur->data), 1));
     cur = cur->next;
     printf("%s\n", list_get(char*, &(cur->data), 1));
-//    login_main(argc, argv);
     string1 = "manba";
     string2 = "000000";
     string3 = "kobe";
     string4 = "1d";
     string5 =  "101";
     add_residents(&database, string1, string2, string3, string4, string5);
+    login_main(argc, argv);
     return 0;
 }

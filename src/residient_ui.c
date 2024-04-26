@@ -344,7 +344,7 @@ static gchar *title[2] = {"工作人员列表","费用标准"};
 //        resident_data[3] =
 //        resident_data[4] =
 //        resident_data[5] =
-//        gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+//        gtk_clist_append(GTK_CLIST(clist1), (gchar **) resident_data);
 //    }
 //}
 
