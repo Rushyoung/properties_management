@@ -17,6 +17,8 @@ int database_query_by_column(db* _this, str _table, str _column, str _keyword);
 str database_query_by_column_to_column(db* _this, str _table, str src_column, str src_keyword, str dst_column);
 
 list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyword);
+list_link_head database_wide_query(db* _this, str _table, str _column, str keyword);
+
 
 list qsort_by_map(map* _data);
 list_link_head database_qsort(db* _database, str _table, str _column);
