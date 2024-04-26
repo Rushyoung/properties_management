@@ -4,12 +4,10 @@
 
 #include "../include/ui.h"
 
-
 #include <gtk/gtk.h>
 
 size_t i;
-
-password_data user_name;
+size_t j;
 
 void cleaner_return(GtkWidget *button, gpointer user_data) {
     gtk_widget_destroy(user_data);
@@ -17,8 +15,16 @@ void cleaner_return(GtkWidget *button, gpointer user_data) {
 }
 
 //保洁页面
+list cleaner_information;
 int cleaner_main(int argc, char *argv[]){
     gtk_init(&argc, &argv);
+
+    cleaner_information= user_info_query(&database,"mycomputerdad");
+    char* cleaner_infor[2];
+    for(i=0;i<2;i++){
+        cleaner_infor[i]= list_get(char*, &cleaner_information,i+1);
+    }
+
 
     // 创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -39,8 +45,8 @@ int cleaner_main(int argc, char *argv[]){
     GtkWidget *label1_2 = gtk_label_new("操作选项");
     GtkWidget *label2_1 = gtk_label_new("姓名");
     GtkWidget *label3_1 = gtk_label_new("工作区域");
-    GtkWidget *label2_2 = gtk_label_new("");
-    GtkWidget *label3_2 = gtk_label_new("");
+    GtkWidget *label2_2 = gtk_label_new(cleaner_infor[0]);
+    GtkWidget *label3_2 = gtk_label_new(cleaner_infor[1]);
 
     //创建一个按钮
     GtkWidget *button1 = gtk_button_new_with_label("密码维护");
@@ -83,7 +89,10 @@ int cleaner_main(int argc, char *argv[]){
 
 //保安界面兼二级跳转
 #define COLUMN_ID    0//列索引
-#define COLUMN_NAME  1//列索引
+#define COLUMN_REGION  1//列索引
+#define COLUMN_ROOM  2//列索引
+#define COLUMN_WORK_CONTENT  3//列索引
+#define COLUMN_TIME  4//列索引
 gboolean window1_opened = FALSE;//标记窗口1是否已打开
 gboolean window3_opened = FALSE;//标记窗口3是否已打开
 gboolean window4_opened = FALSE;//标记窗口4是否已打开
@@ -93,7 +102,6 @@ static int last_selected_id = -1;
 
 //window1——window1中双击事件响应
 static void on_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data) {
-
     //控件，可操作；树形数据结构
     GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
     GtkTreeIter iter;
@@ -123,8 +131,8 @@ static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
         // 获取模型中的第一个迭代器存在iter中
         gboolean found = gtk_tree_model_get_iter_first(model, &iter);
         // 遍历模型，查找与last_selected_id匹配的行
+        int id;
         while (found) {
-            int id;
             gtk_tree_model_get(model, &iter, COLUMN_ID, &id, -1);
 
             if (id == last_selected_id) {
@@ -137,9 +145,11 @@ static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
             // 当返回FALSE时，表示已经遍历完了树型模型中的所有节点。
             found = gtk_tree_model_iter_next(model, &iter);
         }
-
         // 已清除选中行,重新标记为-1
         last_selected_id = -1;
+        gchar *column_data;
+        gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 1, &column_data, -1);
+        printf("%s\n",column_data);
 
         // 重新排列剩余数据的COLUMN_ID为正常顺序
         int new_id = 1;
@@ -157,6 +167,24 @@ static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
         g_print("No row is currently selected.\n");
     }
 }
+
+//void on_submit_order_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data){
+//    GtkListStore *list_store = GTK_LIST_STORE(user_data);
+//
+//    // 从路径中获取选中行的迭代器
+//    GtkTreeIter iter;
+//    gtk_tree_model_get_iter(GTK_TREE_MODEL(list_store), &iter, path);
+//
+//    // 读取指定列的数据
+//    // 假设我们想读取第1列（从0开始计数）的数据，该列存储字符串
+//    gchar *column_data;
+//    gtk_tree_model_get(GTK_TREE_MODEL(list_store), &iter, 1, &column_data, -1);
+//
+//
+//    printf("Activated: %s\n", column_data);
+////    problem_finish(&database,work_content[id]);
+//    g_free(column_data); // 释放字符串内存
+//}
 
 //仅关闭窗口1，重新标记window1为未打开
 void close_window1_only(GtkWidget *window1) {
@@ -178,25 +206,29 @@ static void generate_window1(void){
     g_signal_connect(window1, "destroy", G_CALLBACK(close_window1_only), NULL);
 
     // 创建GtkListStore
-    GtkListStore *list_store = gtk_list_store_new(2, G_TYPE_INT, G_TYPE_STRING);
+    GtkListStore *list_store = gtk_list_store_new(5, G_TYPE_INT, G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING);
 
     // 向GtkListStore中添加数据（此处仅为示例，实际应用中应根据需要添加数据）
     GtkTreeIter iter;
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
-                       COLUMN_ID,   1,
-                       COLUMN_NAME, "Item 1",
-                       -1);
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
-                       COLUMN_ID,   2,
-                       COLUMN_NAME, "Item 2",
-                       -1);
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
-                       COLUMN_ID,   3,
-                       COLUMN_NAME, "Item 3",
-                       -1);
+    list_link_head  guard_work_content= work_content_query(&database);
+    struct list_link_node *cur = guard_work_content.next;
+    for(i=0;i<guard_work_content.length;i++){
+        char* work_content[5];
+        for(j=0;j<5;j++){
+            work_content[j]=list_get(char*, &(cur->data), j+1);
+            printf("%s ",work_content[j]);
+        }
+        printf("\n");
+        gtk_list_store_append(list_store, &iter);
+        gtk_list_store_set(list_store, &iter,
+                           COLUMN_ID,i+1,
+                           COLUMN_REGION,work_content[1],
+                           COLUMN_ROOM,work_content[2],
+                           COLUMN_WORK_CONTENT,work_content[3],
+                           COLUMN_TIME,work_content[4],
+                           -1);
+        cur=cur->next;
+    }
 
     // 创建GtkTreeView并设置数据模型
     GtkWidget *tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
@@ -208,11 +240,24 @@ static void generate_window1(void){
     GtkTreeViewColumn *column_id = gtk_tree_view_column_new_with_attributes("工作编号", renderer_text, "text", COLUMN_ID, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_id);
 
-    GtkTreeViewColumn *column_name = gtk_tree_view_column_new_with_attributes("工作内容", renderer_text, "text", COLUMN_NAME, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_name);
+    GtkTreeViewColumn *column_region = gtk_tree_view_column_new_with_attributes("楼栋号", renderer_text, "text", COLUMN_REGION, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_region);
+
+    GtkTreeViewColumn *column_room = gtk_tree_view_column_new_with_attributes("房间号", renderer_text, "text", COLUMN_ROOM, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_room);
+
+    GtkTreeViewColumn *column_work_content = gtk_tree_view_column_new_with_attributes("工作内容", renderer_text, "text", COLUMN_WORK_CONTENT, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_work_content);
+
+    GtkTreeViewColumn *column_time = gtk_tree_view_column_new_with_attributes("上报时间 ", renderer_text, "text", COLUMN_TIME, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column_time);
+
+
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(tree_view);
+    gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE); // 设置为单选模式（可按需选择其他模式）
 
     // 为GtkTreeView添加“row-activated”信号处理器，即双击时获取其id
-    g_signal_connect(tree_view, "row-activated", G_CALLBACK(on_row_activated), NULL);
+    g_signal_connect(tree_view, "row-activated", G_CALLBACK(on_row_activated), list_store);
 
     // 为了在窗口中正常显示，将GtkTreeView放入GtkScrolledWindow中，并设置固定大小
     //数据过多时可进行滚轮滑动，没有父窗口
@@ -227,9 +272,12 @@ static void generate_window1(void){
     // 添加GtkScrolledWindow到VBox，即scrolled_window->vbox
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
+
     //删除按键
     GtkWidget *delete_button = gtk_button_new_with_label("删除");
     g_signal_connect(delete_button, "clicked", G_CALLBACK(on_delete_button_clicked), tree_view);
+//    g_signal_connect(delete_button, "clicked", G_CALLBACK(on_submit_order_clicked), list_store);
+
 
     // 创建一个HBox用于水平布局按钮，delete_button->hbox->vbox
     GtkWidget *hbox = gtk_hbox_new(FALSE, 10);  // 设置间距为5
@@ -305,7 +353,7 @@ temp_data *data = &da;
 
 //window3——解析数据
 list_link_head result;
-char *resident_data[4];
+char *resident_data[6];
 
 static int menu1_id=-1;
 static int menu2_id=-1;
@@ -347,7 +395,7 @@ void return22(GtkWidget *widget){
 
 static GtkWidget *entry;
 static GtkWidget *clist;
-static gchar *title[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
+static gchar *title[6] = {"账单id","姓名", "楼栋号", "房间号", "缴费费用","缴费时间"};
 
 
 //window3——创建窗口3
@@ -365,19 +413,6 @@ static void generate_window3(void) {
     gtk_container_add(GTK_CONTAINER(window3), table3);
 
 
-    GtkWidget *label1 = gtk_label_new("姓名");
-    GtkWidget *label2 = gtk_label_new("楼栋号");
-    GtkWidget *label3 = gtk_label_new("房间号");
-    GtkWidget *label4 = gtk_label_new("缴费费用");
-
-    gtk_table_attach(GTK_TABLE(table3), label1, 2, 5, 3, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table3), label2, 6, 9, 3, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table3), label3, 10, 13, 3, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table3), label4, 14, 17, 3, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     // 创建菜单，并添加到窗口
     GtkWidget *menubar1 = gtk_menu_bar_new();
@@ -483,7 +518,7 @@ static void generate_window3(void) {
 
 
 
-    clist = gtk_clist_new_with_titles(4, title);
+    clist = gtk_clist_new_with_titles(6, title);
     gtk_table_attach_defaults(GTK_TABLE(table3), clist, 2, 17, 4, 9);
 
     //调节4个title的位置
@@ -491,6 +526,8 @@ static void generate_window3(void) {
     gtk_clist_set_column_width(clist, 1, 80);
     gtk_clist_set_column_width(clist, 2, 80);
     gtk_clist_set_column_width(clist, 3, 80);
+    gtk_clist_set_column_width(clist, 4, 80);
+    gtk_clist_set_column_width(clist, 5, 80);
 
     //点击时清空列表，刷新居民信息
     void on_search_clicked(GtkWidget *button, gpointer user_data);
@@ -511,9 +548,16 @@ void close_window4_only(GtkWidget *window4) {
 }
 
 
+char *title1[3]={"用户姓名","楼栋号","房间号"};
+
 //window4——创建window4
 GtkWidget *window4=NULL;
+list unpay_resident_information;
 static void generate_window4(void) {
+    char* unpay_infor[3];
+//    for(i=0;i<)
+
+
     window4 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window4), "未缴费用户查询");
     gtk_window_set_default_size(GTK_WINDOW(window4), 600, 400);
@@ -522,29 +566,20 @@ static void generate_window4(void) {
     gtk_window_set_position(GTK_WINDOW(window4), GTK_WIN_POS_CENTER);
 
     // 创建一个10x10的布局容器
-    GtkWidget *table4 = gtk_table_new(12, 20, FALSE);
+    GtkWidget *table4 = gtk_table_new(20, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window4), table4);
 
-    char *str[3]={"1","2","3"};
-    GtkWidget *label1 = gtk_label_new("用户姓名");
-    GtkWidget *label2 = gtk_label_new("楼栋号");
-    GtkWidget *label3 = gtk_label_new("房间号");
-    GtkWidget *label4 = gtk_label_new(str[0]);
-    GtkWidget *label5 = gtk_label_new(str[1]);
-    GtkWidget *label6 = gtk_label_new(str[2]);
 
-    gtk_table_attach(GTK_TABLE(table4), label1, 2, 10, 2, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table4), label2, 2, 10, 5, 7,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table4), label3, 2, 10, 8, 10,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table4), label4, 11, 18, 2, 4,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table4), label5, 11, 18, 5, 7,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table4), label6, 11, 18, 8, 10,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    clist = gtk_clist_new_with_titles(3, title1);
+    gtk_table_attach_defaults(GTK_TABLE(table4), clist, 2, 18, 2, 18);
+
+    //调节4个title的位置
+    gtk_clist_set_column_width(clist, 0, 120);
+    gtk_clist_set_column_width(clist, 1, 120);
+    gtk_clist_set_column_width(clist, 2, 120);
+
+
 
 
 
@@ -557,7 +592,7 @@ static void generate_window4(void) {
 
 void (*generate_window1_ptr)(void)=generate_window1;
 void on_button1_clicked(GtkButton *button, gpointer *user_data) {
-    if (!window1_opened&&!window3_opened) {
+    if (!window1_opened&&!window3_opened&&!window4_opened) {
         window1_opened = TRUE;
         generate_window1();
     }
@@ -590,11 +625,10 @@ list guard_information;
 int guard_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
-    guard_information= user_info_query(&database,user_name.username);
+    guard_information= user_info_query(&database,passwordData.username);
     char *Guard_infor[4];
-    int i;
-    for(i=0;i<3;i++){
-        Guard_infor[i]=list_get(char*,guard_information.data,i+2);
+    for(int i=0;i<4;i++){
+        Guard_infor[i]=list_get(char*,&guard_information,i+1);
     }
 
 
@@ -623,7 +657,7 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *label2_2 = gtk_label_new(Guard_infor[0]);
     GtkWidget *label3_2 = gtk_label_new(Guard_infor[1]);
     GtkWidget *label4_2 = gtk_label_new(Guard_infor[2]);
-    GtkWidget *label5_2 = gtk_label_new("");
+    GtkWidget *label5_2 = gtk_label_new(Guard_infor[3]);
 
     //创建3个按钮
     GtkWidget *button1 = gtk_button_new_with_label("完成业主报修");
@@ -694,72 +728,89 @@ void refill_clist() {
     printf("%d %d\n", m, n);
     if(n==2){
         if(m==1){
-            result = database_qsort(&database, "resident","region");
+            result = database_qsort(&database, "bill","region");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
                 cur=cur->next;
             }
         }
         else if(m==2){
-            result = database_qsort(&database, "resident","name");
+            result = database_qsort(&database, "bill","name");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
         else{
-            result = database_qsort(&database, "resident","fee");
+            result = database_qsort(&database, "bill","fee");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
     }
     else{
         if(m==1){
-            result = database_qsort_reverse(&database, "resident","region");
+            result = database_qsort(&database, "bill","region");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
         else if(m==2){
-            result = database_qsort_reverse(&database, "resident","name");
+            result = database_qsort(&database, "bill","name");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
         else{
-            result = database_qsort_reverse(&database, "resident","fee");
+            result = database_qsort(&database, "bill","name");
             struct list_link_node* cur=result.next;
             for (i = 0; i < result.length ; i++) {
-                resident_data[0] = list_get(char*, &(cur->data),2);
-                resident_data[1] = list_get(char*, &(cur->data),3);
-                resident_data[2] = list_get(char*, &(cur->data),4);
-                resident_data[3] = list_get(char*, &(cur->data),5);
+                resident_data[0] = list_get(char*, &(cur->data),1);
+                resident_data[1] = list_get(char*, &(cur->data),2);
+                resident_data[2] = list_get(char*, &(cur->data),3);
+                resident_data[3] = list_get(char*, &(cur->data),4);
+                resident_data[4] = list_get(char*, &(cur->data),5);
+                resident_data[5] = list_get(char*, &(cur->data),6);
                 gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+                cur=cur->next;
             }
         }
     }
@@ -770,5 +821,6 @@ void on_search_clicked(GtkWidget *button, gpointer user_data) {
     // 清空列表
     printf("YES\n");
     gtk_clist_clear(GTK_CLIST(user_data));
+    printf("Have clean the clist\n");
     refill_clist();
 }

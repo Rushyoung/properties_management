@@ -34,7 +34,7 @@ void resident_page_change2(GtkWidget *widget, gpointer data){
 void resident_page_change3(GtkWidget *widget, gpointer data){
     GtkWidget *window = data;
     gtk_widget_destroy(window);
-    resident_inquire(0, NULL);
+//    resident_inquire(0, NULL);
 }
 
 int resident_main(int argc, char *argv[]) {
@@ -398,14 +398,9 @@ int resident_inquire(int argc, char *argv[]) {
     gtk_clist_set_column_width(clist, 0, 260);
     gtk_clist_set_column_width(clist, 1, 260);
 
-// 创建第一个按钮
-    GtkWidget *button1 = gtk_button_new_with_label("工作人员列表");
-    g_signal_connect(button1, "clicked", G_CALLBACK(on_worker_list_clicked), clist);
-    gtk_table_attach(GTK_TABLE(table), button1, 2, 9, 1, 2,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     // 创建第二个按钮
-    GtkWidget *button2 = gtk_button_new_with_label("费用标准");
+    GtkWidget *button2 = gtk_button_new_with_label("缴费历史查询");
     g_signal_connect(button2, "clicked", G_CALLBACK(on_fee_standard_clicked), clist);
     gtk_table_attach(GTK_TABLE(table), button2, 11, 18, 1, 2,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
