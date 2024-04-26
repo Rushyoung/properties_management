@@ -53,7 +53,7 @@ int resident_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -195,7 +195,7 @@ int resident_fee(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -281,7 +281,7 @@ int resident_problem(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -312,54 +312,8 @@ int resident_problem(int argc, char *argv[]) {
 
 
 
-
-
-const int NUM_COLUMNS = 4;
 static GtkWidget *clist;
-static gchar *title[2] = {"工作人员列表","费用标准"};
-//size_t i;
-//
-//struct Resident {
-//    char name[50];          // 姓名
-//    int building_number;    // 楼栋号
-//    int room_number;        // 房间号
-//    double payment_amount;  // 缴费费用
-//    // 可以添加其他字段，如最后一次缴费时间等
-//};
-//struct Resident residents[5]={
-//        {"张三", 1, 101, 1000.0},
-//        {"李四", 2, 201, 2000.0},
-//        {"王五", 3, 301, 3000.0},
-//        {"赵六", 4, 401, 4000.0},
-//        {"孙七", 5, 501, 5000.0}
-//};
-
-//gchar *resident_data[6];
-
-//void refill_clist() {
-//    for (i = 0; ; i++) {
-//        resident_data[0] =
-//        resident_data[1] =
-//        resident_data[2] =
-//        resident_data[3] =
-//        resident_data[4] =
-//        resident_data[5] =
-//        gtk_clist_append(GTK_CLIST(clist1), (gchar **) resident_data);
-//    }
-//}
-
-
-//void worker_list_callback(GtkWidget *widget, gpointer user_data) {
-//    gtk_clist_clear(GTK_CLIST(user_data));
-//    refill_clist();
-//}
-//
-//void fee_standard_callback(GtkWidget *widget, gpointer user_data) {
-//    gtk_clist_clear(GTK_CLIST(user_data));
-//    refill_clist();
-//}
-
-
+static gchar *title = {""};
 
 void refill_clist_o() {
 
@@ -378,7 +332,7 @@ void on_fee_standard_clicked(GtkWidget *widget, gpointer user_data) {
 }
 
 
-int resident_inquire(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口
