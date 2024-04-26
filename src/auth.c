@@ -100,7 +100,7 @@ void pay(db* _database, str username){
     if(line_count == 0) id = "10000000";
     else{
         char format[10];
-        sprintf(format, "%d", atoi(database_select(_database, "content", "ID", line_count)) + 1);
+        sprintf(format, "%d", atoi(database_select(_database, "bill", "ID", line_count)) + 1);
         id = format;
     }
     list data = list_init(id, database_query_by_column_to_column(_database, "resident", "username", username, "fee"), get_time(), username);
