@@ -107,6 +107,17 @@ void map_set(map* m, str key, int value){
     }
 }
 
+void map_set_unsafe(map* m, str key, int value){
+    for(int i = 0; i < m->capacity; i++){
+        if(m->keys[i] == NULL){
+            m->keys[i] = malloc(strlen(key) + 1);
+            strcpy(m->keys[i], key);
+            m->values[i] = value;
+            return;
+        }
+    }
+}
+
 void map_expand(map* m){
     m->capacity += 16;
     m->keys = realloc(m->keys, m->capacity * sizeof(char*));

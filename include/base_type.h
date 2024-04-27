@@ -40,6 +40,7 @@ typedef struct{
 
 map map_create();
 void map_set(map*, str, int);
+void map_set_unsafe(map*, str, int);
 void map_expand(map*);
 int map_get(map*, str);
 void map_remove(map*, str);

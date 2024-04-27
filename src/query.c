@@ -116,7 +116,7 @@ list_link_head database_qsort(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
-        map_set(&temp, list_get(char*, &query, i), i);
+        map_set_unsafe(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
@@ -151,7 +151,7 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
-        map_set(&temp, list_get(char*, &query, i), i);
+        map_set_unsafe(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
