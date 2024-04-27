@@ -160,7 +160,7 @@ void close_window1_only(GtkWidget *window1) {
     gtk_widget_destroy(window1);
     window1=NULL;
     window1_opened=FALSE;
-    gtk_main();
+//    guard_main(0,NULL);
 }
 
 //创建window1
@@ -380,7 +380,7 @@ void close_window3_only(GtkWidget *window3) {
     menu1_id=-1;
     menu2_id=-1;
     judge_entry=0;
-    gtk_main();
+//    guard_main(0,NULL);
 }
 
 //window3——创建窗口3
@@ -523,11 +523,10 @@ static void generate_window3(void) {
 
 
 //仅关闭窗口4，重新标记window4为未打开
-void close_window4_only(GtkWidget *window4) {
+void close_window4_only(GtkButton *button, gpointer *user_data) {
+    GtkWidget *window4 = (GtkWidget *) user_data;
     gtk_widget_destroy(window4);
-    window4=NULL;
-    window4_opened=FALSE;
-    gtk_main();
+    guard_main(0,NULL);
 }
 
 
@@ -540,7 +539,7 @@ static void generate_window4(void) {
     window4 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window4), "未缴费用户查询");
     gtk_window_set_default_size(GTK_WINDOW(window4), 600, 400);
-    g_signal_connect(G_OBJECT(window4), "destroy", G_CALLBACK(close_window4_only), window4);
+    g_signal_connect(G_OBJECT(window4), "destroy", G_CALLBACK(gtk_main_quit), window4);
 
     gtk_window_set_position(GTK_WINDOW(window4), GTK_WIN_POS_CENTER);
 
@@ -551,7 +550,7 @@ static void generate_window4(void) {
 
 
     clist = gtk_clist_new_with_titles(3, title1);
-    gtk_table_attach_defaults(GTK_TABLE(table4), clist, 2, 18, 2, 18);
+    gtk_table_attach_defaults(GTK_TABLE(table4), clist, 2, 18, 3, 18);
 
     //调节4个title的位置
     gtk_clist_set_column_width(clist, 0, 120);
@@ -559,29 +558,21 @@ static void generate_window4(void) {
     gtk_clist_set_column_width(clist, 2, 120);
 
 
-    list_link_head  guard_work_content= work_content_query(&database);
-    struct list_link_node *cur = guard_work_content.next;
-    for(i=0;i<guard_work_content.length;i++){
-        char* work_content[5];
-        for(j=0;j<5;j++){
-            work_content[j]=list_get(char*, &(cur->data), j+1);
-            printf("%s ",work_content[j]);
-        }
-        printf("\n");
-        gtk_clist_append(GTK_CLIST(clist), (gchar **)work_content);
+    list_link_head unpay_information= check_pay_list(&database,passwordData.username);
+    struct list_link_node* cur=unpay_information.next;
+    char* unpay_infor[3];
+    for(i=0;i<3;i++) {
+        if(cur == NULL) break;
+        unpay_infor[i] = list_get(char*, &(cur->data), i+2);
+        gtk_clist_append(GTK_CLIST(clist), (gchar **) unpay_infor);
         cur=cur->next;
     }
 
-//
-//    list_link_head unpay_information= check_pay_list(&database,passwordData.username);
-//    struct list_link_node* cur=unpay_information.next;
-//    char* unpay_infor[3];
-//    for(i=0;i<3;i++) {
-//        if(cur == NULL) break;
-//        unpay_infor[i] = list_get(char*, &(cur->data), i+2);
-//    }
-//    gtk_clist_append(GTK_CLIST(clist), (gchar **) unpay_infor);
-//
+    GtkWidget *button = gtk_button_new_with_label("返回上一级");
+    gtk_table_attach(GTK_TABLE(table4), button, 2, 4, 1, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    g_signal_connect(button, "clicked", G_CALLBACK(close_window4_only), window4);
+
 
     gtk_table_set_row_spacings(GTK_TABLE(table4), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table4), 30);
@@ -610,16 +601,19 @@ void on_button3_clicked(GtkButton *button, gpointer *user_data) {
 
 void (*generate_window4_ptr)(void) = generate_window4;
 void on_button4_clicked(GtkButton *button, gpointer *user_data) {
-    if (!window4_opened&&!window3_opened&&!window1_opened) {
-        window4_opened = TRUE;
-        generate_window4();
-    }
+    window4_opened = TRUE;
+    generate_window4();
+    gtk_widget_destroy(user_data);
 }
 void on_button5_clicked(GtkButton *button, gpointer *user_data) {
     gtk_widget_destroy(user_data);
     login_main(0,NULL);
 }
 
+
+void on_window_close(GtkWidget *window) {
+    gtk_widget_destroy(window);
+}
 
 list guard_information;
 int guard_main(int argc, char *argv[]) {
@@ -636,7 +630,10 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "保安界面");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
-    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), window);
+    // 连接“delete-event”信号到自定义关闭回调
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(on_window_close), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -664,7 +661,7 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *button2 = gtk_button_new_with_label("密码维护");
     GtkWidget *button3 = gtk_button_new_with_label("业主账单查询");
     GtkWidget *button4 = gtk_button_new_with_label("未缴费用户查询");
-    GtkWidget *button5 = gtk_button_new_with_label("返回上一级");
+    GtkWidget *button5 = gtk_button_new_with_label("登出");
 
 
     //系统定位
@@ -714,7 +711,6 @@ int guard_main(int argc, char *argv[]) {
 
     // 显示所有窗口部件
     gtk_widget_show_all(window);
-    //运行主循环
     gtk_main();
 }
 
