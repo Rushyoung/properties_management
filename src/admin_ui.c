@@ -434,8 +434,10 @@ void fill2(GtkWidget *button, gpointer user_data) {
 }
 
 void auth_edit(GtkWidget* widget, gpointer user_data){
-    int a = change_auth(&database, passwordData.username);
-    if(a = -1){
+    GtkWidget *entry = (GtkWidget *) user_data;
+    char* username = gtk_entry_get_text(GTK_ENTRY(entry));
+    int a = change_auth(&database, username);
+    if(a == -1){
         MessageBox(
                 NULL,
                 "The user is not existed!",
@@ -528,8 +530,13 @@ int admin_work( int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table),scrolled_window, 6, 19, 4, 9,
                             GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
+    GtkWidget *entry3 = gtk_entry_new();
+    gtk_entry_set_max_length(GTK_ENTRY(entry3), 20);
+    gtk_table_attach(GTK_TABLE(table), entry3, 1, 2, 8, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
     GtkWidget *button4 = gtk_button_new_with_label("提权");
-    g_signal_connect(button4, "clicked", G_CALLBACK(auth_edit), window);
+    g_signal_connect(button4, "clicked", G_CALLBACK(auth_edit), entry3);
     gtk_table_attach(GTK_TABLE(table), button4, 2, 3, 8, 9,
                      GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
 
