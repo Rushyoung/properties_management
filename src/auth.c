@@ -139,7 +139,7 @@ list check_pay(db* _database){
     return result;
 }
 
-list check_pay_user(db* _database, str username){
+/*list check_pay_user(db* _database, str username){
     FILE* fp = fopen(_database->file_name, "rb");
     jump_to_table(fp, "resident");
     int line_count = count_line(fp);
@@ -152,8 +152,27 @@ list check_pay_user(db* _database, str username){
     }
     fclose(fp);
     return result;
+}*/
+
+list check_pay_user(db* _database, str username) {
+    FILE *fp = fopen(_database->file_name, "rb");
+    jump_to_table(fp, "bill");
+    int line_count = count_line(fp);
+    list result = list_create_by_size(int);
+    for (int i = 1; i <= line_count; i++) {
+        //?
+        if (strcmp(username, database_select(_database, "bill", "username", i)) == 0) {
+            list_append(&result, &i);
+        }
+    }
+    fclose(fp);
+    return result;
 }
 
+list_link_head user_bill(db* _database, str username){
+    list query = check_pay_user(_database, username);
+    return database_select_line_list_link(_database, "bill", query);
+}
 
 int delete_user(db* _database, str username){
     int auth = get_auth(_database, username);
@@ -179,12 +198,6 @@ inline int get_auth(db* _database, str username){
 
 
 list_link_head check_pay_list(db* _database, str username){
-    int auth = get_auth(_database, username);
-    list query;
-    switch (auth) {
-        case 1:
-            query = check_pay(_database);
-            return database_select_line_list_link(_database, "resident", query);
-        case 3:
-    }
+    list query = check_pay(_database);
+    return database_select_line_list_link(_database, "resident", query);
 }

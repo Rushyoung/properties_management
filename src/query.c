@@ -32,6 +32,11 @@ list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyw
         list result = database_select_column(_this, _table, _column);
         for(int i = 1; i <= result.length; i++){
             str temp = list_get(char*, &result, i);
+            if(strcmp(temp, keyword) == 0){
+                answer = i;
+                list_append(&final, &i);
+                continue;
+            }
             if(strstr(temp, keyword) != NULL){
                 answer = i;
                 list_append(&final, &i);
