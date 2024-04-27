@@ -77,7 +77,7 @@ void list_link_append(list_link_head* head,list l);
 
 void free_list_link(list_link_head* head);
 
-#define STRING_EXTRA_LIMIT 128
-#define STRING_SHORT_STD 4
+#define STRING_EXTRA_LIMIT 256
+#define STRING_SHORT_STD 8
 str string(str s);
 #endif //PROPERTY_BASE_TYPE_H
