@@ -54,8 +54,9 @@ int login_main(int argc, char *argv[]) {
     //创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
-    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
+    gtk_window_set_default_size(GTK_WINDOW(window), 200, 100);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -94,7 +95,7 @@ int login_main(int argc, char *argv[]) {
     gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
     gtk_label_set_markup(GTK_LABEL(label),"<span foreground='black'  font_desc='20'>欢迎使用世界树物业管理系统！</span>");
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 3, 0, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
