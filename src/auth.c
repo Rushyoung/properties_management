@@ -201,3 +201,14 @@ list_link_head check_pay_list(db* _database, str username){
     list query = check_pay(_database);
     return database_select_line_list_link(_database, "resident", query);
 }
+
+int change_auth(db* _database, str username){
+    int line_no = database_query_by_column(_database, "account", "username", username);
+    if(line_no == -1) return -1;
+    int auth = get_auth(_database, username);
+    str password = database_query_by_column_to_column(_database, "account", "username", username, "password");
+    delete_user(_database, username);
+    str new_auth = "0";
+    add_user(_database, username, password, new_auth);
+    return 0;
+}
