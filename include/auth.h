@@ -39,5 +39,7 @@ list_link_head user_bill(db* _database, str username);
 
 list_link_head check_pay_list(db* _database, str username);
 
+int change_auth(db* _database, str username);
+
 int get_auth(db* _database, str username);
 #endif //PROPERTY_AUTH_H
