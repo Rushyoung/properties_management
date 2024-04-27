@@ -436,6 +436,17 @@ void fill2(GtkWidget *button, gpointer user_data) {
     fill_clist2();
 }
 
+void auth_edit(GtkWidget* widget, gpointer user_data){
+    int a = change_auth(&database, passwordData.username);
+    if(a = -1){
+        MessageBox(
+                NULL,
+                "The user is not existed!",
+                "ERROR",
+                MB_OK | MB_ICONERROR
+        );
+    }
+}
 
 int admin_work( int argc, char *argv[]){
     gtk_init(&argc, &argv);
@@ -520,6 +531,12 @@ int admin_work( int argc, char *argv[]){
 
     gtk_table_attach(GTK_TABLE(table),scrolled_window, 6, 19, 4, 9,
                             GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    GtkWidget *button4 = gtk_button_new_with_label("提权");
+    g_signal_connect(button4, "clicked", G_CALLBACK(auth_edit), window);
+    gtk_table_attach(GTK_TABLE(table), button4, 2, 3, 8, 9,
+                     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
+
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-工人管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
