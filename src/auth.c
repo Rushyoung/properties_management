@@ -185,6 +185,7 @@ int delete_user(db* _database, str username){
         case 3:
             database_remove_line(_database, "resident", database_query_by_column(_database, "resident", "username", username));
             database_remove_line(_database, "account", database_query_by_column(_database, "account", "username", username));
+            database_vacuum(_database);
             return 0;
     }
     return -1;

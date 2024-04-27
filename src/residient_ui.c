@@ -180,6 +180,29 @@ int fee_submit(int argc, char *argv[]) {
     return 0;
 }
 
+GtkWidget *clist3;
+gchar *titled[4] = {"姓名", "楼栋号", "房间号", "缴费费用"};
+char *resident_data3[4];
+list_link_head result3;
+
+void bill_histroy() {
+    result3 = user_bill(&database, passwordData.username);
+    struct list_link_node* cur=result3.next;
+    for (int i = 0; i < result3.length ; i++) {
+        resident_data3[0] = list_get(char*, &(cur->data),2);
+        resident_data3[1] = list_get(char*, &(cur->data),3);
+        resident_data3[2] = list_get(char*, &(cur->data),4);
+        resident_data3[3] = list_get(char*, &(cur->data),5);
+        gtk_clist_append(GTK_CLIST(clist3), (gchar **) resident_data3);
+        cur=cur->next;
+    }
+}
+
+void clear(GtkWidget *button, gpointer user_data) {
+    gtk_clist_clear(GTK_CLIST(clist3));
+    bill_histroy();
+}
+
 int resident_fee(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
@@ -214,10 +237,22 @@ int resident_fee(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), button2, 4, 15, 2, 3,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
+
     GtkWidget *button3 = gtk_button_new_with_label("缴费记录");
-    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(fee_submit), NULL);
+    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(bill_histroy), NULL);
+    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(clear), NULL);
     gtk_table_attach(GTK_TABLE(table), button3, 4, 15, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+    clist3 = gtk_clist_new_with_titles(4, titled);
+    gtk_table_attach_defaults(GTK_TABLE(table), clist3, 7, 17, 4, 9);
+
+    //调节4个title的位置
+    gtk_clist_set_column_width(clist3, 0, 80);
+    gtk_clist_set_column_width(clist3, 1, 80);
+    gtk_clist_set_column_width(clist3, 2, 80);
+    gtk_clist_set_column_width(clist3, 3, 80);
+
 
     gtk_widget_show_all(window);
     gtk_main();
@@ -298,11 +333,6 @@ int resident_problem(int argc, char *argv[]) {
     GtkWidget *button2 = gtk_button_new_with_label("上报");
     g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(problem_submit), NULL);
     gtk_table_attach(GTK_TABLE(table), button2, 4, 15, 2, 3,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-
-    GtkWidget *button3 = gtk_button_new_with_label("上报记录");
-    g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(problem_submit), NULL);
-    gtk_table_attach(GTK_TABLE(table), button3, 4, 15, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     gtk_widget_show_all(window);

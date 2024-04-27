@@ -189,6 +189,12 @@ void get_guard_data(GtkWidget* widget, gpointer data){
     da->region = gtk_entry_get_text(GTK_ENTRY(da->widget4));
     da->time = gtk_entry_get_text(GTK_ENTRY(da->widget5));
     add_guard(&database, da->username, da->password, da->name, da->region, da->time);
+    MessageBox(
+            NULL,
+            "SUCCESS!",
+            "NOTICE",
+            MB_OK
+    );
 }
 
 int get_cleaner(int argc, char *argv[]){
@@ -369,7 +375,6 @@ int get_guard(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("确定");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_guard_data), data);
-    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 1, 2, 5, 6,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -471,15 +476,24 @@ int admin_work( int argc, char *argv[]){
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(scrolled_window,
+                                   GTK_POLICY_AUTOMATIC, // 垂直滚动条自动出现
+                                   GTK_POLICY_NEVER);     // 水平滚动条永不出现
+
 
     clist2 = gtk_clist_new_with_titles(4, title2);
-    gtk_table_attach_defaults(GTK_TABLE(table), clist2, 7, 17, 4, 9);
 
     //调节4个title的位置
     gtk_clist_set_column_width(clist2, 0, 80);
     gtk_clist_set_column_width(clist2, 1, 80);
     gtk_clist_set_column_width(clist2, 2, 80);
     gtk_clist_set_column_width(clist2, 3, 80);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_window), clist2);
+
+    gtk_table_attach(GTK_TABLE(table),scrolled_window, 6, 19, 4, 9,
+                            GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-工人管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
@@ -520,6 +534,12 @@ void get_resident_data(GtkWidget *widget, gpointer data){
     temp->region = gtk_entry_get_text(GTK_ENTRY(temp->widget4));
     temp->room = gtk_entry_get_text(GTK_ENTRY(temp->widget5));
     add_residents(&database, temp->username, temp->password, temp->name, temp->region, temp->room);
+    MessageBox(
+            NULL,
+            "SUCCESS!",
+            "NOTICE",
+            MB_OK
+            );
 }
 
 int get_resident(int argc, char *argv[]){
@@ -618,10 +638,10 @@ void fill_clist1() {
     result1 = database_wide_query(&database, "resident","username", temp);
     struct list_link_node* cur=result1.next;
     for (int i = 0; i < result1.length ; i++) {
-        resident_data1[0] = list_get(char*, &(cur->data),1);
-        resident_data1[1] = list_get(char*, &(cur->data),2);
-        resident_data1[2] = list_get(char*, &(cur->data),3);
-        resident_data1[3] = list_get(char*, &(cur->data),4);
+        resident_data1[0] = list_get(char*, &(cur->data),2);
+        resident_data1[1] = list_get(char*, &(cur->data),3);
+        resident_data1[2] = list_get(char*, &(cur->data),4);
+        resident_data1[3] = list_get(char*, &(cur->data),5);
         gtk_clist_append(GTK_CLIST(clist1), (gchar **) resident_data1);
         cur=cur->next;
     }
@@ -655,7 +675,6 @@ int admin_resident(int argc, char *argv[]){
 
     GtkWidget *button1 = gtk_button_new_with_label("录入居民信息");
     g_signal_connect(button1, "clicked", G_CALLBACK(get_resident), NULL);
-    g_signal_connect(button1,"clicked",G_CALLBACK(gtk_widget_destroy),window);
     gtk_table_attach(GTK_TABLE(table), button1, 2, 3, 4, 5,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button1), GTK_JUSTIFY_LEFT);
@@ -690,13 +709,23 @@ int admin_resident(int argc, char *argv[]){
     gtk_label_set_justify(GTK_LABEL(button3), GTK_JUSTIFY_LEFT);
 
     clist1 = gtk_clist_new_with_titles(4, title);
-    gtk_table_attach_defaults(GTK_TABLE(table), clist1, 7, 17, 4, 9);
+
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(scrolled_window,
+                                   GTK_POLICY_AUTOMATIC, // 垂直滚动条自动出现
+                                   GTK_POLICY_NEVER);     // 水平滚动条永不出现
 
     //调节4个title的位置
     gtk_clist_set_column_width(clist1, 0, 80);
     gtk_clist_set_column_width(clist1, 1, 80);
     gtk_clist_set_column_width(clist1, 2, 80);
     gtk_clist_set_column_width(clist1, 3, 80);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_window), clist1);
+
+    gtk_table_attach(GTK_TABLE(table),scrolled_window, 6, 19, 4, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
 
     GtkWidget *lable = gtk_label_new("当前页面：管理员-居民管理");
     gtk_table_attach(GTK_TABLE(table), lable, 5, 19, 3, 4,
