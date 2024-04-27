@@ -109,7 +109,8 @@ int admin_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
     GtkWidget *label = gtk_label_new("管理员");
-    gtk_table_attach(GTK_TABLE(table), label, 1, 2, 4, 5, GTK_FILL, GTK_FILL, 0, 0);
+    gtk_table_attach(GTK_TABLE(table), label, 1, 2, 4, 5,
+                     GTK_FILL, GTK_FILL, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 
     GtkWidget *label1 = gtk_label_new("姓名：");
@@ -141,7 +142,8 @@ int admin_main(int argc, char *argv[]) {
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu_item);
 
-    gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 1, 2,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 1, 2,
+                     GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
 
     GtkWidget *button2 = gtk_button_new_with_label("数据备份");
     g_signal_connect(button2, "clicked", G_CALLBACK(data_backup), NULL);
@@ -465,7 +467,8 @@ int admin_work( int argc, char *argv[]){
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item2), file_menu2);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar2), file_menu_item2);
 
-    gtk_table_attach(GTK_TABLE(table), menubar2, 2, 3, 4, 5,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), menubar2, 2, 3, 4, 5,
+                      GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
 
     GtkWidget *entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(entry1), 20);

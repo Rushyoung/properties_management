@@ -58,7 +58,8 @@ int resident_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
     GtkWidget *label = gtk_label_new("业主");
-    gtk_table_attach(GTK_TABLE(table), label, 1, 2, 4, 5, GTK_FILL, GTK_FILL, 0, 0);
+    gtk_table_attach(GTK_TABLE(table), label, 1, 2, 4, 5,
+                     GTK_FILL, GTK_FILL, 0, 0);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 
     GtkWidget *label1 = gtk_label_new("姓名：");
@@ -127,10 +128,12 @@ int resident_main(int argc, char *argv[]) {
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file_menu_item);
-    gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 3, 4,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), menubar, 8, 9, 3, 4,
+                     GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
 
     GtkWidget *lable = gtk_label_new("当前页面：业主界面");
-    gtk_table_attach(GTK_TABLE(table), lable, 8, 9, 5, 7,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
+    gtk_table_attach(GTK_TABLE(table), lable, 8, 9, 5, 7,
+                     GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
     gtk_label_set_justify(GTK_LABEL(lable), GTK_JUSTIFY_LEFT);
 
     GtkWidget *button3 = gtk_button_new_with_label("登出");
