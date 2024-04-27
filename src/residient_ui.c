@@ -34,7 +34,7 @@ void resident_page_change2(GtkWidget *widget, gpointer data){
 void resident_page_change3(GtkWidget *widget, gpointer data){
     GtkWidget *window = data;
     gtk_widget_destroy(window);
-//    resident_inquire(0, NULL);
+    resident_inquire(0, NULL);
 }
 
 int resident_main(int argc, char *argv[]) {
@@ -313,31 +313,15 @@ int resident_problem(int argc, char *argv[]) {
 
 
 static GtkWidget *clist;
-static gchar *title = {""};
-
-void refill_clist_o() {
-
-}
-
-void on_worker_list_clicked(GtkWidget *widget, gpointer user_data) {
-    g_print("Button clicked!\n");
-    gtk_clist_clear(GTK_CLIST(user_data));
-    refill_clist_o();
-}
-
-void on_fee_standard_clicked(GtkWidget *widget, gpointer user_data) {
-    g_print("Button clicked!\n");
-    gtk_clist_clear(GTK_CLIST(user_data));
-    refill_clist_o();
-}
+static gchar *resident_title[3] = {"ID","金额","缴费时间"};
 
 
-int _main(int argc, char *argv[]) {
+int resident_inquire(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "用户查询");
+    gtk_window_set_title(GTK_WINDOW(window), "账单查询");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -345,19 +329,25 @@ int _main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(window), table);
 
 
-    clist = gtk_clist_new_with_titles(2, title);
+    clist = gtk_clist_new_with_titles(3, resident_title);
     gtk_table_attach_defaults(GTK_TABLE(table), clist, 2, 18, 2, 9);
 
     //调节4个title的相对位置
-    gtk_clist_set_column_width(clist, 0, 260);
-    gtk_clist_set_column_width(clist, 1, 260);
+    gtk_clist_set_column_width(clist, 0, 150);
+    gtk_clist_set_column_width(clist, 1, 150);
+    gtk_clist_set_column_width(clist, 2, 150);
 
 
-    // 创建第二个按钮
-    GtkWidget *button2 = gtk_button_new_with_label("缴费历史查询");
-    g_signal_connect(button2, "clicked", G_CALLBACK(on_fee_standard_clicked), clist);
-    gtk_table_attach(GTK_TABLE(table), button2, 11, 18, 1, 2,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    char* resident_accont[3];
+    list_link_head resident_bill = user_bill(&database, passwordData.username);
+    struct list_link_node *cur=resident_bill.next;
+    for(int i=0;i<resident_bill.length;i++){
+        resident_accont[0]= list_get(char*, &(cur->data),1);
+        resident_accont[1]= list_get(char*, &(cur->data),5);
+        resident_accont[2]= list_get(char*, &(cur->data),6);
+        gtk_clist_append(clist, resident_accont);
+        cur=cur->next;
+    }
 
 
     gtk_table_set_row_spacings(GTK_TABLE(table), 20);
