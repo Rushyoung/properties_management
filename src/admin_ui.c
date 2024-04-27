@@ -8,6 +8,26 @@
 #include "../include/auth.h"
 #include "../include/database.h"
 
+static int counter1 = 0;
+
+void on_counter_clicked1(GtkWidget* widget, gpointer data){
+    list_link_head *head = (list_link_head*)data;
+    counter1++;
+    if(counter1 > 1){
+        free_list_link(head);
+    }
+}
+
+static int counter2 = 0;
+
+void on_counter_clicked2(GtkWidget* widget, gpointer data){
+    list_link_head *head = (list_link_head*)data;
+    counter2++;
+    if(counter2 > 1){
+        free_list_link(head);
+    }
+}
+
 void delete(GtkWidget* widget, gpointer data){
     GtkWidget *entry = (GtkWidget *)data;
     delete_user(&database, gtk_entry_get_text(entry));
@@ -71,8 +91,6 @@ int data_recovery(GtkWidget* widget, gpointer data){
 //创建管理员页面
 int admin_main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
-
-    char *shuchu = "NULL";
 
     //  创建主窗口
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -141,7 +159,7 @@ int admin_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_label_set_justify(GTK_LABEL(button), GTK_JUSTIFY_LEFT);
 
-    GtkWidget *button3 = gtk_button_new_with_label("返回上一级");
+    GtkWidget *button3 = gtk_button_new_with_label("登出");
     g_signal_connect(button3, "clicked", G_CALLBACK(change_page), window);
     gtk_table_attach(GTK_TABLE(table), button3, 1, 2, 7, 8,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
@@ -334,7 +352,7 @@ int get_guard(int argc, char *argv[]){
     gtk_table_attach(GTK_TABLE(table), lable5, 0, 1, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
-    GtkWidget *lable6 = gtk_label_new("示例输入（早九至晚九）：09:00-21:00");
+    GtkWidget *lable6 = gtk_label_new("示例输入（早九至晚九）：0900-2100");
     gtk_table_attach(GTK_TABLE(table), lable6, 4, 6, 3, 4,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
@@ -457,6 +475,7 @@ int admin_work( int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button2 = gtk_button_new_with_label("工人信息查询");
+    g_signal_connect(button2, "clicked", G_CALLBACK(on_counter_clicked1), &result1);
     g_signal_connect(button2, "clicked", G_CALLBACK(get_keyword), entry1);
     g_signal_connect(button2, "clicked", G_CALLBACK(fill_clist2), entry1);
     g_signal_connect(button2, "clicked", G_CALLBACK(fill2), clist2);
@@ -687,6 +706,7 @@ int admin_resident(int argc, char *argv[]){
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
     GtkWidget *button2 = gtk_button_new_with_label("居民信息查询");
+    g_signal_connect(button2, "clicked", G_CALLBACK(on_counter_clicked2), &result1);
     g_signal_connect(button2, "clicked", G_CALLBACK(get_keyword), entry1);
     g_signal_connect(button2, "clicked", G_CALLBACK(fill_clist1), entry1);
     g_signal_connect(button2, "clicked", G_CALLBACK(fill1), clist1);

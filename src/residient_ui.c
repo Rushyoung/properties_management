@@ -133,6 +133,12 @@ int resident_main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(table), lable, 8, 9, 5, 7,GTK_FILL|GTK_EXPAND,GTK_FILL|GTK_EXPAND, 3, 3);
     gtk_label_set_justify(GTK_LABEL(lable), GTK_JUSTIFY_LEFT);
 
+    GtkWidget *button3 = gtk_button_new_with_label("登出");
+    g_signal_connect(button3, "clicked", G_CALLBACK(change_page), window);
+    gtk_table_attach(GTK_TABLE(table), button3, 3, 5, 8, 9,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+
+
     gtk_widget_show_all(window);
     gtk_main();
     return 0;

@@ -716,6 +716,7 @@ int guard_main(int argc, char *argv[]) {
     gtk_widget_show_all(window);
     //运行主循环
     gtk_main();
+    return 0;
 }
 
 //当输入框为空的时候，排序填充
