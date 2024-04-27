@@ -42,10 +42,6 @@ void login_change(GtkWidget *widget, gpointer user_data) {
         gtk_widget_destroy(window);
         guard_main(0,NULL);
     }
-    if(auth == 2){
-        gtk_widget_destroy(window);
-        cleaner_main(0,NULL);
-    }
     if(auth == 3){
         gtk_widget_destroy(window);
         resident_main(0,NULL);
@@ -73,6 +69,7 @@ int login_main(int argc, char *argv[]) {
     //创建两个文本框
     GtkWidget *username_entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(username_entry1), 16);
+
     GtkWidget *password_entry1 = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(password_entry1), 16);
     gtk_entry_set_visibility(GTK_ENTRY(password_entry1), FALSE);
