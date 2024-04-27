@@ -156,11 +156,9 @@ static void on_delete_button_clicked(GtkButton *button, gpointer user_data) {
 
 
 //仅关闭窗口1，重新标记window1为未打开
-void close_window1_only(GtkWidget *window1) {
-    gtk_widget_destroy(window1);
-    window1=NULL;
-    window1_opened=FALSE;
-//    guard_main(0,NULL);
+void close_window1_only(GtkButton *button, gpointer *user_data) {
+    gtk_widget_destroy(user_data);
+    guard_main(0,NULL);
 }
 
 //创建window1
@@ -172,7 +170,7 @@ static void generate_window1(void){
     // 设置窗口的基本属性和信号处理
     gtk_window_set_title(GTK_WINDOW(window1), "完成业主报修");
     gtk_window_set_default_size(GTK_WINDOW(window1), 400, 300);
-    g_signal_connect(window1, "destroy", G_CALLBACK(close_window1_only), NULL);
+    g_signal_connect(window1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     // 创建GtkListStore
     GtkListStore *list_store = gtk_list_store_new(5, G_TYPE_INT, G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING);
@@ -243,15 +241,19 @@ static void generate_window1(void){
 
 
     //删除按键
-    GtkWidget *delete_button = gtk_button_new_with_label("删除（双击以选中项目）");
-    g_signal_connect(delete_button, "clicked", G_CALLBACK(on_delete_button_clicked), tree_view);
+    GtkWidget *button1 = gtk_button_new_with_label("删除（双击以选中项目）");
+    g_signal_connect(button1, "clicked", G_CALLBACK(on_delete_button_clicked), tree_view);
 
+    GtkWidget *button2 = gtk_button_new_with_label("返回上一级");
+    g_signal_connect(button2, "clicked", G_CALLBACK(close_window1_only), window1);
 
 
     // 创建一个HBox用于水平布局按钮，delete_button->hbox->vbox
     GtkWidget *hbox = gtk_hbox_new(FALSE, 10);  // 设置间距为5
-    gtk_box_pack_start(GTK_BOX(hbox), delete_button, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), button1, FALSE, FALSE, 0);
+    gtk_box_pack_end(GTK_BOX(hbox), button2, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+
 
     // 显示窗口
     gtk_widget_show_all(window1);
@@ -373,14 +375,12 @@ void on_search_entry(GtkWidget *button, gpointer user_data){
 }
 
 //仅关闭窗口3，重新标记window3为未打开
-void close_window3_only(GtkWidget *window3) {
-    gtk_widget_destroy(window3);
-    window3=NULL;
-    window3_opened=FALSE;
+void close_window3_only(GtkButton *button, gpointer *user_data) {
+    gtk_widget_destroy(user_data);
     menu1_id=-1;
     menu2_id=-1;
     judge_entry=0;
-//    guard_main(0,NULL);
+    guard_main(0,NULL);
 }
 
 //window3——创建窗口3
@@ -389,7 +389,7 @@ static void generate_window3(void) {
     window3 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window3), "业主账单查询");
     gtk_window_set_default_size(GTK_WINDOW(window3), 600, 400);
-    g_signal_connect(G_OBJECT(window3), "destroy", G_CALLBACK(close_window3_only), NULL);
+    g_signal_connect(G_OBJECT(window3), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     //生成在屏幕中央
     gtk_window_set_position(GTK_WINDOW(window3), GTK_WIN_POS_CENTER);
 
@@ -490,8 +490,8 @@ static void generate_window3(void) {
     gtk_table_attach_defaults(GTK_TABLE(table3), entry, 6, 14, 1, 3);
 
 
-    GtkWidget *button = gtk_button_new_with_label("搜索");
-    gtk_table_attach(GTK_TABLE(table3), button, 14, 17, 1, 3,
+    GtkWidget *button1 = gtk_button_new_with_label("搜索");
+    gtk_table_attach(GTK_TABLE(table3), button1, 14, 17, 1, 2,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
 
@@ -512,8 +512,14 @@ static void generate_window3(void) {
 
     //点击时清空列表，刷新居民信息
     void on_search_clicked(GtkWidget *button, gpointer user_data);
-    g_signal_connect(button, "clicked", G_CALLBACK(on_search_entry), entry);
-    g_signal_connect(button, "clicked", G_CALLBACK(on_search_clicked), clist);
+    g_signal_connect(button1, "clicked", G_CALLBACK(on_search_entry), entry);
+    g_signal_connect(button1, "clicked", G_CALLBACK(on_search_clicked), clist);
+
+    GtkWidget *button2 = gtk_button_new_with_label("返回上一级");
+    gtk_table_attach(GTK_TABLE(table3), button2, 14, 17, 2, 3,
+                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+    g_signal_connect(button2, "clicked", G_CALLBACK(close_window3_only), window3);
+
 
 
     gtk_widget_show_all(window3);
@@ -583,25 +589,20 @@ static void generate_window4(void) {
 
 void (*generate_window1_ptr)(void)=generate_window1;
 void on_button1_clicked(GtkButton *button, gpointer *user_data) {
-    if (!window1_opened&&!window3_opened&&!window4_opened) {
-        window1_opened = TRUE;
-        generate_window1();
-    }
+    generate_window1();
+    gtk_widget_destroy(user_data);
 }
 
 
 void (*generate_window3_ptr)(void) = generate_window3;
 void on_button3_clicked(GtkButton *button, gpointer *user_data) {
-    if (!window3_opened&&!window1_opened&&!window4_opened) {
-        window3_opened = TRUE;
-        generate_window3();
-    }
+    generate_window3();
+    gtk_widget_destroy(user_data);
 }
 
 
 void (*generate_window4_ptr)(void) = generate_window4;
 void on_button4_clicked(GtkButton *button, gpointer *user_data) {
-    window4_opened = TRUE;
     generate_window4();
     gtk_widget_destroy(user_data);
 }
@@ -648,7 +649,6 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *label3_1 = gtk_label_new("工作区域");
     GtkWidget *label4_1 = gtk_label_new("工作时间");
     GtkWidget *label5_1 = gtk_label_new("未缴费用户数量");
-
 
 
     GtkWidget *label2_2 = gtk_label_new(Guard_infor[0]);
