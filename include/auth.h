@@ -35,6 +35,7 @@ int delete_user(db* _database, str username);
 
 list check_pay(db* _database);
 list check_pay_user(db* _database, str username);
+list_link_head user_bill(db* _database, str username);
 
 list_link_head check_pay_list(db* _database, str username);
 

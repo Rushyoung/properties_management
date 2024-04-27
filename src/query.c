@@ -32,6 +32,11 @@ list database_wide_query_to_line_No(db* _this, str _table, str _column, str keyw
         list result = database_select_column(_this, _table, _column);
         for(int i = 1; i <= result.length; i++){
             str temp = list_get(char*, &result, i);
+            if(strcmp(temp, keyword) == 0){
+                answer = i;
+                list_append(&final, &i);
+                continue;
+            }
             if(strstr(temp, keyword) != NULL){
                 answer = i;
                 list_append(&final, &i);
@@ -111,7 +116,7 @@ list_link_head database_qsort(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
-        map_set(&temp, list_get(char*, &query, i), i);
+        map_set_unsafe(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
@@ -146,7 +151,7 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column){
     list query = database_select_column(_database, _table, _column);
     map temp = map_create();
     for(int i = 1; i <= query.length; i++){
-        map_set(&temp, list_get(char*, &query, i), i);
+        map_set_unsafe(&temp, list_get(char*, &query, i), i);
     }
     list line_no_result = qsort_by_map(&temp);
     if(map_get(&(_database->master), _table) == -1){
@@ -180,7 +185,12 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column){
 int qsort_compare(const void* a, const void* b){
     sort_struct* A = (sort_struct*)a;
     sort_struct* B = (sort_struct*)b;
-    return strcmp(A->key, B->key);
+    int key_cmp = strcmp(A->key, B->key);
+    if (key_cmp == 0) {
+        return A->value - B->value; // Compare values when keys are equal
+    } else {
+        return key_cmp;
+    }
 }
 
 list_link_head work_content_query(db* _database){
