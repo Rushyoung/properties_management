@@ -31,6 +31,7 @@ int cleaner_main(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "保洁界面");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     //将生成的窗口居中
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
@@ -93,9 +94,6 @@ int cleaner_main(int argc, char *argv[]){
 #define COLUMN_ROOM  2//列索引
 #define COLUMN_WORK_CONTENT  3//列索引
 #define COLUMN_TIME  4//列索引
-gboolean window1_opened = FALSE;//标记窗口1是否已打开
-gboolean window3_opened = FALSE;//标记窗口3是否已打开
-gboolean window4_opened = FALSE;//标记窗口4是否已打开
 
 //window1——记录选中的排列方式的ID
 static int last_selected_id = -1;
@@ -171,6 +169,7 @@ static void generate_window1(void){
     gtk_window_set_title(GTK_WINDOW(window1), "完成业主报修");
     gtk_window_set_default_size(GTK_WINDOW(window1), 400, 300);
     g_signal_connect(window1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window1), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     // 创建GtkListStore
     GtkListStore *list_store = gtk_list_store_new(5, G_TYPE_INT, G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING,G_TYPE_STRING);
@@ -389,6 +388,7 @@ static void generate_window3(void) {
     window3 = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window3), "业主账单查询");
     gtk_window_set_default_size(GTK_WINDOW(window3), 600, 400);
+    g_signal_connect(G_OBJECT(window3), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(G_OBJECT(window3), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     //生成在屏幕中央
     gtk_window_set_position(GTK_WINDOW(window3), GTK_WIN_POS_CENTER);
@@ -883,5 +883,3 @@ gboolean on_search_clicked_callback(gpointer user_data) {
 void on_search_clicked(GtkWidget *button, gpointer user_data){
     g_timeout_add(500, on_search_clicked_callback, user_data);
 }
-
-//判断排序的按钮是否被点击

@@ -97,6 +97,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window), table);
@@ -104,7 +105,7 @@ int admin_main(int argc, char *argv[]) {
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -227,6 +228,7 @@ int get_cleaner(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -321,6 +323,7 @@ int get_guard(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -440,6 +443,7 @@ int admin_work( int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -449,7 +453,7 @@ int admin_work( int argc, char *argv[]){
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -570,6 +574,7 @@ int get_resident(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -681,6 +686,7 @@ int admin_resident(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -691,7 +697,7 @@ int admin_resident(int argc, char *argv[]){
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
@@ -792,7 +798,7 @@ int admin_fee(int argc, char *argv[]){
     gtk_table_set_row_spacings(GTK_TABLE(table), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table), 30);
 
-    GtkWidget *image = gtk_image_new_from_file("logo2.png");
+    GtkWidget *image = gtk_image_new_from_file("../logo2.png");
     gtk_table_attach(GTK_TABLE(table), image, 0, 5, 0, 4,
                      GTK_FILL | GTK_EXPAND,GTK_FILL | GTK_EXPAND, 3, 3);
 
