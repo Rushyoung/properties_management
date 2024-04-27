@@ -484,8 +484,8 @@ db init(){
     if(this.master.keys[1] == NULL){
         //创建账号数据库
         map account = map_create();
-        map_set(&account, "username", 16); // 16 is the max length of the
-        map_set(&account, "password", 16); // username and password
+        map_set(&account, "username", 20); // 20 is the max length of the
+        map_set(&account, "password", 20); // username and password
         map_set(&account, "auth", 6); // auth token
         database_insert_table(&this, "account", account);
         map_free(&account);
@@ -501,7 +501,7 @@ db init(){
         list_free(&admin);
 
         map resident = map_create();
-        map_set(&resident, "username", 16);
+        map_set(&resident, "username", 20);
         map_set(&resident, "name", 16);
         map_set(&resident, "region", 10);
         map_set(&resident, "room", 8);
