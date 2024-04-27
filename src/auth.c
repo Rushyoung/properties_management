@@ -130,7 +130,7 @@ list check_pay(db* _database){
     list result = list_create_by_size(int);
     for(int i = 1; i <= line_count; i++){
         //?
-        if(check_time(database_select(_database, "resident", "last_time", i)) == 1){
+        if(check_time(database_select(_database, "resident", "last_time", i)) == 0){
             list_append(&result, &i);
         }
     }

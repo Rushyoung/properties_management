@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     FILE* resident_fp = fopen("resident.txt", "rb");
     if(resident_fp != NULL){
         while(!feof(resident_fp)){
-            fscanf(resident_fp, "%16s %16s %s %s %s %s", username, password, region, room, last_time, name);
+            fscanf(resident_fp, "%s %s %s %s %s %s", username, password, name,region, room, last_time);
             add_residents(&database, username, password, name, region, room);
             database_update(&database, "resident", "last_time", database_query_by_column(&database, "resident", "username", username), last_time);
         }
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     FILE* guard_fp = fopen("worker.txt", "rb");
     if(guard_fp != NULL){
         while (!feof(guard_fp)){
-            fscanf(guard_fp, "%16s %16s %s %s %s", username, password, name, region, last_time);
+            fscanf(guard_fp, "%s %s %s %s %s", username, password, name, region, last_time);
             add_guard(&database, username, password, name, region, last_time);
         }
     }
