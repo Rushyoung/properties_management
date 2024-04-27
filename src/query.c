@@ -185,7 +185,12 @@ list_link_head database_qsort_reverse(db* _database, str _table, str _column){
 int qsort_compare(const void* a, const void* b){
     sort_struct* A = (sort_struct*)a;
     sort_struct* B = (sort_struct*)b;
-    return strcmp(A->key, B->key);
+    int key_cmp = strcmp(A->key, B->key);
+    if (key_cmp == 0) {
+        return A->value - B->value; // Compare values when keys are equal
+    } else {
+        return key_cmp;
+    }
 }
 
 list_link_head work_content_query(db* _database){
