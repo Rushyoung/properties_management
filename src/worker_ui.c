@@ -648,7 +648,7 @@ int guard_main(int argc, char *argv[]) {
     GtkWidget *label2_1 = gtk_label_new("姓名");
     GtkWidget *label3_1 = gtk_label_new("工作区域");
     GtkWidget *label4_1 = gtk_label_new("工作时间");
-    GtkWidget *label5_1 = gtk_label_new("未缴费用户数量");
+//    GtkWidget *label5_1 = gtk_label_new("未缴费用户数量");
 
 
     GtkWidget *label2_2 = gtk_label_new(Guard_infor[0]);
@@ -681,8 +681,8 @@ int guard_main(int argc, char *argv[]) {
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(table1), label4_2, 6, 11, 9, 11,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(table1), label5_1, 2, 7, 11, 14,
-                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
+//    gtk_table_attach(GTK_TABLE(table1), label5_1, 2, 7, 11, 14,
+//                     GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(table1), label5_2, 6, 11, 11, 14,
                      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 0, 0);
 
