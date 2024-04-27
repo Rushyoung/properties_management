@@ -58,6 +58,14 @@ int data_recovery(GtkWidget* widget, gpointer data){
                 MB_OK | MB_ICONERROR           // 风格：仅“确定”按钮和信息图标
         );
     }
+    if(a == 0){
+        MessageBox(
+                NULL,
+                TEXT("The data has been restored"),  // 显示的文本
+                TEXT("NOTICE"),                // 标题
+                MB_OK | MB_ICONINFORMATION          // 风格：仅“确定”按钮和信息图标
+        );
+    }
 }
 
 //创建管理员页面
@@ -430,10 +438,6 @@ int admin_work( int argc, char *argv[]){
     GtkWidget *auth2_item = gtk_menu_item_new_with_label("保安");
     g_signal_connect(auth2_item, "activate", G_CALLBACK(get_guard), window);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), auth2_item);
-
-    GtkWidget *auth3_item = gtk_menu_item_new_with_label("保洁");
-    g_signal_connect(auth3_item, "activate", G_CALLBACK(get_cleaner), window);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu2), auth3_item);
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item2), file_menu2);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar2), file_menu_item2);
