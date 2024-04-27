@@ -332,7 +332,7 @@ void on_fee_standard_clicked(GtkWidget *widget, gpointer user_data) {
 }
 
 
-int main(int argc, char *argv[]) {
+int _main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
     //  创建主窗口

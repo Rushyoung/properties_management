@@ -108,8 +108,19 @@ char* get_time(){
 }
 
 int check_time(char* a){
-    int temp = atoi(a);
-    if(temp % 1000000 > 152359){
+    int peryear = atoi(a)/1000000;
+    int permonth = atoi(a)/10000 - peryear * 100;
+    int perday = atoi(a)/100 - peryear * 10000 - permonth * 100;
+    int perhour = atoi(a) - peryear * 1000000 - permonth * 10000 - perday * 100;
+    int permin = atoi(a)%100;
+    struct tm pertm;
+    pertm.tm_year = peryear - 1900;
+    pertm.tm_mon = permonth - 1;
+    pertm.tm_mday = perday;
+    pertm.tm_hour = perhour;
+    pertm.tm_min = permin;
+
+    if(difftime(time(NULL), mktime(&pertm))>2592000){
         return 1;
     }
     else{
