@@ -45,6 +45,7 @@ int resident_main(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
@@ -159,6 +160,7 @@ int fee_submit(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -220,6 +222,7 @@ int resident_fee(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window), table);
@@ -279,6 +282,7 @@ int problem_submit(int argc, char *argv[]){
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 60, 40);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
@@ -317,6 +321,7 @@ int resident_problem(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "世界树物业管理系统");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
@@ -363,6 +368,7 @@ int resident_inquire(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "账单查询");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *table = gtk_table_new(10, 20, FALSE);
     gtk_container_add(GTK_CONTAINER(window), table);

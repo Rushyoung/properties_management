@@ -585,4 +585,6 @@ void list_link_append(list_link_head* head, list l){
     memcpy(cur->data.data, l.data, l.type_size * l.length); // Copy the data
     cur->next = NULL;
     head->length++;
+    //temp
+    printf("append %s ", list_get(char*, &(cur->data), 1));
 }
