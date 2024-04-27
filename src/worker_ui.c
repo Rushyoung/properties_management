@@ -243,9 +243,9 @@ static void generate_window1(void){
 
 
     //删除按键
-    GtkWidget *delete_button = gtk_button_new_with_label("删除");
+    GtkWidget *delete_button = gtk_button_new_with_label("删除（双击以选中项目）");
     g_signal_connect(delete_button, "clicked", G_CALLBACK(on_delete_button_clicked), tree_view);
-//    g_signal_connect(delete_button, "clicked", G_CALLBACK(on_submit_order_clicked), list_store);
+
 
 
     // 创建一个HBox用于水平布局按钮，delete_button->hbox->vbox
@@ -313,12 +313,11 @@ void on_sequence_activated(GtkMenuItem *item, gpointer user_data){
 
 
 typedef struct {
-    int i;
-    int j;
-}temp_data;
+    int left;
+    int right;
+}rank_value;
 
-temp_data da;
-temp_data *data = &da;
+rank_value da={0,0};
 
 //window3——解析数据
 list_link_head result;
@@ -337,35 +336,39 @@ void on_combobox_changed() {
 
 
 void return11(GtkWidget *widget){
-    data->i = 1;
+    da.left = 1;
 }
 
 void return12(GtkWidget *widget){
-    data->i = 2;
+    da.left = 2;
 }
 
 void return13(GtkWidget *widget){
-    data->i = 3;
+    da.left = 3;
 }
 
 void return21(GtkWidget *widget){
-    data->j = 1;
+    da.right = 1;
 }
 
 void return22(GtkWidget *widget){
-    data->j = 2;
+    da.right = 2;
 }
 
 static GtkWidget *entry;
 static GtkWidget *clist;
 static gchar *title[6] = {"账单id","姓名", "楼栋号", "房间号", "缴费费用","缴费时间"};
 
+//判断输入框是否为空，改变judege_entry的状态
 void on_search_entry(GtkWidget *button, gpointer user_data){
     char* temp_entry=gtk_entry_get_text(GTK_ENTRY(user_data));
     gboolean has_input = (temp_entry && temp_entry[0] != '\0');
     if(has_input){
         search_entry=temp_entry;
         judge_entry=1;
+    }
+    else{
+        judge_entry = 0;
     }
 }
 
@@ -555,14 +558,30 @@ static void generate_window4(void) {
     gtk_clist_set_column_width(clist, 1, 120);
     gtk_clist_set_column_width(clist, 2, 120);
 
-    list_link_head unpay_information= check_pay_list(&database,passwordData.username);
-    struct list_link_node* cur=unpay_information.next;
-    char* unpay_infor[3];
-    for(i=0;i<3;i++) {
-        unpay_infor[i] = list_get(char*, &(cur->data), i+2);
-    }
-    gtk_clist_append(GTK_CLIST(clist), (gchar **) unpay_infor);
 
+    list_link_head  guard_work_content= work_content_query(&database);
+    struct list_link_node *cur = guard_work_content.next;
+    for(i=0;i<guard_work_content.length;i++){
+        char* work_content[5];
+        for(j=0;j<5;j++){
+            work_content[j]=list_get(char*, &(cur->data), j+1);
+            printf("%s ",work_content[j]);
+        }
+        printf("\n");
+        gtk_clist_append(GTK_CLIST(clist), (gchar **)work_content);
+        cur=cur->next;
+    }
+
+//
+//    list_link_head unpay_information= check_pay_list(&database,passwordData.username);
+//    struct list_link_node* cur=unpay_information.next;
+//    char* unpay_infor[3];
+//    for(i=0;i<3;i++) {
+//        if(cur == NULL) break;
+//        unpay_infor[i] = list_get(char*, &(cur->data), i+2);
+//    }
+//    gtk_clist_append(GTK_CLIST(clist), (gchar **) unpay_infor);
+//
 
     gtk_table_set_row_spacings(GTK_TABLE(table4), 30);
     gtk_table_set_col_spacings(GTK_TABLE(table4), 30);
@@ -699,15 +718,14 @@ int guard_main(int argc, char *argv[]) {
     gtk_main();
 }
 
-
-void refill_clist() {
+//当输入框为空的时候，排序填充
+void refill_clist_rank() {
     printf("YES\n");
-    temp_data *a = (temp_data *) data;
-    int m = a->i;
-    int n = a->j;
-    if(judge_entry==0) {
-        if (n == 2) {
-            if (m == 1) {
+    rank_value *judege_rank_clicked_or_not=&da;
+    int judge_left_clicked_or_not=judege_rank_clicked_or_not->left;
+    int judge_right_clicked_or_not=judege_rank_clicked_or_not->right;
+        if (judge_right_clicked_or_not == 2) {
+            if (judge_left_clicked_or_not == 1) {
                 result = database_qsort(&database, "bill", "region");
                 struct list_link_node *cur = result.next;
                 for (i = 0; i < result.length; i++) {
@@ -720,7 +738,7 @@ void refill_clist() {
                     gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
                     cur = cur->next;
                 }
-            } else if (m == 2) {
+            } else if (judge_left_clicked_or_not == 2) {
                 result = database_qsort(&database, "bill", "name");
                 struct list_link_node *cur = result.next;
                 for (i = 0; i < result.length; i++) {
@@ -748,7 +766,7 @@ void refill_clist() {
                 }
             }
         } else {
-            if (m == 1) {
+            if (judge_left_clicked_or_not == 1) {
                 result = database_qsort_reverse(&database, "bill", "region");
                 struct list_link_node *cur = result.next;
                 for (i = 0; i < result.length; i++) {
@@ -761,7 +779,7 @@ void refill_clist() {
                     gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
                     cur = cur->next;
                 }
-            } else if (m == 2) {
+            } else if (judge_left_clicked_or_not == 2) {
                 result = database_qsort_reverse(&database, "bill", "name");
                 struct list_link_node *cur = result.next;
                 for (i = 0; i < result.length; i++) {
@@ -789,17 +807,84 @@ void refill_clist() {
                 }
             }
         }
-    }
-    else{
-
-    }
+        perror("4 45 6\n");
 }
 
+void refill_clist_entry() {
+    rank_value *judege_rank_clicked_or_not=&da;
+    int judge_left_clicked_or_not=judege_rank_clicked_or_not->left;
+    int judge_right_clicked_or_not=judege_rank_clicked_or_not->right;
+    list_link_head entry_query;
+    if(judge_left_clicked_or_not==1) {
+        entry_query = database_wide_query(&database, "bill", "region", search_entry);
+        struct list_link_node *cur =entry_query.next;
+        for (i = 0; i < entry_query.length; i++) {
+            resident_data[0] = list_get(char*, &(cur->data), 1);
+            resident_data[1] = list_get(char*, &(cur->data), 2);
+            resident_data[2] = list_get(char*, &(cur->data), 3);
+            resident_data[3] = list_get(char*, &(cur->data), 4);
+            resident_data[4] = list_get(char*, &(cur->data), 5);
+            resident_data[5] = list_get(char*, &(cur->data), 6);
+            gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            cur = cur->next;
+        }
+    }
+    else if(judge_left_clicked_or_not==2){
+        entry_query = database_wide_query(&database, "bill", "name", search_entry);
+        struct list_link_node *cur =entry_query.next;
+        for (i = 0; i < entry_query.length; i++) {
+            resident_data[0] = list_get(char*, &(cur->data), 1);
+            resident_data[1] = list_get(char*, &(cur->data), 2);
+            resident_data[2] = list_get(char*, &(cur->data), 3);
+            resident_data[3] = list_get(char*, &(cur->data), 4);
+            resident_data[4] = list_get(char*, &(cur->data), 5);
+            resident_data[5] = list_get(char*, &(cur->data), 6);
+            gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            cur = cur->next;
+            printf("sort");
+        }
+    }
+    else{
+        entry_query = database_wide_query(&database, "bill", "time", search_entry);
+        struct list_link_node *cur =entry_query.next;
+        for (i = 0; i < entry_query.length; i++) {
+            resident_data[0] = list_get(char*, &(cur->data), 1);
+            resident_data[1] = list_get(char*, &(cur->data), 2);
+            resident_data[2] = list_get(char*, &(cur->data), 3);
+            resident_data[3] = list_get(char*, &(cur->data), 4);
+            resident_data[4] = list_get(char*, &(cur->data), 5);
+            resident_data[5] = list_get(char*, &(cur->data), 6);
+            gtk_clist_append(GTK_CLIST(clist), (gchar **) resident_data);
+            cur = cur->next;
+        }
+    }
+    perror("7 8 9\n");
+}
 
-void on_search_clicked(GtkWidget *button, gpointer user_data) {
+gboolean on_search_clicked_callback(gpointer user_data) {
     // 清空列表
+    rank_value *judege_rank_clicked_or_not=&da;
+    int judge_left_clicked_or_not=judege_rank_clicked_or_not->left;
+    int judge_right_clicked_or_not=judege_rank_clicked_or_not->right;
     printf("YES\n");
     gtk_clist_clear(GTK_CLIST(user_data));
     printf("Have clean the clist\n");
-    refill_clist();
+    printf("%d", judge_entry);
+    if(judge_left_clicked_or_not!=0&&judge_right_clicked_or_not!=0) {
+        if (judge_entry == 0) {
+            refill_clist_rank();
+        } else {
+            refill_clist_entry();
+        }
+    }
+    else{
+        printf("Haven't clicked the two buttons of rank");
+    }
+    return FALSE;
 }
+
+void on_search_clicked(GtkWidget *button, gpointer user_data){
+    g_timeout_add(500, on_search_clicked_callback, user_data);
+}
+
+//判断排序的按钮是否被点击
