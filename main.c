@@ -50,9 +50,6 @@ int main(int argc, char *argv[]) {
 #else
     login_main(argc, argv);
 
-
-
-
 #endif
 
     return 0;
